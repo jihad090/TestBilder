@@ -4,6 +4,7 @@ import { Label } from "../../ui/label"; // Adjusted path
 import { Input } from "../../ui/input"; // Adjusted path
 import { cn } from "../../lib/utils"; // Adjusted path
 import { div } from "motion/react-client";
+import Link from "next/link";
 
 export default function SignupFormDemo() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,9 +29,9 @@ export default function SignupFormDemo() {
           <Label htmlFor="password">Password</Label>
           <Input id="password" placeholder="••••••••" type="password" />
         </LabelInputContainer>
-        <div className="flex justify-between">
-          <p className=" text-blue-700 h-9">Sign Up</p>
-          <p className=" text-blue-700 h-9">Forget Password</p>
+        <div className="flex justify-between text-blue-700 h-9">
+          <Link href="/signup">Sign Up</Link>
+          <Link href="/">Forget Password</Link>
         </div>
         
         <button

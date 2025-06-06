@@ -6,6 +6,7 @@ import {
   MenubarRadioItem,
   MenubarTrigger,
 } from "@/components/ui/menubar"
+import Link from "next/link"
 
 export function MenubarDemo() {
   return (
@@ -14,22 +15,30 @@ export function MenubarDemo() {
         TestBilder
       </p>
 
-      <div className="flex">
+      <div className="flex gap-4">
         <MenubarMenu>
-          <MenubarTrigger>Home</MenubarTrigger>
+          <MenubarTrigger>
+            <Link href="/">Home</Link> 
+          </MenubarTrigger>
         </MenubarMenu>
         <MenubarMenu>
           <MenubarTrigger>My Question</MenubarTrigger>
           <MenubarContent>
             <MenubarRadioGroup value="createNew">
-              <MenubarRadioItem value="createNew">Create New</MenubarRadioItem>
+              <Link href="/createQuestionPrimaryInfo">
+                <MenubarRadioItem value="createNew">
+                  Create New
+                </MenubarRadioItem>
+              </Link> 
               <MenubarRadioItem value="incomplete">Incomplete</MenubarRadioItem>
               <MenubarRadioItem value="complete">Complete</MenubarRadioItem>
             </MenubarRadioGroup>
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>Login</MenubarTrigger>
+          <MenubarTrigger>
+            <Link href="/login">Login</Link> 
+          </MenubarTrigger>
         </MenubarMenu>
       </div>
       <div>

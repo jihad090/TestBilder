@@ -3,6 +3,7 @@ import React from "react";
 import { Label } from "../../ui/label"; // Adjusted path
 import { Input } from "../../ui/input"; // Adjusted path
 import { cn } from "../../lib/utils"; // Adjusted path
+import Link from "next/link";
 
 export default function SignupFormDemo() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -45,7 +46,9 @@ export default function SignupFormDemo() {
           <Label htmlFor="confirm-password">Confirm Password</Label>
           <Input id="confirm-password" placeholder="••••••••" type="password" />
         </LabelInputContainer>
-        <p className=" text-blue-700 h-9">Already Registered? Log In</p>
+        <div className=" text-blue-700 h-10">
+          <Link href="/login" >Already Registered? Log In</Link>
+        </div>
         <button
           className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
           type="submit"
