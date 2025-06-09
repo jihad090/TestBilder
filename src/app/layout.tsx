@@ -32,9 +32,11 @@ export default function RootLayout({
     <html lang="en">   
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${""}`}
-      >
+      >  
         <MenubarDemo/>
-        {children}
+        <div className=" relative top-[48px] z-0">
+          {children}
+        </div>
       </body>
     </html>
   );

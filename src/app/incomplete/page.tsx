@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { div } from "motion/react-client"
 
 const incompleteList = [
   {
@@ -210,19 +211,20 @@ const incompleteList = [
 
 export default function TableDemo() {
   return (
-    <Table className="scrollable-table">
-      <TableCaption>A list of your Incomplete Questions.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">SL No</TableHead>
-          <TableHead>Question Type</TableHead>
-          <TableHead>Subject</TableHead>
-          <TableHead>Created At</TableHead>
-          <TableHead>Last Updated</TableHead>
-          <TableHead className="text-right">Action</TableHead>
-        </TableRow>
-      </TableHeader>
-      {/* <div >       */}
+    <div className="">
+      <p className=" text-3xl fixed z-5 w-full h-[40px] text-center bg-white">Incomplete Questions</p>
+      <Table className=" my-[40px]">
+        <TableCaption>A list of your Incomplete Questions.</TableCaption>
+        <TableHeader>
+          <TableRow >
+            <TableHead className="w-[100px]">SL No</TableHead>
+            <TableHead >Question Type</TableHead>
+            <TableHead >Subject</TableHead>
+            <TableHead >Created At</TableHead>
+            <TableHead >Last Updated</TableHead>
+            <TableHead className="text-right">Action</TableHead>
+          </TableRow>
+        </TableHeader>
         <TableBody>
           {incompleteList.map((item, idx) => (
             <TableRow className="bg-red-100 border-4" key={idx+1}>
@@ -238,12 +240,13 @@ export default function TableDemo() {
             </TableRow>
           ))}
         </TableBody>  
-      {/* </div> */}
-      <TableFooter>
-        <TableRow>
-          <TableCell className=" text-center" colSpan={6}>Total Questions: {incompleteList.length}</TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
+        <TableFooter>
+          <TableRow>
+            <TableCell className=" text-center" colSpan={6}>Total Questions: {incompleteList.length}</TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>      
+    </div>
+
   )
 }

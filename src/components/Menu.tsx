@@ -10,7 +10,7 @@ import Link from "next/link"
 
 export function MenubarDemo() {
   return (
-    <Menubar className=" justify-between h-48px fxed">
+    <Menubar className=" justify-between fixed w-full top-0 z-10">
       <p className="text-3xl font-extrabold text-black-300 drop-shadow-xl text-shadow-lg">
         TestBilder
       </p>
