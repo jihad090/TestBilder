@@ -10,7 +10,7 @@ import Link from "next/link"
 
 export function MenubarDemo() {
   return (
-    <Menubar className=" justify-between">
+    <Menubar className=" justify-between h-48px fxed">
       <p className="text-3xl font-extrabold text-black-300 drop-shadow-xl text-shadow-lg">
         TestBilder
       </p>
@@ -26,12 +26,14 @@ export function MenubarDemo() {
           <MenubarContent>
             <MenubarRadioGroup value="createNew">
               <Link href="/createQuestionPrimaryInfo">
-                <MenubarRadioItem value="createNew">
-                  Create New
-                </MenubarRadioItem>
+                <MenubarRadioItem value="createNew">Create New</MenubarRadioItem>
               </Link> 
-              <MenubarRadioItem value="incomplete">Incomplete</MenubarRadioItem>
-              <MenubarRadioItem value="complete">Complete</MenubarRadioItem>
+              <Link href="/incomplete">
+                <MenubarRadioItem value="incomplete">Incomplete</MenubarRadioItem>              
+              </Link>
+              <Link href="/complete">
+                <MenubarRadioItem value="complete">Complete</MenubarRadioItem>
+              </Link>
             </MenubarRadioGroup>
           </MenubarContent>
         </MenubarMenu>
