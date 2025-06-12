@@ -44,7 +44,7 @@ export function MenubarDemo() {
         </MenubarMenu>
       </div>
       <div>
-        darkMode
+        Profile
       </div>
     </Menubar>
   )

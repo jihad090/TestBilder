@@ -8,7 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { div } from "motion/react-client"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Scroll } from "lucide-react"
 
 const incompleteList = [
   {
@@ -212,40 +213,44 @@ const incompleteList = [
 export default function TableDemo() {
   return (
     <div className="">
-      <p className=" text-3xl fixed z-5 w-full h-[40px] text-center bg-white">Incomplete Questions</p>
-      <Table className=" my-[40px]">
-        <TableCaption>A list of your Incomplete Questions.</TableCaption>
-        <TableHeader>
-          <TableRow >
-            <TableHead className="w-[100px]">SL No</TableHead>
-            <TableHead >Question Type</TableHead>
-            <TableHead >Subject</TableHead>
-            <TableHead >Created At</TableHead>
-            <TableHead >Last Updated</TableHead>
-            <TableHead className="text-right">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {incompleteList.map((item, idx) => (
-            <TableRow className="bg-red-100 border-4" key={idx+1}>
-              <TableCell className="font-medium">{idx+1}</TableCell>
-              <TableCell>{item.questionType}</TableCell>
-              <TableCell>{item.subject}</TableCell>
-              <TableCell>{item.createdAt}</TableCell>
-              <TableCell>{item.lastUpdate}</TableCell>
-              <TableCell className="text-right">
-                <button className="text-blue-600 hover:underline">Edit</button>
-                <button className="ml-2 text-red-600 hover:underline">Delete</button>
-              </TableCell>
+      <p className=" text-3xl w-full text-center bg-white">Incomplete Questions</p>
+      <ScrollArea className="h-[90vh] " >
+        <Table className="relative">
+          <TableCaption>A list of your Incomplete Questions.</TableCaption>
+          <TableHeader className=" sticky bg-blue-100 ">
+            <TableRow >
+              <TableHead >SL No</TableHead>
+              <TableHead >Question Type</TableHead>
+              <TableHead >Subject</TableHead>
+              <TableHead >Created At</TableHead>
+              <TableHead >Last Updated</TableHead>
+              <TableHead className="text-right">Action</TableHead>
             </TableRow>
-          ))}
-        </TableBody>  
-        <TableFooter>
-          <TableRow>
-            <TableCell className=" text-center" colSpan={6}>Total Questions: {incompleteList.length}</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>      
+          </TableHeader>
+          <TableBody>
+            {incompleteList.map((item, idx) => (
+              <TableRow className="bg-red-100 border-4" key={idx + 1}>
+                <TableCell>{idx + 1}</TableCell>
+                <TableCell>{item.questionType}</TableCell>
+                <TableCell>{item.subject}</TableCell>
+                <TableCell>{item.createdAt}</TableCell>
+                <TableCell>{item.lastUpdate}</TableCell>
+                <TableCell className="text-right">
+                  <button className="text-blue-600 hover:underline">Edit</button>
+                  <button className="ml-2 text-red-600 hover:underline">Delete</button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell className=" text-center" colSpan={6}>Total Questions: {incompleteList.length}</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </ScrollArea>
+
+
     </div>
 
   )

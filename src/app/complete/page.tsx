@@ -1,3 +1,4 @@
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Table,
   TableBody,
@@ -207,28 +208,27 @@ const completeList = [
     lastUpdate: "2023-08-01"
   }
 ]
-
 export default function TableDemo() {
   return (
-    <div>
-      <p className=" text-3xl fixed z-5 w-full h-[40px] text-center bg-white">Complete Questions</p>
-      <Table className="my-[40px]">
-        <TableCaption>A list of your Incomplete Questions.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">SL No</TableHead>
-            <TableHead>Question Type</TableHead>
-            <TableHead>Subject</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Last Updated</TableHead>
-            <TableHead className="text-right">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        {/* <div >       */}
+    <div className="">
+      <p className=" text-3xl w-full text-center bg-white">Complete Questions</p>
+      <ScrollArea className="h-[90vh]" >
+        <Table className="relative">
+          <TableCaption>A list of your Incomplete Questions.</TableCaption>
+          <TableHeader className=" sticky  bg-blue-100">
+            <TableRow >
+              <TableHead >SL No</TableHead>
+              <TableHead >Question Type</TableHead>
+              <TableHead >Subject</TableHead>
+              <TableHead >Created At</TableHead>
+              <TableHead >Last Updated</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
             {completeList.map((item, idx) => (
-              <TableRow className="bg-green-100 border-4" key={idx+1}>
-                <TableCell className="font-medium">{idx+1}</TableCell>
+              <TableRow className="bg-green-100 border-4" key={idx + 1}>
+                <TableCell>{idx + 1}</TableCell>
                 <TableCell>{item.questionType}</TableCell>
                 <TableCell>{item.subject}</TableCell>
                 <TableCell>{item.createdAt}</TableCell>
@@ -239,16 +239,17 @@ export default function TableDemo() {
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>  
-        {/* </div> */}
-        <TableFooter>
-          <TableRow>
-            <TableCell className=" text-center" colSpan={6}>Total Questions: {completeList.length}</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>      
-    </div>
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell className=" text-center" colSpan={6}>Total Questions: {completeList.length}</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </ScrollArea>
 
+
+    </div>
 
   )
 }

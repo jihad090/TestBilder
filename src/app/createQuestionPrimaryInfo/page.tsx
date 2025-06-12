@@ -72,7 +72,7 @@ export default function SignupFormDemo() {
             <option value="cq">Creative Question (CQ) / সৃজনশীল প্রশ্ন</option>
             <option value="sq">Short Question (SQ) / সংক্ষীপ্ত প্রশ্ন</option>
             <option value="cq">CQ And SQ / সৃজনশীল ও সংক্ষীপ্ত প্রশ্ন </option>
-            <option value="cq">CQ And MCQ / সৃজনশীল ও বহুনীর্বাচনী (No OMR)</option>
+            {/* <option value="cq">CQ And MCQ / সৃজনশীল ও বহুনীর্বাচনী (No OMR)</option> */}
           </select>
         </LabelInputContainer>
         <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
@@ -90,13 +90,12 @@ export default function SignupFormDemo() {
           </LabelInputContainer>
         </div>
         
-        <button
-          className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
+        <Link href="/makeMCQ"
+          className="block h-10 w-full rounded-md bg-black font-medium text-white text-center p-2 hover:bg-blue-700 "
           type="submit"
         >
           Get Templet &rarr;
-          <BottomGradient />
-        </button>
+        </Link>
       </form>
     </div>      
   );
