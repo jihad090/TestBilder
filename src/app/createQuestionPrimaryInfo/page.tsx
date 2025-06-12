@@ -90,7 +90,7 @@ export default function SignupFormDemo() {
           </LabelInputContainer>
         </div>
         
-        <Link href="/makeMCQ"
+        <Link href="/questionMakingCorner/mcq"
           className="block h-10 w-full rounded-md bg-black font-medium text-white text-center p-2 hover:bg-blue-700 "
           type="submit"
         >
