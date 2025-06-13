@@ -9,10 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-const MCQTemplet_1 = ({ className }: { className: string }) => {
+type Props = {
+  mcqTemplet: any[];
+  css: string;
+  count: number;
+  setMcqTemplet: React.Dispatch<React.SetStateAction<any[]>>;
+};
+const MCQTemplet_1 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
   return (
-    <form className={`bg-blue-100 p-3 rounded-2xl mb-2 ${className}`}>
+    <form className={`bg-blue-100 p-3 rounded-2xl mb-2 ${css}`}>
       <LabelInputContainer className="mb-2">
         <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
         <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
@@ -26,7 +31,7 @@ const MCQTemplet_1 = ({ className }: { className: string }) => {
           <LabelInputContainer className="mb-2">
             <Label htmlFor="op2">খ/ Option B</Label>
             <Input id="op2" placeholder="খ/B" type="text" />
-          </LabelInputContainer>     
+          </LabelInputContainer>
         </div>
         <div className="flex ">
           <LabelInputContainer className="mb-2">
@@ -36,7 +41,7 @@ const MCQTemplet_1 = ({ className }: { className: string }) => {
           <LabelInputContainer className="mb-2">
             <Label htmlFor="op4">ঘ/ Option D</Label>
             <Input id="op4" placeholder="ঘ/D" type="text" />
-          </LabelInputContainer>     
+          </LabelInputContainer>
         </div>
       </div>
       <div className="flex justify-between">
@@ -54,12 +59,18 @@ const MCQTemplet_1 = ({ className }: { className: string }) => {
             </SelectContent>
           </Select>
         </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Copy </button>
+        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
+        onClick={(e)=>{
+          e.preventDefault()
+          count++;
+          setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_1 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
+        }}
+        > Copy </button>
       </div>
     </form>
   );
 };
-const MCQTemplet_2 = () => {
+const MCQTemplet_2 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
   return (
     <form className="bg-blue-100 p-3 rounded-2xl mb-2" >
       <LabelInputContainer className="mb-2">
@@ -75,7 +86,7 @@ const MCQTemplet_2 = () => {
           <LabelInputContainer className="mb-2">
             <Label htmlFor="op2">খ/ Option B</Label>
             <Input id="op2" placeholder="খ/B" type="text" />
-          </LabelInputContainer>     
+          </LabelInputContainer>
         </div>
       </div>
       <div className="flex justify-between">
@@ -91,12 +102,18 @@ const MCQTemplet_2 = () => {
             </SelectContent>
           </Select>
         </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Copy </button>
+        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
+          onClick={(e)=>{
+            e.preventDefault()
+            count++;
+            setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_2 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
+          }}
+        > Copy </button>
       </div>
     </form>
   )
 }
-const MCQTemplet_3 = () => {
+const MCQTemplet_3 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
   return (
     <form className="bg-blue-100 p-3 rounded-2xl mb-2" >
       <LabelInputContainer className="mb-2">
@@ -104,31 +121,31 @@ const MCQTemplet_3 = () => {
         <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
       </LabelInputContainer>
       <div className='mx-10'>
-        <label htmlFor="info1">i. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[400px] rounded-md mb-2'/>   <br />     
-        <label htmlFor="info1">ii. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[395px] rounded-md mb-2'/>  <br />
-        <label htmlFor="info1">iii. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[392px] rounded-md mb-2'/>  
+        <label htmlFor="info1">i. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[400px] rounded-md mb-2' />   <br />
+        <label htmlFor="info1">ii. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[395px] rounded-md mb-2' />  <br />
+        <label htmlFor="info1">iii. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[392px] rounded-md mb-2' />
       </div>
 
       <div>
         <div className="flex ">
           <LabelInputContainer className="mb-2">
             <Label htmlFor="op1">ক/ Option A</Label>
-            <Input id="op1" placeholder="ক/A" type="text" />
+            <Input defaultValue={"i, ii"} id="op1" placeholder="ক/A" type="text" />
           </LabelInputContainer>
           <LabelInputContainer className="mb-2">
             <Label htmlFor="op2">খ/ Option B</Label>
-            <Input id="op2" placeholder="খ/B" type="text" />
-          </LabelInputContainer>     
+            <Input defaultValue={"i, iii"} id="op2" placeholder="খ/B" type="text" />
+          </LabelInputContainer>
         </div>
         <div className="flex ">
           <LabelInputContainer className="mb-2">
             <Label htmlFor="op3">গ/Option C</Label>
-            <Input id="op3" placeholder="গ/C" type="text" />
+            <Input defaultValue={"ii, iii"} id="op3" placeholder="গ/C" type="text" />
           </LabelInputContainer>
           <LabelInputContainer className="mb-2">
             <Label htmlFor="op4">ঘ/ Option D</Label>
-            <Input id="op4" placeholder="ঘ/D" type="text" />
-          </LabelInputContainer>     
+            <Input defaultValue={"i, ii, iii"} id="op4" placeholder="ঘ/D" type="text" />
+          </LabelInputContainer>
         </div>
       </div>
       <div className="flex justify-between">
@@ -146,27 +163,46 @@ const MCQTemplet_3 = () => {
             </SelectContent>
           </Select>
         </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Copy </button>
+        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
+          onClick={(e)=>{
+            e.preventDefault()
+            count++;
+            setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_3 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
+          }}
+        > Copy </button>
       </div>
     </form>
   )
 }
-const MCQTemplet_4 = () => {
+const MCQTemplet_4 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
+  // const [mcqTemplet4, setMcqTemplet4] = React.useState<any>([]);
   return (
-    <form className="bg-blue-100 p-3 rounded-2xl mb-2" >
-      <LabelInputContainer className="mb-2">
-        <Label htmlFor="qStatement">Passage</Label>
-        <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
-      </LabelInputContainer>
-      <MCQTemplet_1 className=' bg-blue-400'/>      
+    <div className="bg-blue-100 p-3 rounded-2xl mb-2">
+      <form  >
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="passage">উদ্দীপক (Passage)</Label>
+          <textarea id="passage" className='bg-white p-3 rounded-2xl' placeholder="উদ্দীপকটি লিখুন (write the passage)" />
+        </LabelInputContainer>
+      </form>
+      <MCQTemplet_1 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} count={count} css="bg-blue-300" />
+      {
+
+      }
       <div className="flex justify-between">
         <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Delete </button>
         <div>
         </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Copy </button>
+        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
+          onClick={(e)=>{
+            e.preventDefault()
+            count++;
+            setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_4 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} count={count} css="bg-blue-300"/> }]);
+          }}
+        > Copy </button>
       </div>
-    </form>
-    
+    </div>
+
+
   )
 }
 
@@ -185,4 +221,4 @@ const LabelInputContainer = ({
   );
 };
 
-export {MCQTemplet_1, MCQTemplet_2,MCQTemplet_3, MCQTemplet_4, LabelInputContainer};
+export { MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4, LabelInputContainer };
