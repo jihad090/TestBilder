@@ -25,7 +25,7 @@ const mcq = () => {
 
   return (
     <div id="test" className=' my-15 w-full'>
-      <div className=" justify-between items-center w-full fixed top-[100px] z-10">
+      <div className=" justify-between items-center w-full fixed top-[50px] z-10">
         <div className=" justify-between item-center w-full flex bg-gray-400 p-2 rounded-2xl max-w-200 m-auto">
           <div className="flex items-center text-md font-semibold">
             <div className="w-22">MCQ Type: </div>
