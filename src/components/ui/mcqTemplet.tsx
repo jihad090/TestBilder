@@ -63,7 +63,7 @@ const MCQTemplet_1 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
         onClick={(e)=>{
           e.preventDefault()
           count++;
-          setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_1 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
+          setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_1 count={count} mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
         }}
         > Copy </button>
       </div>
@@ -106,7 +106,7 @@ const MCQTemplet_2 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
           onClick={(e)=>{
             e.preventDefault()
             count++;
-            setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_2 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
+            setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_2  count={count} mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
           }}
         > Copy </button>
       </div>
@@ -167,7 +167,7 @@ const MCQTemplet_3 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
           onClick={(e)=>{
             e.preventDefault()
             count++;
-            setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_3 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
+            setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, { call: () => <MCQTemplet_3 count={count} mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} css=""/> }]);
           }}
         > Copy </button>
       </div>
@@ -175,7 +175,7 @@ const MCQTemplet_3 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
   )
 }
 const MCQTemplet_4 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
-  // const [mcqTemplet4, setMcqTemplet4] = React.useState<any>([]);
+  const [mcqTemplet4, setMcqTemplet4] = React.useState<any>([]);
   return (
     <div className="bg-blue-100 p-3 rounded-2xl mb-2">
       <form  >
@@ -184,9 +184,24 @@ const MCQTemplet_4 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
           <textarea id="passage" className='bg-white p-3 rounded-2xl' placeholder="উদ্দীপকটি লিখুন (write the passage)" />
         </LabelInputContainer>
       </form>
-      <MCQTemplet_1 mcqTemplet={mcqTemplet} setMcqTemplet={setMcqTemplet} count={count} css="bg-blue-300" />
+      <div className='w-full flex justify-between items-center'>
+        <button disabled={mcqTemplet4.length >= 2}
+        className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 justify-end"
+        onClick={(e)=>{
+          e.preventDefault()
+          count++;
+          setMcqTemplet4((mcqTemplet4:any) => [...mcqTemplet4, { call: () => <MCQTemplet_4_1 /> }]);
+        }}
+        >ADD MCQ</button>       
+        <p className='px-4'>You can add maximum 3 MCQs here </p> 
+      </div>
+      <MCQTemplet_4_1/>
       {
-
+        mcqTemplet4.map((item:any, index:number) => (
+          <div key={index} className="mb-4 max-w-[800px] mx-auto ">
+            {item.call()}
+          </div>
+        ))
       }
       <div className="flex justify-between">
         <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Delete </button>
@@ -201,11 +216,54 @@ const MCQTemplet_4 = ({ mcqTemplet, setMcqTemplet, css, count }: Props) => {
         > Copy </button>
       </div>
     </div>
-
-
   )
 }
 
+const MCQTemplet_4_1 = () => {
+  return (
+    <form className={`p-3 rounded-2xl mb-2 bg-blue-300`}>
+    <LabelInputContainer className="mb-2">
+      <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
+      <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
+    </LabelInputContainer>
+    <div>
+      <div className="flex ">
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="op1">ক/ Option A</Label>
+          <Input id="op1" placeholder="ক/A" type="text" />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="op2">খ/ Option B</Label>
+          <Input id="op2" placeholder="খ/B" type="text" />
+        </LabelInputContainer>
+      </div>
+      <div className="flex ">
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="op3">গ/Option C</Label>
+          <Input id="op3" placeholder="গ/C" type="text" />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="op4">ঘ/ Option D</Label>
+          <Input id="op4" placeholder="ঘ/D" type="text" />
+        </LabelInputContainer>
+      </div>
+    </div>
+    <div className="flex justify-center">
+      <Select>
+        <SelectTrigger className="min-w-[250px] bg-white">
+          <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="0">ক/A</SelectItem>
+          <SelectItem value="1">খ/B</SelectItem>
+          <SelectItem value="2">গ/C</SelectItem>
+          <SelectItem value="3">ঘ/D</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  </form>
+  );
+};
 
 const LabelInputContainer = ({
   children,
