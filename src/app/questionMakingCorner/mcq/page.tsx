@@ -4,7 +4,7 @@ import { Label } from "@/ui/label"; // Adjusted path
 import { Input } from "@/ui/input"; // Adjusted path
 import { cn } from "@/lib/utils"; // Adjusted path
 import Link from "next/link";
-import {MCQTemplet_1, MCQTemplet_2,MCQTemplet_3, MCQTemplet_4} from "@/components/ui/mcqTemplet";
+import { DelBtn, MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4 } from "@/components/ui/mcqTemplet";
 import { MCQ } from "@/components/mcq";
 import {
   Select,
@@ -14,14 +14,14 @@ import {
   SelectValue,
   SelectLabel
 } from "@/components/ui/select"
-let count = 0;
+let mcqTempIdx = 0;
 const mcq = () => {
   const [mcqTemplet, setMcqTemplet] = React.useState<any>([]);
   const [mcqTempletName, setMcqTempletName] = useState<string | undefined>("mcq-1");
 
-  React.useEffect(() => {
-    console.log("mcqTemplet updated:", mcqTemplet);
-  }, [mcqTemplet]);
+  // React.useEffect(() => {
+  //   console.log("mcqTemplet updated:", mcqTemplet);
+  // }, [mcqTemplet]);
 
   return (
     <div id="test" className=' my-15 w-full'>
@@ -35,42 +35,36 @@ const mcq = () => {
             }}>
               <SelectTrigger className=" min-w-[380px] bg-white">
                 <SelectValue placeholder="Select MCQ type" />
-              </SelectTrigger> 
+              </SelectTrigger>
               <SelectContent >
                 <SelectItem value="mcq-1">সাধারণ বহুনির্বাচনী (Standard Multiple Choice Question) </SelectItem>
                 <SelectItem value="mcq-2">সত্য/মিথ্যা (True/False) </SelectItem>
                 <SelectItem value="mcq-3">বহুপদী ও সমাপ্তিসূচক (Multiple Completion Based Question) </SelectItem>
                 <SelectItem value="mcq-4">অভিন্ন তথ্যভিত্তিক (Situation Set Based Question)</SelectItem>
               </SelectContent>
-            </Select>             
+            </Select>
           </div>
           <div>
             <button className="px-6 mx-3 hover:bg-blue-700 py-1 text-white rounded-xl bg-black"
-            onClick={()=>{
-              if (mcqTempletName === "mcq-1"){setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, () => <MCQTemplet_1 setMcqTemplet={setMcqTemplet} count={count} css=""/> ]); count++;}
-              else if (mcqTempletName === "mcq-2"){setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, () => <MCQTemplet_2 setMcqTemplet={setMcqTemplet} count={count} css=""/> ]); count++;}
-              else if (mcqTempletName === "mcq-3"){setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, () => <MCQTemplet_3 setMcqTemplet={setMcqTemplet} count={count} css=""/> ]); count++;}
-              else if (mcqTempletName === "mcq-4"){setMcqTemplet((mcqTemplet:any) => [...mcqTemplet, () => <MCQTemplet_4 setMcqTemplet={setMcqTemplet} count={count} css=""/> ]); count++;}
-            }}>Add</button>
+              onClick={() => {
+                setMcqTemplet((mcqTemplet: any) => [...mcqTemplet, [{ mcqType: mcqTempletName, parentIdx: mcqTempIdx, childIdx:0 }]])
+                mcqTempIdx++
+              }}>Add</button>
             {/* <MCQTemplet_1 className=""/> */}
           </div>
         </div>
       </div>
-      
-      {/* <button onClick={
-      ()=>{ setMcqTemplet((mcqTemplet:any) => 
-      [...mcqTemplet, { call: () => <MCQTemplet_1 /> }]
-      );
-      }}>
-        Add Question
-      </button> */}
       <>
         {
-          mcqTemplet.map((item:any, index:number) => (
-            <div key={index} className="mb-4 max-w-[800px] mx-auto ">
-              {item()}
-            </div>
-          ))
+          // mcqTemplet.map((item: any, idx1: number) => item.map((i:any, idx2: number)=>{
+            mcqTemplet.map((item: any, idx1: number) => item.map((i:any, idx2: number)=>{
+              console.log(item)
+              if ( i.mcqType === "mcq-1"){ return <MCQTemplet_1 key={idx2}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_1>}
+              if ( i.mcqType === "mcq-2"){ return <MCQTemplet_2 key={idx2}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_2>}
+              if ( i.mcqType === "mcq-3"){ return <MCQTemplet_3 key={idx2}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_3>}
+              if ( i.mcqType === "mcq-4"){ return <MCQTemplet_4 pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} key={idx2} mcqTemplet={mcqTemplet}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_4>}
+            })
+          )
         }
       </>
       <div className="justify-center flex text-white">

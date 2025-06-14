@@ -10,119 +10,124 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import ImageDropzone from '@/components/ImageDropzone'
+import { remove } from 'dexie';
+import { div } from 'motion/react-client';
 type Props = {
-  css: string;
-  count: number;
+  css?: string;
+  mcqTempIdx?: string;
+  mcqTemplet: any
+  index?: string;
+  pIdx: number;
+  cIdx: number;
   setMcqTemplet: React.Dispatch<React.SetStateAction<any[]>>;
 };
-const MCQTemplet_1 = ({ setMcqTemplet, count }: Props) => {
+const MCQTemplet_1 = ({ children }: { children: React.ReactNode }) => {
+  // console.log("state:", mcqTemplet, mcqTempIdx)
   return (
-    <form className={`bg-blue-300 p-3 rounded-2xl mb-2 `}>
-      <LabelInputContainer className="mb-2">
-        <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
-        <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
-      </LabelInputContainer>
-      <ImageDropzone imgFor={"Question"} />   
-      <div>
-        <div className="flex ">
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op1">ক/ Option A</Label>
-            <Input id="op1" placeholder="ক/A" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op2">খ/ Option B</Label>
-            <Input id="op2" placeholder="খ/B" type="text" />
-          </LabelInputContainer>
-        </div>
-        <div className="flex ">
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op3">গ/Option C</Label>
-            <Input id="op3" placeholder="গ/C" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op4">ঘ/ Option D</Label>
-            <Input id="op4" placeholder="ঘ/D" type="text" />
-          </LabelInputContainer>
-        </div>
-      </div>
-      <div className="flex justify-between">
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Delete </button>
+    <div className='w-full'>
+      <form className="bg-blue-300 mx-auto max-w-220 p-3 rounded-2xl mb-2 ">
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
+          <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
+        </LabelInputContainer>
+        <ImageDropzone imgFor={"Question"} />
         <div>
-          <Select>
-            <SelectTrigger className="min-w-[250px] bg-white">
-              <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0">ক/A</SelectItem>
-              <SelectItem value="1">খ/B</SelectItem>
-              <SelectItem value="2">গ/C</SelectItem>
-              <SelectItem value="3">ঘ/D</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex ">
+            <LabelInputContainer className="mb-2">
+              <Label htmlFor="op1">ক/ Option A</Label>
+              <Input id="op1" placeholder="ক/A" type="text" />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2">
+              <Label htmlFor="op2">খ/ Option B</Label>
+              <Input id="op2" placeholder="খ/B" type="text" />
+            </LabelInputContainer>
+          </div>
+          <div className="flex ">
+            <LabelInputContainer className="mb-2">
+              <Label htmlFor="op3">গ/Option C</Label>
+              <Input id="op3" placeholder="গ/C" type="text" />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2">
+              <Label htmlFor="op4">ঘ/ Option D</Label>
+              <Input id="op4" placeholder="ঘ/D" type="text" />
+            </LabelInputContainer>
+          </div>
         </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
-          onClick={(e) => {
-            e.preventDefault()
-            count++;
-            setMcqTemplet((mcqTemplet: any) => [...mcqTemplet, () => <MCQTemplet_1 count={count} setMcqTemplet={setMcqTemplet} css="" /> ]);
-          }}
-        > Copy </button>
-      </div>
-    </form>
+        <div className="flex justify-between">
+          {
+            children
+          }
+          <div>
+            <Select>
+              <SelectTrigger className="min-w-[250px] bg-white">
+                <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">ক/A</SelectItem>
+                <SelectItem value="1">খ/B</SelectItem>
+                <SelectItem value="2">গ/C</SelectItem>
+                <SelectItem value="3">ঘ/D</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </form>
+    </div>
+
   );
 };
-const MCQTemplet_2 = ({ setMcqTemplet, css, count }: Props) => {
+const MCQTemplet_2 = ({ children }: { children: React.ReactNode }) => {
+  // console.log("state:", mcqTemplet, mcqTempIdx)
   return (
-    <form className="bg-blue-300 p-3 rounded-2xl mb-2" >
-      <LabelInputContainer className="mb-2">
-        <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
-        <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
-      </LabelInputContainer>
-      <ImageDropzone imgFor={"Question"} /> 
-      <div>
-        <div className="flex ">
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op1">ক/ Option A</Label>
-            <Input id="op1" placeholder="ক/A" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op2">খ/ Option B</Label>
-            <Input id="op2" placeholder="খ/B" type="text" />
-          </LabelInputContainer>
-        </div>
-      </div>
-      <div className="flex justify-between">
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Delete </button>
+    <div className='w-full'>
+      <form className="bg-blue-300 mx-auto max-w-220 p-3 rounded-2xl mb-2 ">
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
+          <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
+        </LabelInputContainer>
+        <ImageDropzone imgFor={"Question"} />
         <div>
-          <Select>
-            <SelectTrigger className="min-w-[250px] bg-white">
-              <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0">ক/A</SelectItem>
-              <SelectItem value="1">খ/B</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex ">
+            <LabelInputContainer className="mb-2">
+              <Label htmlFor="op1">ক/ Option A</Label>
+              <Input id="op1" placeholder="ক/A" type="text" />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2">
+              <Label htmlFor="op2">খ/ Option B</Label>
+              <Input id="op2" placeholder="খ/B" type="text" />
+            </LabelInputContainer>
+          </div>
+
         </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
-          onClick={(e) => {
-            e.preventDefault()
-            count++;
-            setMcqTemplet((mcqTemplet: any) => [...mcqTemplet, () => <MCQTemplet_2 count={count} setMcqTemplet={setMcqTemplet} css="" /> ]);
-          }}
-        > Copy </button>
-      </div>
-    </form>
-  )
-}
-const MCQTemplet_3 = ({ setMcqTemplet, css, count }: Props) => {
+        <div className="flex justify-between">
+          {
+            children
+          }
+          <div>
+            <Select>
+              <SelectTrigger className="min-w-[250px] bg-white">
+                <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">ক/A</SelectItem>
+                <SelectItem value="1">খ/B</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  );
+};
+const MCQTemplet_3 = ({ children }: { children: React.ReactNode }) => {
   return (
-    <form className="bg-blue-300 p-3 rounded-2xl mb-2" >
+    <form className="bg-blue-300 mx-auto max-w-220 p-3 rounded-2xl mb-2 " >
       <LabelInputContainer className="mb-2">
         <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
         <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
       </LabelInputContainer>
-      <ImageDropzone imgFor={"Question"} /> 
+      <ImageDropzone imgFor={"Question"} />
       <div className='mx-10'>
         <label htmlFor="info1">i. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[400px] rounded-md mb-2' />   <br />
         <label htmlFor="info1">ii. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[395px] rounded-md mb-2' />  <br />
@@ -152,7 +157,9 @@ const MCQTemplet_3 = ({ setMcqTemplet, css, count }: Props) => {
         </div>
       </div>
       <div className="flex justify-between">
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Delete </button>
+        {
+          children
+        }
         <div>
           <Select>
             <SelectTrigger className="min-w-[250px] bg-white">
@@ -166,62 +173,55 @@ const MCQTemplet_3 = ({ setMcqTemplet, css, count }: Props) => {
             </SelectContent>
           </Select>
         </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
-          onClick={(e) => {
-            e.preventDefault()
-            count++;
-            setMcqTemplet((mcqTemplet: any) => [...mcqTemplet,() => <MCQTemplet_3 count={count} setMcqTemplet={setMcqTemplet} css="" /> ]);
-          }}
-        > Copy </button>
       </div>
     </form>
   )
 }
-const MCQTemplet_4 = ({ setMcqTemplet, css, count }: Props) => {
-  const [mcqTemplet4, setMcqTemplet4] = React.useState<any>([]);
-  return (
-    <div className="bg-blue-100 p-3 rounded-2xl mb-2">
-      <form  >
-        <LabelInputContainer className="mb-2">
-          <Label htmlFor="passage">উদ্দীপক (Passage)</Label>
-          <textarea id="passage" className='bg-white p-3 rounded-2xl' placeholder="উদ্দীপকটি লিখুন (write the passage)" />
-        </LabelInputContainer>
-        <ImageDropzone imgFor={"Passage"} /> 
-      </form>
-      <div className='w-full flex justify-between items-center'>
-        <button disabled={mcqTemplet4.length >= 2}
-          className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 justify-end"
-          onClick={(e) => {
-            e.preventDefault()
-            count++;
-            setMcqTemplet4((mcqTemplet4: any) => [...mcqTemplet4, () => <MCQTemplet_4_1 /> ]);
-          }}
-        >ADD MCQ</button>
-        <p className='px-4'>You can add maximum 3 MCQs here </p>
-      </div>
-      <MCQTemplet_4_1 />
-      {
-        mcqTemplet4.map((item: any, index: number) => (
-          <div key={index} className="mb-4 max-w-[800px] mx-auto ">
-            {item.call()}
-          </div>
-        ))
-      }
-      <div className="flex justify-between">
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"> Delete </button>
-        <div>
-        </div>
-        <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
-          onClick={(e) => {
-            e.preventDefault()
-            count++;
-            setMcqTemplet((mcqTemplet: any) => [...mcqTemplet, () => <MCQTemplet_4 setMcqTemplet={setMcqTemplet} count={count} css="bg-blue-300" /> ]);
-          }}
-        > Copy </button>
-      </div>
-    </div>
-  )
-}
+type MCQTempletProps = {
+  children: React.ReactNode;
+  pIdx: number;
+  cIdx: number;
+  mcqTemplet: any;
+  setMcqTemplet: any; 
+};
+// const MCQTemplet_4 = ({ children, cIdx, pIdx, setMcqTemplet, mcqTemplet }: MCQTempletProps) => {
+//   return (
+//     <div className="bg-blue-100 max-w-220 mx-auto p-3 rounded-2xl mb-2">
+//       <form  >
+//         <LabelInputContainer className="mb-2">
+//           <Label htmlFor="passage">উদ্দীপক (Passage)</Label>
+//           <textarea id="passage" className='bg-white p-3 rounded-2xl' placeholder="উদ্দীপকটি লিখুন (write the passage)" />
+//         </LabelInputContainer>
+//         <ImageDropzone imgFor={"Passage"} />
+//       </form>
+//       <div className='w-full flex justify-between items-center'>
+//         <button disabled={mcqTemplet[pIdx].length >= 2}
+//           className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 justify-end"
+//           onClick={(e) => {
+//             e.preventDefault()
+//             setMcqTemplet(()={})
+//           }}
+//         >ADD MCQ</button>
+//         <p className='px-4'>You can add maximum 3 MCQs here </p>
+//       </div>
+//       <MCQTemplet_4_1 />
+//       {
+//         mcqTemplet4.map((item: any, index: number) => (
+//           <div key={index} className="mb-4 max-w-[800px] mx-auto ">
+//             {item.call()}
+//           </div>
+//         ))
+//       }
+//       <div className="flex justify-between">
+//         {
+//           children
+//         }
+//         <div>
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
 const MCQTemplet_4_1 = () => {
   return (
     <form className={`p-3 rounded-2xl mb-2 bg-blue-300`}>
@@ -229,7 +229,7 @@ const MCQTemplet_4_1 = () => {
         <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
         <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
       </LabelInputContainer>
-      <ImageDropzone imgFor={"Question"} /> 
+      <ImageDropzone imgFor={"Question"} />
       <div>
         <div className="flex ">
           <LabelInputContainer className="mb-2">
@@ -281,5 +281,17 @@ const LabelInputContainer = ({
     </div>
   );
 };
-
-export { MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4, LabelInputContainer };
+const DelBtn = ({ pIdx, cIdx, setMcqTemplet }: Props) => {
+  return (
+    <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
+      onClick={(e) => {
+        e.preventDefault()
+        setMcqTemplet((prev) => {
+          const updated = [...prev];
+          updated[pIdx] = updated[pIdx].filter((_: any, index: number) => index !== cIdx);
+          return updated;
+        });
+      }}> Delete </button>
+  )
+}
+export { MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4, LabelInputContainer, DelBtn };
