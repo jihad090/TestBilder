@@ -185,62 +185,65 @@ type MCQTempletProps = {
   setMcqTemplet: any;
 };
 const MCQTemplet_4 = ({ children, cIdx, pIdx, setMcqTemplet, mcqTemplet }: MCQTempletProps) => {
+  const handleAddMcq = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (mcqTemplet[pIdx].length >= 3) return; // Max 3 MCQs
+    
+    setMcqTemplet((prev:any) => {
+      return prev.map((group: any, index: any) => {
+        if (index === pIdx) {
+          const lastChild = group[group.length - 1];
+          const newChildIdx = lastChild ? lastChild.childIdx + 1 : 0;
+          const newItem = {
+            mcqType: "mcq-4",
+            parentIdx: pIdx,
+            childIdx: newChildIdx,
+            id: Date.now() + Math.random() // Add unique ID
+          };
+          return [...group, newItem];
+        }
+        return group;
+      });
+    });
+  };
+
   return (
     <div className="bg-blue-100 max-w-220 mx-auto p-3 rounded-2xl mb-2">
-      <form  >
+      <form>
         <LabelInputContainer className="mb-2">
           <Label htmlFor="passage">উদ্দীপক (Passage)</Label>
-          <textarea id="passage" className='bg-white p-3 rounded-2xl' placeholder="উদ্দীপকটি লিখুন (write the passage)" />
+          <textarea 
+            id="passage" 
+            className='bg-white p-3 rounded-2xl' 
+            placeholder="উদ্দীপকটি লিখুন (write the passage)" 
+          />
         </LabelInputContainer>
         <ImageDropzone imgFor={"Passage"} />
       </form>
+      
       <div className='w-full flex justify-between items-center'>
-      <button 
-      disabled={mcqTemplet[pIdx].length > 2}
-      className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 justify-end"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation(); // Prevent event bubbling
-        // Add a small delay to prevent double clicks
-        if (e.detail === 1) { // Only execute on single click
-          setMcqTemplet((prev: any) => {
-            const updated = [...prev];
-            const currentGroup = [...updated[pIdx]]; // Destructure the current group
-            const lastChild = currentGroup[currentGroup.length - 1];
-            const newChildIdx = lastChild ? lastChild.childIdx + 1 : 0;
-            const newItem = {
-              mcqType: "MCQ-4",
-              parentIdx: pIdx,
-              childIdx: newChildIdx,
-            };
-            // Add the new item to the destructured array
-            const updatedGroup = [...currentGroup, newItem];
-            // Update the main array with the new group
-            updated[pIdx] = updatedGroup;
-            return updated;
-          });
-        }
-      }}
-    >
-      ADD MCQ
-    </button>
-        <p className='px-4'>You can add maximum 3 MCQs here </p>
+        <button 
+          disabled={mcqTemplet[pIdx].length >= 3}
+          className="bg-black disabled:bg-gray-400 text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 transition-colors"
+          onClick={handleAddMcq}
+        >
+          ADD MCQ ({mcqTemplet[pIdx].length}/3)
+        </button>
+        <p className='px-4 text-sm text-gray-600'>Maximum 3 MCQs allowed</p>
       </div>
-      {
-        mcqTemplet[pIdx].map((item: any, idx: number) => {
-          return  <MCQTemplet_4_1 key={idx} />
-        })
-      }
+      
+      {mcqTemplet[pIdx].map((item: any, idx: number) => (
+        <MCQTemplet_4_1 key={item.id || idx} />
+      ))}
+      
       <div className="flex justify-between">
-        {
-          children
-        }
-        <div>
-        </div>
+        {children}
       </div>
     </div>
-  )
-}
+  );
+};
 const MCQTemplet_4_1 = () => {
   return (
     <form className={`p-3 rounded-2xl mb-2 bg-blue-300`}>
@@ -301,16 +304,23 @@ const LabelInputContainer = ({
   );
 };
 const DelBtn = ({ pIdx, cIdx, setMcqTemplet, mcqTemplet }: Props) => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setMcqTemplet((prev) => {
+      // Remove the entire group at pIdx
+      return prev.filter((_, index) => index !== pIdx);
+    });
+  };
+
   return (
-    <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
-      onClick={(e) => {
-        e.preventDefault()
-        setMcqTemplet((prev) => {
-          const updated = [...prev];
-          updated[pIdx] = updated[pIdx].filter((_: any, index: number) => index != cIdx);
-          return updated;
-        });
-      }}> Delete </button>
-  )
-}
+    <button 
+      className="bg-red-500 hover:bg-red-600 text-white font-semibold px-3 p-2 text-sm rounded-xl transition-colors"
+      onClick={handleDelete}
+    > 
+      Delete
+    </button>
+  );
+};
 export { MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4, LabelInputContainer, DelBtn };
