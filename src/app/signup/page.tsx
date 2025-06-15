@@ -1,22 +1,57 @@
 "use client";
 import React from "react";
-import { Label } from "../../ui/label"; // Adjusted path
-import { Input } from "../../ui/input"; // Adjusted path
-import { cn } from "../../lib/utils"; // Adjusted path
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
+import { cn } from "../../lib/utils";
 import Link from "next/link";
 
 export default function SignupFormDemo() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
+
+    const form = e.currentTarget;
+    const firstName = (form.elements.namedItem("firstname") as HTMLInputElement).value;
+    const lastName = (form.elements.namedItem("lastname") as HTMLInputElement).value;
+    const mobileNo = (form.elements.namedItem("mobileNo") as HTMLInputElement).value;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+    const confirmPassword = (form.elements.namedItem("confirm-password") as HTMLInputElement).value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch("/Api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ firstName, lastName, mobileNo, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(`❌ ${data.message}`);
+      } else {
+        alert("✅ Signup successful!");
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
+
   return (
     <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-gray-100 my-16 p-4 md:rounded-2xl md:p-8 dark:bg-black">
       <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
         Welcome to TestBilder
       </h2>
       <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-        Sign up to unlock premium features 
+        Sign up to unlock premium features
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>
@@ -46,18 +81,16 @@ export default function SignupFormDemo() {
           <Label htmlFor="confirm-password">Confirm Password</Label>
           <Input id="confirm-password" placeholder="••••••••" type="password" />
         </LabelInputContainer>
-        <div className=" text-blue-700 h-10">
-          <Link href="/login" >Already Registered? Log In</Link>
+        <div className="text-blue-700 h-10 mb-2">
+          <Link href="/login">Already Registered? Log In</Link>
         </div>
         <button
-          className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
+          className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900"
           type="submit"
         >
           Sign up &rarr;
           <BottomGradient />
         </button>
-
-       
       </form>
     </div>
   );
@@ -79,9 +112,5 @@ const LabelInputContainer = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  return (
-    <div className={cn("flex w-full flex-col space-y-2", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("flex w-full flex-col space-y-2", className)}>{children}</div>;
 };
