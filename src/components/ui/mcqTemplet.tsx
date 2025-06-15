@@ -178,50 +178,69 @@ const MCQTemplet_3 = ({ children }: { children: React.ReactNode }) => {
   )
 }
 type MCQTempletProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   pIdx: number;
   cIdx: number;
   mcqTemplet: any;
-  setMcqTemplet: any; 
+  setMcqTemplet: any;
 };
-// const MCQTemplet_4 = ({ children, cIdx, pIdx, setMcqTemplet, mcqTemplet }: MCQTempletProps) => {
-//   return (
-//     <div className="bg-blue-100 max-w-220 mx-auto p-3 rounded-2xl mb-2">
-//       <form  >
-//         <LabelInputContainer className="mb-2">
-//           <Label htmlFor="passage">উদ্দীপক (Passage)</Label>
-//           <textarea id="passage" className='bg-white p-3 rounded-2xl' placeholder="উদ্দীপকটি লিখুন (write the passage)" />
-//         </LabelInputContainer>
-//         <ImageDropzone imgFor={"Passage"} />
-//       </form>
-//       <div className='w-full flex justify-between items-center'>
-//         <button disabled={mcqTemplet[pIdx].length >= 2}
-//           className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 justify-end"
-//           onClick={(e) => {
-//             e.preventDefault()
-//             setMcqTemplet(()={})
-//           }}
-//         >ADD MCQ</button>
-//         <p className='px-4'>You can add maximum 3 MCQs here </p>
-//       </div>
-//       <MCQTemplet_4_1 />
-//       {
-//         mcqTemplet4.map((item: any, index: number) => (
-//           <div key={index} className="mb-4 max-w-[800px] mx-auto ">
-//             {item.call()}
-//           </div>
-//         ))
-//       }
-//       <div className="flex justify-between">
-//         {
-//           children
-//         }
-//         <div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
+const MCQTemplet_4 = ({ children, cIdx, pIdx, setMcqTemplet, mcqTemplet }: MCQTempletProps) => {
+  return (
+    <div className="bg-blue-100 max-w-220 mx-auto p-3 rounded-2xl mb-2">
+      <form  >
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor="passage">উদ্দীপক (Passage)</Label>
+          <textarea id="passage" className='bg-white p-3 rounded-2xl' placeholder="উদ্দীপকটি লিখুন (write the passage)" />
+        </LabelInputContainer>
+        <ImageDropzone imgFor={"Passage"} />
+      </form>
+      <div className='w-full flex justify-between items-center'>
+      <button 
+      disabled={mcqTemplet[pIdx].length > 2}
+      className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 justify-end"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent event bubbling
+        // Add a small delay to prevent double clicks
+        if (e.detail === 1) { // Only execute on single click
+          setMcqTemplet((prev: any) => {
+            const updated = [...prev];
+            const currentGroup = [...updated[pIdx]]; // Destructure the current group
+            const lastChild = currentGroup[currentGroup.length - 1];
+            const newChildIdx = lastChild ? lastChild.childIdx + 1 : 0;
+            const newItem = {
+              mcqType: "MCQ-4",
+              parentIdx: pIdx,
+              childIdx: newChildIdx,
+            };
+            // Add the new item to the destructured array
+            const updatedGroup = [...currentGroup, newItem];
+            // Update the main array with the new group
+            updated[pIdx] = updatedGroup;
+            return updated;
+          });
+        }
+      }}
+    >
+      ADD MCQ
+    </button>
+        <p className='px-4'>You can add maximum 3 MCQs here </p>
+      </div>
+      {
+        mcqTemplet[pIdx].map((item: any, idx: number) => {
+          return  <MCQTemplet_4_1 key={idx} />
+        })
+      }
+      <div className="flex justify-between">
+        {
+          children
+        }
+        <div>
+        </div>
+      </div>
+    </div>
+  )
+}
 const MCQTemplet_4_1 = () => {
   return (
     <form className={`p-3 rounded-2xl mb-2 bg-blue-300`}>
@@ -281,14 +300,14 @@ const LabelInputContainer = ({
     </div>
   );
 };
-const DelBtn = ({ pIdx, cIdx, setMcqTemplet }: Props) => {
+const DelBtn = ({ pIdx, cIdx, setMcqTemplet, mcqTemplet }: Props) => {
   return (
     <button className="bg-black text-white font-semibold px-3 p-2 text-sm rounded-xl"
       onClick={(e) => {
         e.preventDefault()
         setMcqTemplet((prev) => {
           const updated = [...prev];
-          updated[pIdx] = updated[pIdx].filter((_: any, index: number) => index !== cIdx);
+          updated[pIdx] = updated[pIdx].filter((_: any, index: number) => index != cIdx);
           return updated;
         });
       }}> Delete </button>

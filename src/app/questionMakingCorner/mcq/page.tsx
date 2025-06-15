@@ -18,7 +18,7 @@ let mcqTempIdx = 0;
 const mcq = () => {
   const [mcqTemplet, setMcqTemplet] = React.useState<any>([]);
   const [mcqTempletName, setMcqTempletName] = useState<string | undefined>("mcq-1");
-
+  
   // React.useEffect(() => {
   //   console.log("mcqTemplet updated:", mcqTemplet);
   // }, [mcqTemplet]);
@@ -31,7 +31,7 @@ const mcq = () => {
             <div className="w-22">MCQ Type: </div>
             <Select defaultValue={"mcq-1"} value={mcqTempletName} onValueChange={(value: string) => {
               setMcqTempletName(value);
-              console.log(value);
+              // console.log(value);
             }}>
               <SelectTrigger className=" min-w-[380px] bg-white">
                 <SelectValue placeholder="Select MCQ type" />
@@ -47,26 +47,24 @@ const mcq = () => {
           <div>
             <button className="px-6 mx-3 hover:bg-blue-700 py-1 text-white rounded-xl bg-black"
               onClick={() => {
-                setMcqTemplet((mcqTemplet: any) => [...mcqTemplet, [{ mcqType: mcqTempletName, parentIdx: mcqTempIdx, childIdx:0 }]])
+                setMcqTemplet((prev: any) => [...prev, [ { mcqType: mcqTempletName, parentIdx: mcqTempIdx, childIdx:0 }]])
                 mcqTempIdx++
               }}>Add</button>
             {/* <MCQTemplet_1 className=""/> */}
           </div>
         </div>
       </div>
-      <>
-        {
-          // mcqTemplet.map((item: any, idx1: number) => item.map((i:any, idx2: number)=>{
-            mcqTemplet.map((item: any, idx1: number) => item.map((i:any, idx2: number)=>{
-              console.log(item)
-              if ( i.mcqType === "mcq-1"){ return <MCQTemplet_1 key={idx2}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_1>}
-              if ( i.mcqType === "mcq-2"){ return <MCQTemplet_2 key={idx2}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_2>}
-              if ( i.mcqType === "mcq-3"){ return <MCQTemplet_3 key={idx2}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_3>}
-              if ( i.mcqType === "mcq-4"){ return <MCQTemplet_4 pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} key={idx2} mcqTemplet={mcqTemplet}><DelBtn pIdx={idx1} cIdx={idx2} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_4>}
-            })
-          )
-        }
-      </>
+      {
+        // mcqTemplet.map((item: any, idx1: number) => item.map((i:any, idx2: number)=>{
+
+        mcqTemplet.map((item: any, idx1: number)=>{
+          if ( item[0]?.mcqType === "mcq-1"){ return <MCQTemplet_1 key={item[0].parentIdx}><DelBtn pIdx={item[0].parentIdx} cIdx={item[0].childIdx} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_1>}
+          if ( item[0]?.mcqType === "mcq-2"){ return <MCQTemplet_2 key={item[0].parentIdx}><DelBtn pIdx={item[0].parentIdx} cIdx={item[0].childIdx} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_2>}
+          if ( item[0]?.mcqType === "mcq-3"){ return <MCQTemplet_3 key={item[0].parentIdx}><DelBtn pIdx={item[0].parentIdx} cIdx={item[0].childIdx} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_3>}
+          if ( item[0]?.mcqType === "mcq-4"){ return <MCQTemplet_4 pIdx={item[0].parentIdx} cIdx={item[0].childIdx} setMcqTemplet={setMcqTemplet} key={item[0].parentIdx} mcqTemplet={mcqTemplet}><DelBtn pIdx={item[0].parentIdx} cIdx={item[0].childIdx} setMcqTemplet={setMcqTemplet} mcqTemplet={mcqTemplet}/> </MCQTemplet_4>}
+          console.log(mcqTemplet) 
+        })
+      }
       <div className="justify-center flex text-white">
         <button className="bg-black px-3 p-1 hover:bg-blue-700 font-semibold rounded-md text-white">Generate PDF</button>
       </div>
