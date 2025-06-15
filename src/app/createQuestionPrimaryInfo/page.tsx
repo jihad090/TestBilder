@@ -184,7 +184,7 @@ export default function QuestionFormDemo() {
             <option value="mcq">Multiple Choice Question (MCQ) / বহুনির্বাচনী প্রশ্ন</option>
             <option value="cq">Creative Question (CQ) / সৃজনশীল প্রশ্ন</option>
             <option value="sq">Short Question (SQ) / সংক্ষীপ্ত প্রশ্ন</option>
-            <option value="cq_and_sq">CQ And SQ / সৃজনশীল ও সংক্ষীপ্ত প্রশ্ন</option>
+            {/* <option value="cq_and_sq">CQ And SQ / সৃজনশীল ও সংক্ষীপ্ত প্রশ্ন</option> */}
           </select>
         </LabelInputContainer>
         <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">

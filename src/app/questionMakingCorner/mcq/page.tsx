@@ -35,7 +35,7 @@ const mcq = () => {
   // Render MCQ component based on type
   const renderMcqComponent = (item: any, arrayIndex: number) => {
     const keyValue = item[0].id || arrayIndex;
-    
+    console.log(mcqTemplet)
     const deleteBtn = (
       <DelBtn 
         pIdx={arrayIndex} 
