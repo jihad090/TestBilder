@@ -23,6 +23,7 @@ pick a database
   use myDatabase 
 
 to check database
+
   db
 
 list of table

@@ -74,8 +74,8 @@ export default function Home() {
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Database className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Auto Save</h3>
-              <p className="text-gray-600 text-sm">All questions automatically recorded</p>
+              <h3 className="font-bold text-gray-900 mb-2">Save Previous</h3>
+              <p className="text-gray-600 text-sm">All Complete and Incomplete questions are recorded</p>
             </div>
 
             <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition-shadow">
