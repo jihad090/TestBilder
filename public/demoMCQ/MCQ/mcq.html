@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MCQ</title>
+<style>
+  body {
+    width: 816px;   /* 8.5in * 96dpi */
+    height: 1344px; /* 14in * 96dpi */
+    border: 1px solid #ccc;
+    background: white;
+    margin: 0;
+    padding: 0;
+  }
+  .parent{
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(64, 1fr);
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .headerPage1{
+    grid-row: 1 / 10;
+    grid-column: 1 / 3;
+    padding: 30px 20px 5px 20px;
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+  }
+  .headerPage2{
+    grid-row: 1 / 4;
+    grid-column: 1 / 3;
+    padding: 30px 20px 5px 20px;
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+  }
+  .qPage1-Left {
+    grid-row: 10 / 42;
+    grid-column: 1 / 2;
+    /* background-color: aqua; */
+    padding: 10px 10px 10px 20px;
+    box-sizing: border-box;
+    border-right: 1px solid black;
+  }
+  .qPage1-Right {
+    grid-row: 10 / 42;
+    grid-column: 2 / 3;
+    /* background-color: lightblue; */
+    padding: 10px 20px 10px 10px;
+    box-sizing: border-box;
+  }
+  .qPage2-Left {
+    grid-row: 4 / 42;
+    grid-column: 1 / 2;
+    /* background-color: lightgreen; */
+    padding: 10px 10px 10px 20px;
+    box-sizing: border-box;
+    border-right: 1px solid black;
+  }
+  .qPage2-Right {
+    grid-row: 4 / 42;
+    grid-column: 2 / 3;
+    /* background-color: lightcoral; */
+    padding: 10px 20px 10px 10px;
+    box-sizing: border-box;
+  }
+  .omrFront {
+    grid-row: 42 / 65;
+    grid-column: 1 / 3;
+    background-color: #ffffff;
+    padding: 20px;
+    box-sizing: border-box;
+    border-top: 2px dashed black;
+  }
+  .omrBack {
+    grid-row: 42 / 65;
+    grid-column: 1 / 3;
+    background-color: #ffffff;
+    padding: 20px;
+    box-sizing: border-box;
+    border-top: 2px dashed black;
+  }
+  
+  /* Page break for printing */
+  .parent:nth-child(2) {
+    page-break-before: always;
+  }
+  
+  /* Print styles */
+  @media print {
+    @page {
+      size: legal portrait;
+      margin: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      border: none;
+      box-shadow: none;
+    }
+    
+    .parent {
+      page-break-after: always;
+    }
+    
+    .parent:last-child {
+      page-break-after: avoid;
+    }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<script src="data.js"></script> 
+
+</head>
+<body>
+
+  
+  <script src="script.js"></script>
+
+</body>
+</html>
