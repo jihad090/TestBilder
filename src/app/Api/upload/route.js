@@ -18,22 +18,18 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Create unique filename
     const timestamp = Date.now()
     const filename = `${timestamp}-${file.name}`
     const filepath = join(process.cwd(), "public/uploads", filename)
 
-    // Ensure upload directory exists
     const { mkdir } = await import("fs/promises")
     const uploadDir = join(process.cwd(), "public/uploads")
 
     try {
       await mkdir(uploadDir, { recursive: true })
     } catch (error) {
-      // Directory might already exist, ignore error
     }
 
-    // Write file
     await writeFile(filepath, buffer)
 
     return NextResponse.json({

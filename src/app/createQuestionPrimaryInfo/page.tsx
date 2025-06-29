@@ -72,7 +72,7 @@ export default function QuestionFormDemo() {
     }
 
     try {
-      //  Step 1: Create primary info (keep same)
+      //   Create primary info (keep same)
       const res = await fetch("/Api/createQuestionPrimaryInfo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -102,6 +102,7 @@ export default function QuestionFormDemo() {
 
           const templateResult = await templateRes.json()
           console.log("CQ Template Creation Response:", templateResult)
+//create templete id for cq
 
           if (templateResult.success) {
             templateId = templateResult.data._id
@@ -123,9 +124,10 @@ export default function QuestionFormDemo() {
 
           const templateResult = await templateRes.json()
           console.log("MCQ Template Creation Response:", templateResult)
+//create templete id for mcq
 
           if (templateResult.success) {
-            templateId = templateResult.data._id
+            templateId = templateResult.data._id  || templateResult.data.id
           } else {
             setErrorMsg("MCQ Template creation failed: " + templateResult.message)
             setLoading(false)
@@ -140,7 +142,7 @@ export default function QuestionFormDemo() {
               primaryInfo: primaryId,
               sqGroup: {
                 title: "sq-1",
-                questions: [], // ✅ Correct structure for SQ
+                questions: [], // Correct structure for SQ
                 isComplete: false,
               },
             }),
@@ -148,7 +150,7 @@ export default function QuestionFormDemo() {
 
           const templateResult = await templateRes.json()
           console.log("SQ Template Creation Response:", templateResult)
-
+//create templete id for sq
           if (templateResult.success) {
             templateId = templateResult.data._id
           } else {
@@ -158,7 +160,7 @@ export default function QuestionFormDemo() {
           }
         }
 
-        // Step 3: Redirect with BOTH IDs
+        //Redirect with BOTH IDs
         if (templateId) {
           alert("Primary Question Created Successfully!")
           const redirectPath = `/questionMakingCorner/${examType}?primaryId=${primaryId}&templateId=${templateId}`

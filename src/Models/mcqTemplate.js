@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 // Sub-MCQs (only for mcq-4)
 const subMCQSchema = new mongoose.Schema({
-  childIdx: { type: Number, required: true },
-  id: { type: String, required: true },
+  childIdx: { type: Number, required: false },
+  //id: { type: String, required: true },
   questionText: { type: String, required: false },
   image: { type: String, default: "" },
   options: { type: [String], required: false },
@@ -17,10 +17,10 @@ const mcqSchema = new mongoose.Schema({
   mcqType: {
     type: String,
     enum: ["mcq-1", "mcq-2", "mcq-3", "mcq-4"],
-    required: true,
+    required: false,
   },
-  parentIdx: { type: Number, required: true },
-  id: { type: String, required: true },
+  parentIdx: { type: Number, required: false },
+  //id: { type: String, required: true },
 
   // For mcq-1,2,3
   questionText: { type: String },

@@ -69,7 +69,7 @@ const CQ = () => {
   const debouncedSaveRef = useRef<any>(null)
 
   useEffect(() => {
-    // Create debounced function only when saveToDatabase changes
+    // Create debounced function only when saveToDatabase for changes
     debouncedSaveRef.current = debounce(saveToDatabase, 1000)
 
     // Cleanup function to cancel pending debounced calls

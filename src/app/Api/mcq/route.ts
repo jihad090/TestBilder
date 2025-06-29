@@ -9,7 +9,7 @@ import MCQTemplate from "@/Models/mcqTemplate"
 await connectDB()
 
 function validateMCQ(mcq: any): boolean {
-  console.log("🔍 Validating MCQ:", mcq.mcqType, mcq.id)
+  console.log(" Validating MCQ:", mcq.mcqType, mcq.id)
 
   if (mcq.mcqType === "mcq-4") {
     const hasPassageText = mcq.passage && mcq.passage.trim() !== ""
@@ -85,7 +85,7 @@ function validateMCQ(mcq: any): boolean {
     console.log(" MCQ-4: All validations passed")
     return true
   } else {
-    console.log(`🔍 Validating ${mcq.mcqType}:`)
+    console.log(` Validating ${mcq.mcqType}:`)
 
     const hasQuestionText = mcq.questionText && mcq.questionText.trim() !== ""
     const hasQuestionImage = mcq.image && mcq.image.trim() !== ""
@@ -206,12 +206,12 @@ function checkTemplateIsComplete(mcqs: any[][]): boolean {
   return isComplete
 }
 
-// Clean mcqs before saving - Updated to handle the new data structure
+
 function cleanMCQs(mcqs: any[][]): any[][] {
   return mcqs.map((group) =>
     group.map((mcq) => {
       if (mcq.mcqType === "mcq-4") {
-        // MCQ-4: শুধু passage এবং subQuestions রাখো, বাকি সব remove করো
+        
         return {
           mcqType: mcq.mcqType,
           parentIdx: mcq.parentIdx,
@@ -223,7 +223,7 @@ function cleanMCQs(mcqs: any[][]): any[][] {
           // questionText, image, options, correctAnswer, marks
         }
       } else {
-        // অন্য MCQ types: question fields রাখো, passage fields remove করো
+        
         const cleanedMCQ: any = {
           mcqType: mcq.mcqType,
           parentIdx: mcq.parentIdx,
@@ -259,7 +259,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Log the received data for debugging
-    console.log("📥 Received MCQ data:", JSON.stringify(mcqs, null, 2))
+    console.log("Received MCQ data:", JSON.stringify(mcqs, null, 2))
 
     //  Check template completion BEFORE cleaning
     const isComplete = checkTemplateIsComplete(mcqs)
@@ -268,7 +268,7 @@ export async function POST(req: NextRequest) {
     mcqs = cleanMCQs(mcqs)
 
     // Log cleaned data
-    console.log("🧹 Cleaned MCQ data:", JSON.stringify(mcqs, null, 2))
+    console.log(" Cleaned MCQ data:", JSON.stringify(mcqs, null, 2))
 
     //  Create template with calculated isComplete
     const newTemplate = await MCQTemplate.create({

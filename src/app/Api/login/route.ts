@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/dbconfig/dbconfig";
 import User from "@/Models/userModel";
 
-import bcrypt from "bcryptjs"; // Use this if you're hashing passwords
+import bcrypt from "bcryptjs"; 
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,8 +23,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // If you're using bcrypt to hash passwords during registration
-    // const isMatch = await bcrypt.compare(password, user.password);
+   
     const isMatch = password === user.password; // If you're not hashing
 
     if (!isMatch) {

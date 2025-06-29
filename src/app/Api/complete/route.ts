@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, message: "User ID is required" }, { status: 400 })
     }
 
-    // ✅ Step 1: Get all primaryInfo IDs for this user
+    //   Get all primaryInfo IDs for this user
     const primaryInfos = await PrimaryQuestionInfo.find({ user: userId }).select("_id examType")
 
     if (primaryInfos.length === 0) {
@@ -32,12 +32,12 @@ export async function GET(request: NextRequest) {
 
     const primaryInfoIds = primaryInfos.map((info) => info._id)
 
-    // ✅ Step 2: Get complete templates using primaryInfo IDs
+    //  Get complete templates using primaryInfo IDs
     const [cqTemplates, mcqTemplates, sqTemplates] = await Promise.all([
       FullCQTemplate.find({
         primaryInfo: { $in: primaryInfoIds },
         isComplete: true,
-        isDeleted: { $ne: true }, // ✅ Exclude soft-deleted templates
+        isDeleted: { $ne: true }, 
       })
         .populate("primaryInfo")
         .sort({ updatedAt: -1 }),
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
         .sort({ updatedAt: -1 }),
     ])
 
-    // ✅ Step 3: Format and combine all templates
+    //  Format and combine all templates
     const allTemplates = [
       ...cqTemplates.map((template) => ({
         _id: template._id,
@@ -115,11 +115,10 @@ export async function GET(request: NextRequest) {
         questionsCount: template.sqGroup?.questions?.length || 0,
       })),
     ]
-
-    // ✅ Step 4: Sort by updatedAt (most recent first)
+// Sort by updatedAt (most recent first)
     allTemplates.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 
-    console.log(`✅ Fetched ${allTemplates.length} complete templates for user ${userId}`)
+    console.log(`Fetched ${allTemplates.length} complete templates for user ${userId}`)
 
     return NextResponse.json(
       {
@@ -130,7 +129,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     )
   } catch (error: any) {
-    console.error("❌ Error fetching complete templates:", error)
+    console.error(" Error fetching complete templates:", error)
     return NextResponse.json(
       { success: false, message: "Internal Server Error", error: error.message },
       { status: 500 },
@@ -138,7 +137,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// ✅ DELETE method for soft-deleting templates
+//  DELETE method for soft-deleting templates
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB()
@@ -156,7 +155,7 @@ export async function DELETE(request: NextRequest) {
     let deletedTemplate = null
     let templateType = ""
 
-    // ✅ Soft delete based on exam type
+    //  Soft delete based on exam type
     switch (examType) {
       case "cq":
         deletedTemplate = await FullCQTemplate.findOneAndUpdate(
@@ -193,7 +192,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Template not found or access denied" }, { status: 404 })
     }
 
-    console.log(`✅ Soft-deleted ${templateType} template: ${templateId}`)
+    console.log(`Soft-deleted ${templateType} template: ${templateId}`)
 
     return NextResponse.json(
       {
@@ -204,7 +203,7 @@ export async function DELETE(request: NextRequest) {
       { status: 200 },
     )
   } catch (error: any) {
-    console.error("❌ Error deleting template:", error)
+    console.error(" Error deleting template:", error)
     return NextResponse.json(
       { success: false, message: "Internal Server Error", error: error.message },
       { status: 500 },

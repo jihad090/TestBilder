@@ -1,4 +1,3 @@
-// app/api/signup/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/dbconfig/dbconfig";
 import User from "@/Models/userModel";

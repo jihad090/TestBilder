@@ -14,7 +14,7 @@ const Mcq = () => {
   const [errorMsg, setErrorMsg] = useState<string>("")
   const router = useRouter()
 
-  const generateId = () => Date.now() + Math.random()
+  //const generateId = () => Date.now() + Math.random()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,11 +50,11 @@ const Mcq = () => {
         {
           mcqType: mcqTempletName,
           parentIdx: mcqTemplet.length,
-          // childIdx: 0,  // ❌ Removed childIdx for main MCQ
-          id: generateId(),
+            
+         // id: generateId(),
           passage: "",
           passageImage: "",
-          subQuestions: [], // ✅ Empty subQuestions array
+          subQuestions: [], //  Empty subQuestions array
         },
       ]
     } else {
@@ -63,8 +63,8 @@ const Mcq = () => {
         {
           mcqType: mcqTempletName,
           parentIdx: mcqTemplet.length,
-          // childIdx: 0,  // ❌ Removed childIdx for main MCQ
-          id: generateId(),
+          // childIdx: 0,  //  Removed childIdx for main MCQ
+         // id: generateId(),
           questionText: "",
           image: "",
           options: mcqTempletName === "mcq-2" ? ["", ""] : ["", "", "", ""],
