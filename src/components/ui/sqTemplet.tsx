@@ -1,7 +1,10 @@
+
+
 import React from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import ImageDropzone from "@/components/ImageDropzone";
+
 
 type DelBtnProps = {
   pIdx: number;
@@ -17,29 +20,55 @@ export const DelBtnSQ = ({ onDelete }: DelBtnProps) => (
   </button>
 );
 
-export const SqTemplet = ({ children }: { children: React.ReactNode }) => {
+type SqTempletProps = {
+  value: string;
+  marks?: number;
+  image?: string;
+   onImageChange: (imgPath: string) => void;
+  onChange: (value: string) => void;
+  children: React.ReactNode;
+};
+
+export const SqTemplet = ({
+  value,
+  marks = 2,
+  image,
+  onImageChange,
+   onChange,
+  children,
+}: SqTempletProps) => {
+
+ 
   return (
     <div className="mx-auto max-w-2xl p-3 bg-blue-100 rounded-2xl">
       <div className="flex justify-between">
         <div className="w-full">
           <Label>প্রশ্ন (Question)</Label>
           <Input
-            placeholder={`প্রশ্ন লিখুন (Write question )`}
+            placeholder="প্রশ্ন লিখুন (Write question)"
             type="text"
             className="w-full"
-          /> 
-        </div>      
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </div>
         <div>
           <Label>নম্বর (Marks)</Label>
           <Input
             placeholder="নম্বর"
             type="number"
             className="w-20"
-            defaultValue={1}
+            defaultValue={marks}
+            readOnly
           />
-        </div>        
+        </div>
       </div>
-      <ImageDropzone imgFor="" />                
+     <ImageDropzone 
+     imgFor="Image" 
+      image={image} 
+      onImageChange={onImageChange} 
+      />
+
       <div className="flex space-x-2">{children}</div>
     </div>
   );

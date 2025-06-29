@@ -1,326 +1,715 @@
-import React from 'react'
-import { Label } from "../../ui/label"; // Adjusted path
-import { Input } from "../../ui/input"; // Adjusted path
-import { cn } from "../../lib/utils"; // Adjusted path
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import ImageDropzone from '@/components/ImageDropzone'
-import { remove } from 'dexie';
-import { div } from 'motion/react-client';
+
+
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+import { Label } from "../../ui/label"
+import { Input } from "../../ui/input"
+import { cn } from "@/lib/utils"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import ImageDropzone from "@/components/ImageDropzone"
+import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
+
+// Updated Props interface (removed cIdx)
 type Props = {
-  css?: string;
-  mcqTempIdx?: string;
-  mcqTemplet: any
-  index?: string;
-  pIdx: number;
-  cIdx: number;
-  setMcqTemplet: React.Dispatch<React.SetStateAction<any[]>>;
-};
-const MCQTemplet_1 = ({ children }: { children: React.ReactNode }) => {
-  // console.log("state:", mcqTemplet, mcqTempIdx)
-  return (
-    <div className='w-full'>
-      <form className="bg-blue-300 mx-auto max-w-220 p-3 rounded-2xl mb-2 ">
-        <LabelInputContainer className="mb-2">
-          <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
-          <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
-        </LabelInputContainer>
-        <ImageDropzone imgFor={"Question"} />
-        <div>
-          <div className="flex ">
-            <LabelInputContainer className="mb-2">
-              <Label htmlFor="op1">ক/ Option A</Label>
-              <Input id="op1" placeholder="ক/A" type="text" />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-2">
-              <Label htmlFor="op2">খ/ Option B</Label>
-              <Input id="op2" placeholder="খ/B" type="text" />
-            </LabelInputContainer>
-          </div>
-          <div className="flex ">
-            <LabelInputContainer className="mb-2">
-              <Label htmlFor="op3">গ/Option C</Label>
-              <Input id="op3" placeholder="গ/C" type="text" />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-2">
-              <Label htmlFor="op4">ঘ/ Option D</Label>
-              <Input id="op4" placeholder="ঘ/D" type="text" />
-            </LabelInputContainer>
-          </div>
-        </div>
-        <div className="flex justify-between">
-          {
-            children
-          }
-          <div>
-            <Select>
-              <SelectTrigger className="min-w-[250px] bg-white">
-                <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">ক/A</SelectItem>
-                <SelectItem value="1">খ/B</SelectItem>
-                <SelectItem value="2">গ/C</SelectItem>
-                <SelectItem value="3">ঘ/D</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </form>
-    </div>
-
-  );
-};
-const MCQTemplet_2 = ({ children }: { children: React.ReactNode }) => {
-  // console.log("state:", mcqTemplet, mcqTempIdx)
-  return (
-    <div className='w-full'>
-      <form className="bg-blue-300 mx-auto max-w-220 p-3 rounded-2xl mb-2 ">
-        <LabelInputContainer className="mb-2">
-          <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
-          <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
-        </LabelInputContainer>
-        <ImageDropzone imgFor={"Question"} />
-        <div>
-          <div className="flex ">
-            <LabelInputContainer className="mb-2">
-              <Label htmlFor="op1">ক/ Option A</Label>
-              <Input id="op1" placeholder="ক/A" type="text" />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-2">
-              <Label htmlFor="op2">খ/ Option B</Label>
-              <Input id="op2" placeholder="খ/B" type="text" />
-            </LabelInputContainer>
-          </div>
-
-        </div>
-        <div className="flex justify-between">
-          {
-            children
-          }
-          <div>
-            <Select>
-              <SelectTrigger className="min-w-[250px] bg-white">
-                <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">ক/A</SelectItem>
-                <SelectItem value="1">খ/B</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </form>
-    </div>
-
-  );
-};
-const MCQTemplet_3 = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <form className="bg-blue-300 mx-auto max-w-220 p-3 rounded-2xl mb-2 " >
-      <LabelInputContainer className="mb-2">
-        <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
-        <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
-      </LabelInputContainer>
-      <ImageDropzone imgFor={"Question"} />
-      <div className='mx-10'>
-        <label htmlFor="info1">i. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[400px] rounded-md mb-2' />   <br />
-        <label htmlFor="info1">ii. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[395px] rounded-md mb-2' />  <br />
-        <label htmlFor="info1">iii. </label><input id='info1' type="text" placeholder='info 1' className='bg-white p-1 w-[392px] rounded-md mb-2' />
-      </div>
-
-      <div>
-        <div className="flex ">
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op1">ক/ Option A</Label>
-            <Input defaultValue={"i, ii"} id="op1" placeholder="ক/A" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op2">খ/ Option B</Label>
-            <Input defaultValue={"i, iii"} id="op2" placeholder="খ/B" type="text" />
-          </LabelInputContainer>
-        </div>
-        <div className="flex ">
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op3">গ/Option C</Label>
-            <Input defaultValue={"ii, iii"} id="op3" placeholder="গ/C" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op4">ঘ/ Option D</Label>
-            <Input defaultValue={"i, ii, iii"} id="op4" placeholder="ঘ/D" type="text" />
-          </LabelInputContainer>
-        </div>
-      </div>
-      <div className="flex justify-between">
-        {
-          children
-        }
-        <div>
-          <Select>
-            <SelectTrigger className="min-w-[250px] bg-white">
-              <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0">ক/A</SelectItem>
-              <SelectItem value="1">খ/B</SelectItem>
-              <SelectItem value="2">গ/C</SelectItem>
-              <SelectItem value="3">ঘ/D</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-    </form>
-  )
+  children?: React.ReactNode
+  css?: string
+  mcqTempIdx?: string
+  mcqTemplet: any[]
+  index?: string
+  pIdx: number
+  // cIdx: number,  // ❌ Removed cIdx
+  setMcqTemplet: React.Dispatch<React.SetStateAction<any[]>>
 }
-type MCQTempletProps = {
-  children?: React.ReactNode;
-  pIdx: number;
-  cIdx: number;
-  mcqTemplet: any;
-  setMcqTemplet: any;
-};
-const MCQTemplet_4 = ({ children, cIdx, pIdx, setMcqTemplet, mcqTemplet }: MCQTempletProps) => {
-  const handleAddMcq = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (mcqTemplet[pIdx].length >= 3) return; // Max 3 MCQs
-    
-    setMcqTemplet((prev:any) => {
-      return prev.map((group: any, index: any) => {
-        if (index === pIdx) {
-          const lastChild = group[group.length - 1];
-          const newChildIdx = lastChild ? lastChild.childIdx + 1 : 0;
-          const newItem = {
-            mcqType: "mcq-4",
-            parentIdx: pIdx,
-            childIdx: newChildIdx,
-            id: Date.now() + Math.random() // Add unique ID
-          };
-          return [...group, newItem];
+
+// MCQ Template 1 - Standard Multiple Choice (4 options)
+const MCQTemplet_1 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
+  const [formData, setFormData] = useState({
+    questionText: "",
+    image: "",
+    options: ["", "", "", ""],
+    correctAnswer: "",
+    marks: 1,
+  })
+
+  // Update parent state whenever formData changes (NO cIdx)
+  useEffect(() => {
+    setMcqTemplet((prev) => {
+      const newState = [...prev]
+      if (newState[pIdx] && newState[pIdx][0]) {
+        // Always index 0 for main MCQ
+        newState[pIdx][0] = {
+          ...newState[pIdx][0],
+          ...formData,
         }
-        return group;
-      });
-    });
-  };
+      }
+      return newState
+    })
+  }, [formData, pIdx, setMcqTemplet])
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleOptionChange = (index: number, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      options: prev.options.map((opt, i) => (i === index ? value : opt)),
+    }))
+  }
 
   return (
-    <div className="bg-blue-100 max-w-220 mx-auto p-3 rounded-2xl mb-2">
-      <form>
+    <div className="w-full">
+      <form className="bg-blue-300 mx-auto max-w-4xl p-3 rounded-2xl mb-2">
         <LabelInputContainer className="mb-2">
-          <Label htmlFor="passage">উদ্দীপক (Passage)</Label>
-          <textarea 
-            id="passage" 
-            className='bg-white p-3 rounded-2xl' 
-            placeholder="উদ্দীপকটি লিখুন (write the passage)" 
+          <Label htmlFor={`qStatement-${pIdx}`}>প্রশ্ন (Question)</Label>
+          <Input
+            id={`qStatement-${pIdx}`}
+            placeholder="প্রশ্নটি লিখুন (Write the question)"
+            type="text"
+            value={formData.questionText}
+            onChange={(e) => handleInputChange("questionText", e.target.value)}
           />
         </LabelInputContainer>
-        <ImageDropzone imgFor={"Passage"} />
+
+        <ImageDropzone
+          imgFor={"Question"}
+          image={formData.image}
+          onImageChange={(url) => handleInputChange("image", url)}
+        />
+
+        <div>
+          <div className="flex gap-2">
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op1-${pIdx}`}>ক/ Option A</Label>
+              <Input
+                id={`op1-${pIdx}`}
+                placeholder="ক/A"
+                type="text"
+                value={formData.options[0]}
+                onChange={(e) => handleOptionChange(0, e.target.value)}
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op2-${pIdx}`}>খ/ Option B</Label>
+              <Input
+                id={`op2-${pIdx}`}
+                placeholder="খ/B"
+                type="text"
+                value={formData.options[1]}
+                onChange={(e) => handleOptionChange(1, e.target.value)}
+              />
+            </LabelInputContainer>
+          </div>
+          <div className="flex gap-2">
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op3-${pIdx}`}>গ/Option C</Label>
+              <Input
+                id={`op3-${pIdx}`}
+                placeholder="গ/C"
+                type="text"
+                value={formData.options[2]}
+                onChange={(e) => handleOptionChange(2, e.target.value)}
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op4-${pIdx}`}>ঘ/ Option D</Label>
+              <Input
+                id={`op4-${pIdx}`}
+                placeholder="ঘ/D"
+                type="text"
+                value={formData.options[3]}
+                onChange={(e) => handleOptionChange(3, e.target.value)}
+              />
+            </LabelInputContainer>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          {children}
+          <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">নম্বর:</span>
+              <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
+            </div>
+            <div>
+              <Select
+                value={formData.correctAnswer}
+                onValueChange={(value) => handleInputChange("correctAnswer", value)}
+              >
+                <SelectTrigger className="min-w-[250px] bg-white">
+                  <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">ক/A</SelectItem>
+                  <SelectItem value="1">খ/B</SelectItem>
+                  <SelectItem value="2">গ/C</SelectItem>
+                  <SelectItem value="3">ঘ/D</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
       </form>
-      
-      <div className='w-full flex justify-between items-center'>
-        <button 
-          disabled={mcqTemplet[pIdx].length >= 3}
-          className="bg-black disabled:bg-gray-400 text-white font-semibold px-3 p-2 text-sm rounded-xl mb-2 transition-colors"
-          onClick={handleAddMcq}
-        >
-          ADD MCQ ({mcqTemplet[pIdx].length}/3)
-        </button>
-        <p className='px-4 text-sm text-gray-600'>Maximum 3 MCQs allowed</p>
-      </div>
-      
-      {mcqTemplet[pIdx].map((item: any, idx: number) => (
-        <MCQTemplet_4_1 key={item.id || idx} />
-      ))}
-      
-      <div className="flex justify-between">
-        {children}
-      </div>
     </div>
-  );
-};
-const MCQTemplet_4_1 = () => {
+  )
+}
+
+// MCQ Template 2 - True/False (2 options)
+const MCQTemplet_2 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
+  const [formData, setFormData] = useState({
+    questionText: "",
+    image: "",
+    options: ["সত্য", "মিথ্যা"],
+    correctAnswer: "",
+    marks: 1,
+  })
+
+  useEffect(() => {
+    setMcqTemplet((prev) => {
+      const newState = [...prev]
+      if (newState[pIdx] && newState[pIdx][0]) {
+        newState[pIdx][0] = {
+          ...newState[pIdx][0],
+          ...formData,
+        }
+      }
+      return newState
+    })
+  }, [formData, pIdx, setMcqTemplet])
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleOptionChange = (index: number, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      options: prev.options.map((opt, i) => (i === index ? value : opt)),
+    }))
+  }
+
   return (
-    <form className={`p-3 rounded-2xl mb-2 bg-blue-300`}>
-      <LabelInputContainer className="mb-2">
-        <Label htmlFor="qStatement">প্রশ্ন (Question)</Label>
-        <Input id="qStatement" placeholder="প্রশ্নটি লিখুন (Write the question)" type="text" />
-      </LabelInputContainer>
-      <ImageDropzone imgFor={"Question"} />
-      <div>
-        <div className="flex ">
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op1">ক/ Option A</Label>
-            <Input id="op1" placeholder="ক/A" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op2">খ/ Option B</Label>
-            <Input id="op2" placeholder="খ/B" type="text" />
-          </LabelInputContainer>
+    <div className="w-full">
+      <form className="bg-blue-300 mx-auto max-w-4xl p-3 rounded-2xl mb-2">
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor={`qStatement-${pIdx}`}>প্রশ্ন (Question)</Label>
+          <Input
+            id={`qStatement-${pIdx}`}
+            placeholder="প্রশ্নটি লিখুন (Write the question)"
+            type="text"
+            value={formData.questionText}
+            onChange={(e) => handleInputChange("questionText", e.target.value)}
+          />
+        </LabelInputContainer>
+
+        <ImageDropzone
+          imgFor={"Question"}
+          image={formData.image}
+          onImageChange={(url) => handleInputChange("image", url)}
+        />
+
+        <div>
+          <div className="flex gap-2">
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op1-${pIdx}`}>ক/ Option A</Label>
+              <Input
+                id={`op1-${pIdx}`}
+                placeholder="সত্য/True"
+                type="text"
+                value={formData.options[0]}
+                onChange={(e) => handleOptionChange(0, e.target.value)}
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op2-${pIdx}`}>খ/ Option B</Label>
+              <Input
+                id={`op2-${pIdx}`}
+                placeholder="মিথ্যা/False"
+                type="text"
+                value={formData.options[1]}
+                onChange={(e) => handleOptionChange(1, e.target.value)}
+              />
+            </LabelInputContainer>
+          </div>
         </div>
-        <div className="flex ">
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op3">গ/Option C</Label>
-            <Input id="op3" placeholder="গ/C" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-2">
-            <Label htmlFor="op4">ঘ/ Option D</Label>
-            <Input id="op4" placeholder="ঘ/D" type="text" />
-          </LabelInputContainer>
+
+        <div className="flex justify-between items-center">
+          {children}
+          <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">নম্বর:</span>
+              <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
+            </div>
+            <div>
+              <Select
+                value={formData.correctAnswer}
+                onValueChange={(value) => handleInputChange("correctAnswer", value)}
+              >
+                <SelectTrigger className="min-w-[250px] bg-white">
+                  <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">ক/A</SelectItem>
+                  <SelectItem value="1">খ/B</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
+      </form>
+    </div>
+  )
+}
+
+// MCQ Template 3 - Multiple Completion Based
+const MCQTemplet_3 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
+  const [formData, setFormData] = useState({
+    questionText: "",
+    image: "",
+    infoItems: ["", "", ""],
+    options: ["i, ii", "i, iii", "ii, iii", "i, ii, iii"],
+    correctAnswer: "",
+    marks: 1,
+  })
+
+  useEffect(() => {
+    setMcqTemplet((prev) => {
+      const newState = [...prev]
+      if (newState[pIdx] && newState[pIdx][0]) {
+        newState[pIdx][0] = {
+          ...newState[pIdx][0],
+          questionText: formData.questionText,
+          image: formData.image,
+          options: formData.options,
+          correctAnswer: formData.correctAnswer,
+          marks: formData.marks,
+          infoItems: formData.infoItems,
+        }
+      }
+      return newState
+    })
+  }, [formData, pIdx, setMcqTemplet])
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleInfoChange = (index: number, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      infoItems: prev.infoItems.map((item, i) => (i === index ? value : item)),
+    }))
+  }
+
+  const handleOptionChange = (index: number, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      options: prev.options.map((opt, i) => (i === index ? value : opt)),
+    }))
+  }
+
+  return (
+    <div className="w-full">
+      <form className="bg-blue-300 mx-auto max-w-4xl p-3 rounded-2xl mb-2">
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor={`qStatement-${pIdx}`}>প্রশ্ন (Question)</Label>
+          <Input
+            id={`qStatement-${pIdx}`}
+            placeholder="প্রশ্নটি লিখুন (Write the question)"
+            type="text"
+            value={formData.questionText}
+            onChange={(e) => handleInputChange("questionText", e.target.value)}
+          />
+        </LabelInputContainer>
+
+        <ImageDropzone
+          imgFor={"Question"}
+          image={formData.image}
+          onImageChange={(url) => handleInputChange("image", url)}
+        />
+
+        <div className="mx-4 space-y-2 mb-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor={`info1-${pIdx}`} className="text-sm font-medium">
+              i.
+            </label>
+            <input
+              id={`info1-${pIdx}`}
+              type="text"
+              placeholder="তথ্য ১ (Info 1)"
+              className="bg-white p-2 flex-1 rounded-md border"
+              value={formData.infoItems[0]}
+              onChange={(e) => handleInfoChange(0, e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor={`info2-${pIdx}`} className="text-sm font-medium">
+              ii.
+            </label>
+            <input
+              id={`info2-${pIdx}`}
+              type="text"
+              placeholder="তথ্য ২ (Info 2)"
+              className="bg-white p-2 flex-1 rounded-md border"
+              value={formData.infoItems[1]}
+              onChange={(e) => handleInfoChange(1, e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor={`info3-${pIdx}`} className="text-sm font-medium">
+              iii.
+            </label>
+            <input
+              id={`info3-${pIdx}`}
+              type="text"
+              placeholder="তথ্য ৩ (Info 3)"
+              className="bg-white p-2 flex-1 rounded-md border"
+              value={formData.infoItems[2]}
+              onChange={(e) => handleInfoChange(2, e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex gap-2">
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op1-${pIdx}`}>ক/ Option A</Label>
+              <Input
+                id={`op1-${pIdx}`}
+                placeholder="i, ii"
+                type="text"
+                value={formData.options[0]}
+                onChange={(e) => handleOptionChange(0, e.target.value)}
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op2-${pIdx}`}>খ/ Option B</Label>
+              <Input
+                id={`op2-${pIdx}`}
+                placeholder="i, iii"
+                type="text"
+                value={formData.options[1]}
+                onChange={(e) => handleOptionChange(1, e.target.value)}
+              />
+            </LabelInputContainer>
+          </div>
+          <div className="flex gap-2">
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op3-${pIdx}`}>গ/Option C</Label>
+              <Input
+                id={`op3-${pIdx}`}
+                placeholder="ii, iii"
+                type="text"
+                value={formData.options[2]}
+                onChange={(e) => handleOptionChange(2, e.target.value)}
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-2 flex-1">
+              <Label htmlFor={`op4-${pIdx}`}>ঘ/ Option D</Label>
+              <Input
+                id={`op4-${pIdx}`}
+                placeholder="i, ii, iii"
+                type="text"
+                value={formData.options[3]}
+                onChange={(e) => handleOptionChange(3, e.target.value)}
+              />
+            </LabelInputContainer>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          {children}
+          <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">নম্বর:</span>
+              <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
+            </div>
+            <div>
+              <Select
+                value={formData.correctAnswer}
+                onValueChange={(value) => handleInputChange("correctAnswer", value)}
+              >
+                <SelectTrigger className="min-w-[250px] bg-white">
+                  <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">ক/A</SelectItem>
+                  <SelectItem value="1">খ/B</SelectItem>
+                  <SelectItem value="2">গ/C</SelectItem>
+                  <SelectItem value="3">ঘ/D</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+// MCQ Template 4 - Situation Based with Passage and Collapsible Sub-Questions
+type MCQTempletProps = {
+  children?: React.ReactNode
+  pIdx: number
+  // cIdx: number,  // ❌ Removed cIdx
+  mcqTemplet: any[]
+  setMcqTemplet: any
+}
+
+const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet }: MCQTempletProps) => {
+  const [passageData, setPassageData] = useState({
+    passage: "",
+    passageImage: "",
+    subQuestions: [] as any[],
+  })
+  const [isSubQuestionsOpen, setIsSubQuestionsOpen] = useState(false)
+
+  // Update parent state for passage data (NO cIdx)
+  useEffect(() => {
+    setMcqTemplet((prev: any[]) => {
+      const newState = [...prev]
+      if (newState[pIdx] && newState[pIdx][0]) {
+        newState[pIdx][0] = {
+          ...newState[pIdx][0],
+          passage: passageData.passage,
+          passageImage: passageData.passageImage,
+          subQuestions: passageData.subQuestions,
+        }
+      }
+      return newState
+    })
+  }, [passageData, pIdx, setMcqTemplet])
+
+  const handleAddSubQuestion = () => {
+    if (passageData.subQuestions.length >= 3) return // Max 3 sub-questions
+
+    const newSubQuestion = {
+      childIdx: passageData.subQuestions.length, // ✅ childIdx only for sub-questions
+      id: Date.now() + Math.random(),
+      questionText: "",
+      image: "",
+      options: ["", "", "", ""],
+      correctAnswer: "",
+      marks: 1,
+    }
+
+    setPassageData((prev) => ({
+      ...prev,
+      subQuestions: [...prev.subQuestions, newSubQuestion],
+    }))
+  }
+
+  const handleDeleteSubQuestion = (index: number) => {
+    setPassageData((prev) => ({
+      ...prev,
+      subQuestions: prev.subQuestions
+        .filter((_, i) => i !== index)
+        .map((sq, i) => ({
+          ...sq,
+          childIdx: i, // ✅ Re-index childIdx after deletion
+        })),
+    }))
+  }
+
+  const handleSubQuestionChange = (index: number, field: string, value: any) => {
+    setPassageData((prev) => ({
+      ...prev,
+      subQuestions: prev.subQuestions.map((sq, i) => (i === index ? { ...sq, [field]: value } : sq)),
+    }))
+  }
+
+  const handleSubQuestionOptionChange = (subIndex: number, optionIndex: number, value: string) => {
+    setPassageData((prev) => ({
+      ...prev,
+      subQuestions: prev.subQuestions.map((sq, i) =>
+        i === subIndex
+          ? {
+              ...sq,
+              options: sq.options.map((opt: string, oi: number) => (oi === optionIndex ? value : opt)),
+            }
+          : sq,
+      ),
+    }))
+  }
+
+  return (
+    <div className="bg-blue-100 max-w-4xl mx-auto p-3 rounded-2xl mb-2">
+      {/* Passage Section */}
+      <form>
+        <LabelInputContainer className="mb-2">
+          <Label htmlFor={`passage-${pIdx}`}>উদ্দীপক (Passage)</Label>
+          <textarea
+            id={`passage-${pIdx}`}
+            className="bg-white p-3 rounded-2xl w-full min-h-[100px] border"
+            placeholder="উদ্দীপকটি লিখুন (write the passage)"
+            value={passageData.passage}
+            onChange={(e) => setPassageData((prev) => ({ ...prev, passage: e.target.value }))}
+          />
+        </LabelInputContainer>
+        <ImageDropzone
+          imgFor={"Passage"}
+          image={passageData.passageImage}
+          onImageChange={(url) => setPassageData((prev) => ({ ...prev, passageImage: url }))}
+        />
+      </form>
+
+      {/* Sub-Questions Section */}
+      <div className="mt-4">
+        <div className="flex justify-between items-center mb-3">
+          <button
+            type="button"
+            onClick={() => setIsSubQuestionsOpen(!isSubQuestionsOpen)}
+            className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg transition-colors"
+          >
+            <span className="font-medium">Sub Questions ({passageData.subQuestions.length}/3)</span>
+            {isSubQuestionsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleAddSubQuestion}
+            disabled={passageData.subQuestions.length >= 3}
+            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-3 py-2 rounded-lg transition-colors"
+          >
+            <Plus size={16} />
+            Add Sub Question
+          </button>
+        </div>
+
+        {/* Collapsible Sub-Questions */}
+        {isSubQuestionsOpen && (
+          <div className="space-y-3">
+            {passageData.subQuestions.map((subQuestion, index) => (
+              <div key={subQuestion.id} className="bg-blue-300 p-3 rounded-lg relative">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteSubQuestion(index)}
+                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                >
+                  <Trash2 size={12} />
+                </button>
+
+                <div className="pr-8">
+                  <LabelInputContainer className="mb-2">
+                    <Label>
+                      প্রশ্ন {index + 1} (Sub Question {index + 1}) - childIdx: {subQuestion.childIdx}
+                    </Label>
+                    <Input
+                      placeholder="প্রশ্নটি লিখুন"
+                      value={subQuestion.questionText}
+                      onChange={(e) => handleSubQuestionChange(index, "questionText", e.target.value)}
+                    />
+                  </LabelInputContainer>
+
+                  <ImageDropzone
+                    imgFor={`Sub Question ${index + 1}`}
+                    image={subQuestion.image}
+                    onImageChange={(url) => handleSubQuestionChange(index, "image", url)}
+                  />
+
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <LabelInputContainer>
+                      <Label>ক/ Option A</Label>
+                      <Input
+                        placeholder="ক/A"
+                        value={subQuestion.options[0]}
+                        onChange={(e) => handleSubQuestionOptionChange(index, 0, e.target.value)}
+                      />
+                    </LabelInputContainer>
+                    <LabelInputContainer>
+                      <Label>খ/ Option B</Label>
+                      <Input
+                        placeholder="খ/B"
+                        value={subQuestion.options[1]}
+                        onChange={(e) => handleSubQuestionOptionChange(index, 1, e.target.value)}
+                      />
+                    </LabelInputContainer>
+                    <LabelInputContainer>
+                      <Label>গ/ Option C</Label>
+                      <Input
+                        placeholder="গ/C"
+                        value={subQuestion.options[2]}
+                        onChange={(e) => handleSubQuestionOptionChange(index, 2, e.target.value)}
+                      />
+                    </LabelInputContainer>
+                    <LabelInputContainer>
+                      <Label>ঘ/ Option D</Label>
+                      <Input
+                        placeholder="ঘ/D"
+                        value={subQuestion.options[3]}
+                        onChange={(e) => handleSubQuestionOptionChange(index, 3, e.target.value)}
+                      />
+                    </LabelInputContainer>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">নম্বর:</span>
+                      <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
+                    </div>
+                    <Select
+                      value={subQuestion.correctAnswer}
+                      onValueChange={(value) => handleSubQuestionChange(index, "correctAnswer", value)}
+                    >
+                      <SelectTrigger className="w-48 bg-white">
+                        <SelectValue placeholder="সঠিক উত্তর" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">ক/A</SelectItem>
+                        <SelectItem value="1">খ/B</SelectItem>
+                        <SelectItem value="2">গ/C</SelectItem>
+                        <SelectItem value="3">ঘ/D</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {passageData.subQuestions.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                No sub-questions added yet. Click "Add Sub Question" to start.
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      <div className="flex justify-center">
-        <Select>
-          <SelectTrigger className="min-w-[250px] bg-white">
-            <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">ক/A</SelectItem>
-            <SelectItem value="1">খ/B</SelectItem>
-            <SelectItem value="2">গ/C</SelectItem>
-            <SelectItem value="3">ঘ/D</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </form>
-  );
-};
+
+      <div className="flex justify-between mt-4">{children}</div>
+    </div>
+  )
+}
+
 const LabelInputContainer = ({
   children,
   className,
 }: {
-  children: React.ReactNode;
-  className?: string;
+  children: React.ReactNode
+  className?: string
 }) => {
-  return (
-    <div className={cn("flex w-full flex-col space-y-2", className)}>
-      {children}
-    </div>
-  );
-};
-const DelBtn = ({ pIdx, cIdx, setMcqTemplet, mcqTemplet }: Props) => {
+  return <div className={cn("flex w-full flex-col space-y-2", className)}>{children}</div>
+}
+
+const DelBtn = ({ pIdx, setMcqTemplet, mcqTemplet }: Omit<Props, "children">) => {
   const handleDelete = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
+    e.preventDefault()
+    e.stopPropagation()
+
     setMcqTemplet((prev) => {
-      // Remove the entire group at pIdx
-      return prev.filter((_, index) => index !== pIdx);
-    });
-  };
+      return prev.filter((_, index) => index !== pIdx)
+    })
+  }
 
   return (
-    <button 
-      className="bg-red-500 hover:bg-red-600 text-white font-semibold px-3 p-2 text-sm rounded-xl transition-colors"
+    <button
+      className="bg-red-500 hover:bg-red-600 text-white font-semibold px-3 py-2 text-sm rounded-xl transition-colors"
       onClick={handleDelete}
-    > 
+    >
       Delete
     </button>
-  );
-};
-export { MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4, LabelInputContainer, DelBtn };
+  )
+}
+
+export { MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4, LabelInputContainer, DelBtn }

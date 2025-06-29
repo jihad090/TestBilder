@@ -41,8 +41,10 @@ const PrimaryQuestionInfoSchema = new mongoose.Schema({
   },
   subjectCode: {
     type: Number,
+    required: false,
     min: 1,
     max: 999,
+
   },
   examType: {
     type: String,
@@ -50,7 +52,7 @@ const PrimaryQuestionInfoSchema = new mongoose.Schema({
     required: true,
   },
   totalTime: {
-    type: String, // e.g., "1 hour", "90 minutes", "2 hrs 30 min"
+    type: String,
     required: true,
   },
   totalSet: {
