@@ -28,23 +28,33 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-            <Link href="/createQuestionPrimaryInfo">
-              <Button
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
-              >
-                <FormInput className="w-6 h-6 mr-3" />
-                Start Creating Questions
-              </Button>
-            </Link>
-            <Link href="/MCQ">
+          <Link href="/MCQ">
               <Button
                 size="lg"
                 variant="outline"
                 className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-10 py-4 text-lg font-semibold rounded-xl"
               >
                 <FileText className="w-6 h-6 mr-3" />
-                View Sample Papers
+                View MCQ Sample Papers
+              </Button>
+            </Link>
+            <Link href="/CQ">
+              <Button
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                <FormInput className="w-6 h-6 mr-3" />
+                View CQ Sample Papers
+              </Button>
+            </Link>
+            <Link href="/SQ">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-10 py-4 text-lg font-semibold rounded-xl"
+              >
+                <FileText className="w-6 h-6 mr-3" />
+                View SQ Sample Papers
               </Button>
             </Link>
           </div>
@@ -116,7 +126,7 @@ export default function Home() {
             <p className="text-lg text-gray-600 mb-8">
               Join thousands of educators who trust our platform for their examination needs.
             </p>
-            <Link href="/get-started">
+            <Link href="/createQuestionPrimaryInfo">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
