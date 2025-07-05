@@ -8,13 +8,12 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 lg:py-10">
         <div className="text-center max-w-5xl mx-auto">
-          {/* Badge */}
+
           <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-8">
             <Zap className="w-4 h-4 mr-2" />
             Professional Question Paper Generator
           </div>
 
-          {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
             - Create Like Professionals -
             <span className="text-blue-600 block">Make Ready to Print Question Papers</span>
@@ -23,15 +22,13 @@ export default function Home() {
             </span>
           </h1>
 
-          {/* Subtitle */}
           <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
             Transform your questions into professional exam papers instantly. No design skills needed, no charges
             required, completely secure.
           </p>
 
-          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-            <Link href="/create">
+            <Link href="/createQuestionPrimaryInfo">
               <Button
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
@@ -40,7 +37,7 @@ export default function Home() {
                 Start Creating Questions
               </Button>
             </Link>
-            <Link href="/demo">
+            <Link href="/MCQ">
               <Button
                 size="lg"
                 variant="outline"
@@ -52,7 +49,6 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Key Benefits Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
             <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -87,7 +83,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Perfect For Section */}
           <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl">
             <div className="flex items-center justify-center mb-6">
               <GraduationCap className="w-8 h-8 text-blue-600 mr-3" />
@@ -114,7 +109,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Final CTA */}
           <div className="mt-16">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               Ready to Create Your First Professional Question Paper?

@@ -115,14 +115,14 @@ function infiniteMCQ(){
           // question
           allContainer.innerHTML += `<div id="question"><b>${questionCount}&#46;</b> <span id="qStatement">${ques.question}</span></div>`
           mainArray.push(`<div id="question"><b>${questionCount}&#46;</b> <span id="qStatement">${ques.question}</span></div>`)
-          if(item.questionImgSrc){
+          if(ques.questionImgSrc){
             // img
             allContainer.innerHTML += `
               <div style="width: 100%; text-align: center;">
-                <img src="${item.questionImgSrc}" alt="Image missing" height="${imgHeight}px">
+                <img src="${ques.questionImgSrc}" alt="Image missing" height="${imgHeight}px">
               </div>
-            `
-            mainArray.push( `<div style="width: 100%; text-align: center;"><img src="${item.questionImgSrc}" alt="Image missing" height="${imgHeight}px"></div>`)
+            `   
+            mainArray.push( `<div style="width: 100%; text-align: center;"><img src="${ques.questionImgSrc}" alt="Image missing" height="${imgHeight}px"></div>`)
           }     
 
           allContainer.innerHTML+=`<div style="width: fit-content;" id="optionSize"></div>`
@@ -188,7 +188,7 @@ function infiniteMCQ(){
   function shuffleArray(array) {
     return [...array].sort(() => Math.random() - 0.5);
   }
-  const mcqData = shuffleArray(dataBan);
+  const mcqData = shuffleArray(dataEng);
   let flag = true
   let font = false
 
