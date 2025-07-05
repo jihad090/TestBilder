@@ -1,42 +1,3 @@
-// import { NextRequest, NextResponse } from "next/server";
-// import ShortQuestion from "@/Models/sqTemplete";
-// import { connectDB } from "@/dbconfig/dbconfig"; 
-
-// export async function POST(req: NextRequest) {
-//   try {
-//     await connectDB();
-
-//     const body = await req.json();
-//     const { user, primaryInfo, sqGroup } = body;
-
-//     if (!user || !primaryInfo || !sqGroup) {
-//       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
-//     }
-
-//     // Check if all questionText fields are non-empty strings
-//     const isComplete = sqGroup.questions.every(
-//       (q: { questionText?: string }) => typeof q.questionText === "string" && q.questionText.trim() !== ""
-//     );
-
-   
-//     const newShortQuestion = new ShortQuestion({
-//       user,
-//       primaryInfo,
-//       sqGroup: {
-//         ...sqGroup,
-//         isComplete,
-//       },
-//     });
-
-//     await newShortQuestion.save();
-
-//     return NextResponse.json({ success: true, data: newShortQuestion });
-//   } catch (error) {
-//     console.error("Error saving short question:", error);
-//     return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
-//   }
-// }
-
 
 
 import { type NextRequest, NextResponse } from "next/server"
@@ -48,11 +9,11 @@ const validateSQ = (sq: any) => {
 
   // Check if sq has either questionText or image
   if (!sq.questionText && !sq.image) {
-    console.log("❌ SQ needs either questionText or image")
+    console.log(" SQ needs either questionText or image")
     return false
   }
 
-  console.log("✅ Backend SQ validation passed")
+  console.log(" Backend SQ validation passed")
   return true
 }
 
@@ -70,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
     }
 
-    // ✅ Handle UPDATE operation
+    //  Handle UPDATE operation
     if (operation === "update" && templateId) {
       if (!sqGroup || !sqGroup.questions || !Array.isArray(sqGroup.questions)) {
         return NextResponse.json(
@@ -109,11 +70,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
       }
 
-      console.log("✅ SQ Template updated:", updated._id)
+      console.log(" SQ Template updated:", updated._id)
       return NextResponse.json({ success: true, data: updated }, { status: 200 })
     }
 
-    // ✅ Handle CREATE operation (default)
+    //  Handle CREATE operation (default)
     // Check if template already exists for this primaryInfo
     const existingTemplate = await ShortQuestion.findOne({
       user,
@@ -137,20 +98,20 @@ export async function POST(request: NextRequest) {
       primaryInfo,
       sqGroup: {
         title: "sq-1",
-        questions: [], // Empty initially
+        questions: [], 
         isComplete: false,
       },
       isComplete: false, // Always incomplete when first created
     })
 
     const savedTemplate = await newTemplate.save()
-    console.log("✅ Successfully created SQ Template:", savedTemplate._id)
+    console.log(" Successfully created SQ Template:", savedTemplate._id)
 
     return NextResponse.json(
       {
         success: true,
         data: {
-          _id: savedTemplate._id, // ✅ _id দিয়ে return করুন
+          _id: savedTemplate._id, 
           user: savedTemplate.user,
           primaryInfo: savedTemplate.primaryInfo,
           sqGroup: savedTemplate.sqGroup,
@@ -163,12 +124,12 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     )
   } catch (error) {
-    console.error("❌ Error creating SQ template:", error)
+    console.error("Error creating SQ template:", error)
     return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 })
   }
 }
 
-// GET: Fetch existing SQ template
+// Fetch existing SQ template
 export async function GET(request: NextRequest) {
   try {
     await connectDB()
@@ -180,7 +141,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId")
     const onlyComplete = searchParams.get("onlyComplete")
 
-    // ✅ Handle fetching complete templates for a user
+    //  Handle fetching complete templates for a user
     if (userId && onlyComplete === "true") {
       const templates = await ShortQuestion.find({
         user: userId,
@@ -209,7 +170,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
     }
 
-    console.log("✅ Successfully fetched SQ Template:", template._id)
+    console.log("Successfully fetched SQ Template:", template._id)
 
     return NextResponse.json(
       {
@@ -219,7 +180,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     )
   } catch (error) {
-    console.error("❌ Error fetching SQ template:", error)
+    console.error("Error fetching SQ template:", error)
     return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 })
   }
 }
@@ -260,10 +221,10 @@ export async function DELETE(request: NextRequest) {
 
     await template.save()
 
-    console.log("✅ SQ deleted from template:", template._id)
+    console.log("SQ deleted from template:", template._id)
     return NextResponse.json({ success: true, data: template }, { status: 200 })
   } catch (err) {
-    console.error("❌ SQ DELETE error:", err)
+    console.error(" SQ DELETE error:", err)
     return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 })
   }
 }

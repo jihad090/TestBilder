@@ -1,709 +1,345 @@
 
 
-
-
-// import { type NextRequest, NextResponse } from "next/server"
-// import { connectDB } from "@/dbconfig/dbconfig"
-// import MCQTemplate from "@/Models/mcqTemplate"
-
-// await connectDB()
-
-// function validateMCQ(mcq: any): boolean {
-//   console.log(" Validating MCQ:", mcq.mcqType, mcq.id)
-
-//   if (mcq.mcqType === "mcq-4") {
-//     const hasPassageText = mcq.passage && mcq.passage.trim() !== ""
-//     const hasPassageImage = mcq.passageImage && mcq.passageImage.trim() !== ""
-
-//     if (!hasPassageText && !hasPassageImage) {
-//       console.log(" MCQ-4: No passage text or image")
-//       return false
-//     }
-//     console.log("MCQ-4: Has passage content")
-
-//     if (!mcq.subQuestions || !Array.isArray(mcq.subQuestions) || mcq.subQuestions.length === 0) {
-//       console.log(" MCQ-4: No sub-questions found")
-//       return false
-//     }
-//     console.log(` MCQ-4: Has ${mcq.subQuestions.length} sub-questions`)
-
-//     const allSubQuestionsValid = mcq.subQuestions.every((subQ: any, index: number) => {
-//       console.log(`Validating Sub-Question ${index + 1}:`)
-
-//       const hasSubText = subQ.questionText && subQ.questionText.trim() !== ""
-//       const hasSubImage = subQ.image && subQ.image.trim() !== ""
-
-//       if (!hasSubText && !hasSubImage) {
-//         console.log(`MCQ-4 Sub ${index + 1}: No text or image`)
-//         return false
-//       }
-//       console.log(`MCQ-4 Sub ${index + 1}: Has content (${hasSubText ? "text" : ""}${hasSubImage ? "image" : ""})`)
-
-//       if (!subQ.options || !Array.isArray(subQ.options)) {
-//         console.log(` MCQ-4 Sub ${index + 1}: No options array`)
-//         return false
-//       }
-
-//       if (subQ.options.length < 4) {
-//         console.log(` MCQ-4 Sub ${index + 1}: Less than 4 options (has ${subQ.options.length})`)
-//         return false
-//       }
-
-//       const emptyOptions = subQ.options.map((opt: string, optIndex: number) => {
-//         const isEmpty = !opt || opt.trim() === ""
-//         if (isEmpty) {
-//           console.log(` MCQ-4 Sub ${index + 1}: Option ${optIndex + 1} is empty`)
-//         }
-//         return isEmpty
-//       })
-
-//       if (emptyOptions.some((isEmpty: boolean) => isEmpty)) {
-//         console.log(` MCQ-4 Sub ${index + 1}: Some options are empty`)
-//         return false
-//       }
-//       console.log(` MCQ-4 Sub ${index + 1}: All 4 options have content`)
-
-//       if (subQ.correctAnswer === "" || subQ.correctAnswer === null || subQ.correctAnswer === undefined) {
-//         console.log(` MCQ-4 Sub ${index + 1}: No correct answer`)
-//         return false
-//       }
-
-//       const answerIndex = Number.parseInt(subQ.correctAnswer)
-//       if (isNaN(answerIndex) || answerIndex < 0 || answerIndex >= subQ.options.length) {
-//         console.log(` MCQ-4 Sub ${index + 1}: Invalid correct answer index (${subQ.correctAnswer})`)
-//         return false
-//       }
-//       console.log(` MCQ-4 Sub ${index + 1}: Valid correct answer (${answerIndex})`)
-
-//       return true
-//     })
-
-//     if (!allSubQuestionsValid) {
-//       return false
-//     }
-
-//     console.log(" MCQ-4: All validations passed")
-//     return true
-//   } else {
-//     console.log(` Validating ${mcq.mcqType}:`)
-
-//     const hasQuestionText = mcq.questionText && mcq.questionText.trim() !== ""
-//     const hasQuestionImage = mcq.image && mcq.image.trim() !== ""
-
-//     if (!hasQuestionText && !hasQuestionImage) {
-//       console.log(` ${mcq.mcqType}: No question text or image`)
-//       return false
-//     }
-//     console.log(
-//       ` ${mcq.mcqType}: Has question content (${hasQuestionText ? "text" : ""}${hasQuestionImage ? "image" : ""})`,
-//     )
-
-//     if (!mcq.options || !Array.isArray(mcq.options)) {
-//       console.log(` ${mcq.mcqType}: No options array`)
-//       return false
-//     }
-
-//     const requiredOptions = mcq.mcqType === "mcq-2" ? 2 : 4
-//     if (mcq.options.length < requiredOptions) {
-//       console.log(` ${mcq.mcqType}: Less than ${requiredOptions} options (has ${mcq.options.length})`)
-//       return false
-//     }
-
-//     const emptyOptions = mcq.options.slice(0, requiredOptions).map((opt: string, optIndex: number) => {
-//       const isEmpty = !opt || opt.trim() === ""
-//       if (isEmpty) {
-//         console.log(` ${mcq.mcqType}: Option ${optIndex + 1} is empty`)
-//       }
-//       return isEmpty
-//     })
-
-//     if (emptyOptions.some((isEmpty: boolean) => isEmpty)) {
-//       console.log(` ${mcq.mcqType}: Some options are empty`)
-//       return false
-//     }
-//     console.log(` ${mcq.mcqType}: All ${requiredOptions} options have content`)
-
-//     // STEP 3: Check correct answer
-//     if (mcq.correctAnswer === "" || mcq.correctAnswer === null || mcq.correctAnswer === undefined) {
-//       console.log(` ${mcq.mcqType}: No correct answer`)
-//       return false
-//     }
-
-//     const answerIndex = Number.parseInt(mcq.correctAnswer)
-//     if (isNaN(answerIndex) || answerIndex < 0 || answerIndex >= requiredOptions) {
-//       console.log(` ${mcq.mcqType}: Invalid correct answer index (${mcq.correctAnswer})`)
-//       return false
-//     }
-//     console.log(` ${mcq.mcqType}: Valid correct answer (${answerIndex})`)
-
-//     // STEP 4: For MCQ-3, check infoItems
-//     if (mcq.mcqType === "mcq-3") {
-//       if (!mcq.infoItems || !Array.isArray(mcq.infoItems) || mcq.infoItems.length < 3) {
-//         console.log(" MCQ-3: Invalid infoItems array")
-//         return false
-//       }
-
-//       const emptyInfoItems = mcq.infoItems.slice(0, 3).map((info: string, infoIndex: number) => {
-//         const isEmpty = !info || info.trim() === ""
-//         if (isEmpty) {
-//           console.log(` MCQ-3: Info item ${infoIndex + 1} is empty`)
-//         }
-//         return isEmpty
-//       })
-
-//       if (emptyInfoItems.some((isEmpty: boolean) => isEmpty)) {
-//         console.log(" MCQ-3: Some info items are empty")
-//         return false
-//       }
-//       console.log(" MCQ-3: All 3 info items have content")
-//     }
-
-//     console.log(` ${mcq.mcqType}: All validations passed`)
-//     return true
-//   }
-// }
-
-// // Function to check if entire template is complete
-// function checkTemplateIsComplete(mcqs: any[][]): boolean {
-//   console.log(" Checking template completion...")
-
-//   if (!mcqs || !Array.isArray(mcqs) || mcqs.length === 0) {
-//     console.log("❌ No MCQs found in template")
-//     return false
-//   }
-
-//   // Check each MCQ group
-//   const allGroupsValid = mcqs.every((group: any[], groupIndex: number) => {
-//     if (!Array.isArray(group) || group.length === 0) {
-//       console.log(` Group ${groupIndex + 1}: Empty group`)
-//       return false
-//     }
-
-//     // Check each MCQ in the group
-//     const allMCQsValid = group.every((mcq: any, mcqIndex: number) => {
-//       console.log(`\n Checking Group ${groupIndex + 1}, MCQ ${mcqIndex + 1}:`)
-//       const isValid = validateMCQ(mcq)
-//       if (!isValid) {
-//         console.log(` Group ${groupIndex + 1}, MCQ ${mcqIndex + 1}: INVALID`)
-//       } else {
-//         console.log(` Group ${groupIndex + 1}, MCQ ${mcqIndex + 1}: VALID`)
-//       }
-//       return isValid
-//     })
-
-//     if (!allMCQsValid) {
-//       console.log(` Group ${groupIndex + 1}: Contains invalid MCQs`)
-//       return false
-//     }
-
-//     console.log(` Group ${groupIndex + 1}: All MCQs valid`)
-//     return true
-//   })
-
-//   const isComplete = allGroupsValid
-//   console.log(`\n FINAL RESULT: Template completion status: ${isComplete ? " COMPLETE" : " INCOMPLETE"}`)
-
-//   return isComplete
-// }
-
-
-// function cleanMCQs(mcqs: any[][]): any[][] {
-//   return mcqs.map((group) =>
-//     group.map((mcq) => {
-//       if (mcq.mcqType === "mcq-4") {
-        
-//         return {
-//           mcqType: mcq.mcqType,
-//           parentIdx: mcq.parentIdx,
-//           id: mcq.id,
-//           passage: mcq.passage || "",
-//           passageImage: mcq.passageImage || "",
-//           subQuestions: mcq.subQuestions || [],
-//           // Remove these fields for MCQ-4:
-//           // questionText, image, options, correctAnswer, marks
-//         }
-//       } else {
-        
-//         const cleanedMCQ: any = {
-//           mcqType: mcq.mcqType,
-//           parentIdx: mcq.parentIdx,
-//           id: mcq.id,
-//           questionText: mcq.questionText || "",
-//           image: mcq.image || "",
-//           options: mcq.options || [],
-//           correctAnswer: mcq.correctAnswer || "",
-//           marks: mcq.marks || 1,
-//           //  Remove these fields for other MCQs:
-//           // passage, passageImage, subQuestions
-//         }
-
-//         // Add infoItems for MCQ-3
-//         if (mcq.mcqType === "mcq-3" && mcq.infoItems) {
-//           cleanedMCQ.infoItems = mcq.infoItems
-//         }
-
-//         return cleanedMCQ
-//       }
-//     }),
-//   )
-// }
-
-// //  Only POST route for creating MCQ templates
-// export async function POST(req: NextRequest) {
-//   try {
-//     const body = await req.json()
-//     let { user, primaryInfo, mcqs } = body
-
-//     if (!user || !primaryInfo || !mcqs) {
-//       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
-//     }
-
-//     // Log the received data for debugging
-//     console.log("Received MCQ data:", JSON.stringify(mcqs, null, 2))
-
-//     //  Check template completion BEFORE cleaning
-//     const isComplete = checkTemplateIsComplete(mcqs)
-
-//     // Filter/clean mcqs
-//     mcqs = cleanMCQs(mcqs)
-
-//     // Log cleaned data
-//     console.log(" Cleaned MCQ data:", JSON.stringify(mcqs, null, 2))
-
-//     //  Create template with calculated isComplete
-//     const newTemplate = await MCQTemplate.create({
-//       user,
-//       primaryInfo,
-//       mcqs,
-//       isComplete, //  Set calculated value
-//     })
-
-//     console.log(" Successfully saved to MongoDB:", newTemplate._id)
-//     console.log(" Template isComplete status:", newTemplate.isComplete)
-
-//     return NextResponse.json(
-//       {
-//         success: true,
-//         data: {
-//           id: newTemplate._id,
-//           isComplete: newTemplate.isComplete,
-//           totalMCQs: mcqs.length,
-//         },
-//         message: isComplete
-//           ? "Template completed and saved!"
-//           : "Template saved but incomplete. Please fill all required fields.",
-//       },
-//       { status: 201 },
-//     )
-//   } catch (error: any) {
-//     console.error(" Error saving MCQ Template:", error.message)
-//     console.error("Full error:", error)
-//     return NextResponse.json(
-//       { success: false, message: "Internal Server Error", error: error.message },
-//       { status: 500 },
-//     )
-//   }
-// }
-
-
-
-
-
 import { type NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/dbconfig/dbconfig"
 import MCQTemplate from "@/Models/mcqTemplate"
-import mongoose from "mongoose"
 
-const validateMCQ = (mcq: any) => {
-  console.log("🔍 Backend validating MCQ:", JSON.stringify(mcq, null, 2))
-
-  // Check if mcq has required fields
+// Validate a single MCQ
+function validateMCQ(mcq: any): boolean {
   if (mcq.mcqType === "mcq-4") {
-    // Passage-based MCQ
-    const hasPassage = !!(mcq.passage?.trim() || mcq.passageImage?.trim())
-    console.log("📝 Has passage:", hasPassage, { passage: mcq.passage, passageImage: mcq.passageImage })
+    const hasPassageText = mcq.passage && mcq.passage.trim() !== ""
+    const hasPassageImage = mcq.passageImage && mcq.passageImage.trim() !== ""
+    if (!hasPassageText && !hasPassageImage) return false
 
-    const hasSubQuestions = !!(mcq.subQuestions && mcq.subQuestions.length > 0)
-    console.log("📋 Has subQuestions:", hasSubQuestions, "Count:", mcq.subQuestions?.length)
+    if (!mcq.subQuestions || !Array.isArray(mcq.subQuestions) || mcq.subQuestions.length === 0) return false
 
-    if (!hasPassage || !hasSubQuestions) {
-      console.log("❌ MCQ-4 failed basic checks")
-      return false
-    }
-
-    // ✅ Enhanced subQuestion validation with detailed logging
-    const allSubQuestionsValid = mcq.subQuestions.every((sq: any, index: number) => {
-      const hasQuestionContent = !!(sq.questionText?.trim() || sq.image?.trim())
-      const hasAllOptions = !!(
-        sq.options &&
-        Array.isArray(sq.options) &&
-        sq.options.length === 4 &&
-        sq.options.every((opt: string) => opt?.trim())
-      )
-      const hasCorrectAnswer = !!(
-        sq.correctAnswer !== "" &&
-        sq.correctAnswer !== null &&
-        sq.correctAnswer !== undefined
-      )
-
-      console.log(`🔍 SubQuestion ${index + 1}:`, {
-        hasQuestionContent,
-        questionText: sq.questionText,
-        image: sq.image,
-        hasAllOptions,
-        options: sq.options,
-        hasCorrectAnswer,
-        correctAnswer: sq.correctAnswer,
-      })
-
-      const isValid = hasQuestionContent && hasAllOptions && hasCorrectAnswer
-      console.log(`✅ SubQuestion ${index + 1} valid:`, isValid)
-
-      return isValid
+    const allSubQuestionsValid = mcq.subQuestions.every((subQ: any) => {
+      const hasContent = (subQ.questionText && subQ.questionText.trim()) || (subQ.image && subQ.image.trim())
+      if (!hasContent) return false
+      if (!Array.isArray(subQ.options) || subQ.options.length < 4) return false
+      if (subQ.options.some((opt: string) => !opt || opt.trim() === "")) return false
+      const answerIndex = Number.parseInt(subQ.correctAnswer)
+      return !isNaN(answerIndex) && answerIndex >= 0 && answerIndex < subQ.options.length
     })
-
-    console.log("🎯 All subQuestions valid:", allSubQuestionsValid)
-    const finalResult = hasPassage && hasSubQuestions && allSubQuestionsValid
-    console.log("🏁 Final MCQ-4 validation result:", finalResult)
-
-    return finalResult
+    return allSubQuestionsValid
   } else {
-    // Regular MCQ (mcq-1, mcq-2, mcq-3)
-    const hasQuestion = !!(mcq.questionText?.trim() || mcq.image?.trim())
-    const hasOptions = !!(mcq.options && Array.isArray(mcq.options) && mcq.options.every((opt: string) => opt?.trim()))
-    const hasCorrectAnswer = !!(
-      mcq.correctAnswer !== "" &&
-      mcq.correctAnswer !== null &&
-      mcq.correctAnswer !== undefined
-    )
+    const hasContent = (mcq.questionText && mcq.questionText.trim()) || (mcq.image && mcq.image.trim())
+    if (!hasContent) return false
 
-    console.log("🔍 Regular MCQ validation:", {
-      mcqType: mcq.mcqType,
-      hasQuestion,
-      hasOptions,
-      hasCorrectAnswer,
-      questionText: mcq.questionText,
-      image: mcq.image,
-      options: mcq.options,
-      correctAnswer: mcq.correctAnswer,
-    })
+    const requiredOptions = mcq.mcqType === "mcq-2" ? 2 : 4
+    if (!Array.isArray(mcq.options) || mcq.options.length < requiredOptions) return false
+    if (mcq.options.slice(0, requiredOptions).some((opt: string) => !opt || opt.trim() === "")) return false
 
-    const result = hasQuestion && hasOptions && hasCorrectAnswer
-    console.log("✅ Regular MCQ validation result:", result)
+    const answerIndex = Number.parseInt(mcq.correctAnswer)
+    if (isNaN(answerIndex) || answerIndex < 0 || answerIndex >= requiredOptions) return false
 
-    return result
+    if (mcq.mcqType === "mcq-3") {
+      if (!Array.isArray(mcq.infoItems) || mcq.infoItems.length < 3) return false
+      if (mcq.infoItems.slice(0, 3).some((info: string) => !info || info.trim() === "")) return false
+    }
+    return true
   }
 }
 
-// POST: Create new MCQ template (called when primary info is submitted)
-export async function POST(request: NextRequest) {
-  try {
-    await connectDB()
+// Check if entire template is complete
+function checkTemplateIsComplete(mcqs: any[]): boolean {
+  if (!Array.isArray(mcqs) || mcqs.length === 0) return false
+  return mcqs.every(validateMCQ)
+}
 
-    const body = await request.json()
-    const { user, primaryInfo, mcqs = [], isComplete = false, operation, templateId } = body
+// Convert frontend array structure to backend flat structure
+function convertMCQsToBackendFormat(mcqs: any[][]): any[] {
+  const flatMCQs: any[] = []
 
-    console.log("📥 Received MCQ data:", JSON.stringify(body, null, 2))
-
-    if (!user || !primaryInfo) {
-      return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
-    }
-
-    // ✅ Handle UPDATE operation
-    if (operation === "update" && templateId) {
-      if (!Array.isArray(mcqs)) {
-        return NextResponse.json({ success: false, message: "MCQs must be an array for update" }, { status: 400 })
+  mcqs.forEach((group, groupIndex) => {
+    group.forEach((mcq) => {
+      const cleanedMCQ: any = {
+        mcqType: mcq.mcqType,
+        parentIdx: groupIndex,
+        questionText: mcq.questionText || "",
+        image: mcq.image || "",
+        options: mcq.options || [],
+        correctAnswer: mcq.correctAnswer || "",
+        marks: mcq.marks || 1,
       }
 
-      console.log("🔄 Updating MCQ template with", mcqs.length, "MCQs")
-
-      const validatedMCQs = mcqs.map((mcq: any, index: number) => {
-        console.log(`\n🔍 Validating MCQ ${index + 1}:`)
-        const isValid = validateMCQ(mcq)
-
-        const validatedMCQ = {
-          ...mcq,
-          id: mcq.id || `${Date.now()}-${index}`,
-          parentIdx: index,
-          isComplete: isValid,
-        }
-
-        console.log(`✅ MCQ ${index + 1} validation result:`, isValid)
-        return validatedMCQ
-      })
-
-      const allMCQsComplete = validatedMCQs.length > 0 && validatedMCQs.every((mcq: any) => mcq.isComplete)
-      console.log("🎯 All MCQs complete:", allMCQsComplete)
-      console.log(
-        "📊 MCQ completion status:",
-        validatedMCQs.map((mcq, i) => `MCQ ${i + 1}: ${mcq.isComplete}`),
-      )
-
-      const updated = await MCQTemplate.findByIdAndUpdate(
-        templateId,
-        {
-          user,
-          primaryInfo,
-          mcqs: validatedMCQs,
-          isComplete: allMCQsComplete,
-        },
-        { new: true },
-      )
-
-      if (!updated) {
-        return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
+      if (mcq.mcqType === "mcq-3" && mcq.infoItems) {
+        cleanedMCQ.infoItems = mcq.infoItems
       }
 
-      console.log("✅ MCQ Template updated:", updated._id, "isComplete:", allMCQsComplete)
-      return NextResponse.json(
-        {
-          success: true,
-          data: updated,
-          message: allMCQsComplete
-            ? "MCQ Template completed and saved successfully!"
-            : "MCQ Template saved as draft. Complete all questions to finish.",
-        },
-        { status: 200 },
-      )
-    }
+      if (mcq.mcqType === "mcq-4") {
+        cleanedMCQ.passage = mcq.passage || ""
+        cleanedMCQ.passageImage = mcq.passageImage || ""
+        cleanedMCQ.subQuestions = (mcq.subQuestions || []).map((subQ: any, index: number) => ({
+          childIdx: index,
+          questionText: subQ.questionText || "",
+          image: subQ.image || "",
+          options: subQ.options || [],
+          correctAnswer: subQ.correctAnswer || "",
+          marks: subQ.marks || 1,
+        }))
+      }
 
-    // ✅ Handle CREATE operation (default)
-    // Check if template already exists for this primaryInfo
-    const existingTemplate = await MCQTemplate.findOne({
-      user,
-      primaryInfo,
+      flatMCQs.push(cleanedMCQ)
+    })
+  })
+
+  return flatMCQs
+}
+
+// Convert backend flat structure to frontend array structure
+function convertMCQsToFrontendFormat(mcqs: any[]): any[][] {
+  const groupedMCQs: { [key: number]: any[] } = {}
+
+  mcqs.forEach((mcq) => {
+    const parentIdx = mcq.parentIdx
+    if (!groupedMCQs[parentIdx]) {
+      groupedMCQs[parentIdx] = []
+    }
+    groupedMCQs[parentIdx].push(mcq)
+  })
+
+  // Convert to array format
+  const result: any[][] = []
+  Object.keys(groupedMCQs)
+    .sort((a, b) => Number(a) - Number(b))
+    .forEach((key) => {
+      result.push(groupedMCQs[Number(key)])
     })
 
-    if (existingTemplate) {
+  return result
+}
+
+export async function POST(req: NextRequest) {
+  await connectDB()
+
+  try {
+    const body = await req.json()
+    const { user, primaryInfo, mcqs } = body
+
+    if (!user || !primaryInfo || !mcqs) {
       return NextResponse.json(
         {
           success: false,
-          message: "Template already exists for this primary info",
-          templateId: existingTemplate._id,
+          message: "Missing required fields",
         },
-        { status: 409 },
+        { status: 400 },
       )
     }
 
-    // Create new incomplete template
-    const newTemplate = new MCQTemplate({
-      user,
-      primaryInfo,
-      mcqs: [], // Empty initially
-      isComplete: false, // Always incomplete when first created
-    })
+    // Convert frontend format to backend format
+    const backendMCQs = convertMCQsToBackendFormat(mcqs)
+    const isComplete = checkTemplateIsComplete(backendMCQs)
 
-    const savedTemplate = await newTemplate.save()
-    console.log("✅ Successfully created MCQ Template:", savedTemplate._id)
+    const template = await MCQTemplate.findOne({ user, primaryInfo })
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: {
-          _id: savedTemplate._id, // ✅ _id দিয়ে return করুন
-          user: savedTemplate.user,
-          primaryInfo: savedTemplate.primaryInfo,
-          mcqs: savedTemplate.mcqs,
-          isComplete: savedTemplate.isComplete,
-          createdAt: savedTemplate.createdAt,
-          updatedAt: savedTemplate.updatedAt,
+    if (template) {
+      template.mcqs = backendMCQs
+      template.isComplete = isComplete
+      await template.save()
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Template updated",
+          data: {
+            ...template.toObject(),
+            mcqs: convertMCQsToFrontendFormat(template.mcqs),
+          },
         },
-        message: "MCQ Template created successfully. Add questions to complete it.",
-      },
-      { status: 201 },
-    )
-  } catch (error) {
-    console.error("❌ Error creating MCQ template:", error)
-    return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 })
-  }
-}
-
-// ✅ FIXED GET: Fetch existing MCQ template with better error handling
-export async function GET(request: NextRequest) {
-  try {
-    console.log("🔍 MCQ GET request started")
-
-    // ✅ Connect to database first
-    await connectDB()
-    console.log("✅ Database connected")
-
-    const { searchParams } = new URL(request.url)
-    const templateId = searchParams.get("templateId")
-    const user = searchParams.get("user")
-    const primaryInfo = searchParams.get("primaryInfo")
-    const userId = searchParams.get("userId")
-    const onlyComplete = searchParams.get("onlyComplete")
-
-    console.log("📥 GET parameters:", { templateId, user, primaryInfo, userId, onlyComplete })
-
-    // ✅ Handle fetching complete templates for a user
-    if (userId && onlyComplete === "true") {
-      console.log("🔍 Fetching complete templates for user:", userId)
-
-      const templates = await MCQTemplate.find({
-        user: userId,
-        isComplete: true,
-        isDeleted: { $ne: true },
-      })
-        .populate("primaryInfo")
-        .sort({ updatedAt: -1 })
-
-      console.log("✅ Found", templates.length, "complete templates")
-      return NextResponse.json({ success: true, data: templates }, { status: 200 })
-    }
-
-    if (!templateId && (!user || !primaryInfo)) {
-      console.log("❌ Missing required parameters")
-      return NextResponse.json({ success: false, message: "Missing templateId or user/primaryInfo" }, { status: 400 })
-    }
-
-    let template
-
-    // ✅ Enhanced templateId validation and fetching
-    if (templateId) {
-      console.log("🔍 Fetching template by ID:", templateId)
-
-      // ✅ Validate ObjectId format
-      if (!mongoose.Types.ObjectId.isValid(templateId)) {
-        console.log("❌ Invalid ObjectId format:", templateId)
-        return NextResponse.json({ success: false, message: "Invalid template ID format" }, { status: 400 })
-      }
-
-      try {
-        // ✅ Try without populate first
-        console.log("🔍 Finding template without populate...")
-        template = await MCQTemplate.findById(templateId)
-
-        if (!template) {
-          console.log("❌ Template not found with ID:", templateId)
-          return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
-        }
-
-        console.log("✅ Template found, now populating primaryInfo...")
-
-        // ✅ Try to populate separately to catch populate errors
-        try {
-          template = await MCQTemplate.findById(templateId).populate("primaryInfo")
-          console.log("✅ Template populated successfully")
-        } catch (populateError) {
-          console.log("⚠️ Populate failed, returning template without primaryInfo:", populateError)
-          // Return template without populated primaryInfo if populate fails
-          template = await MCQTemplate.findById(templateId)
-        }
-      } catch (findError) {
-          const err = findError as Error
-
-        return NextResponse.json(
-          {
-            success: false,
-            message: "Error fetching template",
-            error:err.message,
-          },
-          { status: 500 },
-        )
-      }
+        { status: 200 },
+      )
     } else {
-      // Find by user + primaryInfo
-      console.log("🔍 Fetching template by user and primaryInfo")
+      const newTemplate = await MCQTemplate.create({
+        user,
+        primaryInfo,
+        mcqs: backendMCQs,
+        isComplete,
+      })
 
-      try {
-        template = await MCQTemplate.findOne({ user, primaryInfo })
-
-        if (template) {
-          try {
-            template = await MCQTemplate.findOne({ user, primaryInfo }).populate("primaryInfo")
-          } catch (populateError) {
-            console.log("⚠️ Populate failed for user query:", populateError)
-          }
-        }
-      } catch (findError) {
-         const err = findError as Error
-        return NextResponse.json(
-          {
-            success: false,
-            message: "Error fetching template",
-            error: err.message,
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Template created",
+          data: {
+            ...newTemplate.toObject(),
+            mcqs: convertMCQsToFrontendFormat(newTemplate.mcqs),
           },
-          { status: 500 },
-        )
-      }
+        },
+        { status: 201 },
+      )
     }
-
-    if (!template) {
-      console.log("❌ Template not found")
-      return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
-    }
-
-    console.log("✅ Successfully fetched MCQ Template:", template._id)
-    console.log("📊 Template data:", {
-      id: template._id,
-      mcqsCount: template.mcqs?.length || 0,
-      isComplete: template.isComplete,
-      hasPrimaryInfo: !!template.primaryInfo,
-    })
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: template,
-      },
-      { status: 200 },
-    )
   } catch (error: any) {
-    console.error("❌ Unexpected error in MCQ GET:", error)
-    console.error("❌ Error stack:", error.stack)
-
+    console.error("POST /api/mcq error:", error)
     return NextResponse.json(
       {
         success: false,
-        message: "Internal Server Error",
+        message: "Server error",
         error: error.message,
-        details: "Check server logs for more information",
       },
       { status: 500 },
     )
   }
 }
 
-// DELETE: Remove a single MCQ from existing template
-export async function DELETE(request: NextRequest) {
+export async function GET(req: NextRequest) {
+  await connectDB()
+
   try {
-    await connectDB()
+    const { searchParams } = new URL(req.url)
+    const user = searchParams.get("user")
+    const primaryInfo = searchParams.get("primaryInfo")
 
-    const { searchParams } = new URL(request.url)
-    const templateId = searchParams.get("templateId")
-    const mcqIndex = searchParams.get("mcqIndex")
-
-    if (!templateId || mcqIndex === null) {
-      return NextResponse.json({ success: false, message: "Missing templateId or mcqIndex" }, { status: 400 })
+    if (!user || !primaryInfo) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Missing user or primaryInfo",
+        },
+        { status: 400 },
+      )
     }
 
-    const template = await MCQTemplate.findById(templateId)
+    const template = await MCQTemplate.findOne({ user, primaryInfo })
 
+    if (!template) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Template not found",
+        },
+        { status: 404 },
+      )
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          ...template.toObject(),
+          mcqs: convertMCQsToFrontendFormat(template.mcqs),
+        },
+      },
+      { status: 200 },
+    )
+  } catch (error: any) {
+    console.error("GET /api/mcq error:", error)
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Server error",
+        error: error.message,
+      },
+      { status: 500 },
+    )
+  }
+}
+
+// Add a new PUT endpoint for individual MCQ updates and fix DELETE
+export async function PUT(req: NextRequest) {
+  await connectDB()
+
+  try {
+    const body = await req.json()
+    const { user, primaryInfo, mcqId, updatedMCQ } = body
+
+    if (!user || !primaryInfo || !mcqId || !updatedMCQ) {
+      return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
+    }
+
+    const template = await MCQTemplate.findOne({ user, primaryInfo })
     if (!template) {
       return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
     }
 
-    const updatedMCQs = [...template.mcqs]
-    updatedMCQs.splice(Number.parseInt(mcqIndex), 1)
+    // Find and update the specific MCQ
+    const mcqIndex = template.mcqs.findIndex((mcq: any) => mcq._id.toString() === mcqId)
+    if (mcqIndex === -1) {
+      return NextResponse.json({ success: false, message: "MCQ not found" }, { status: 404 })
+    }
 
-    const validatedMCQs = updatedMCQs.map((mcq: any, index: number) => ({
-      ...mcq,
-      parentIdx: index,
-      isComplete: validateMCQ(mcq),
-    }))
-
-    const allComplete = validatedMCQs.length > 0 && validatedMCQs.every((mcq) => mcq.isComplete)
-
-    template.mcqs = validatedMCQs
-    template.isComplete = allComplete
-
+    template.mcqs[mcqIndex] = { ...template.mcqs[mcqIndex], ...updatedMCQ }
+    template.isComplete = checkTemplateIsComplete(template.mcqs)
     await template.save()
 
-    console.log("✅ MCQ deleted from template:", template._id)
-    return NextResponse.json({ success: true, data: template }, { status: 200 })
-  } catch (err) {
-    console.error("❌ MCQ DELETE error:", err)
-    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 })
+    return NextResponse.json(
+      {
+        success: true,
+        message: "MCQ updated",
+        data: {
+          ...template.toObject(),
+          mcqs: convertMCQsToFrontendFormat(template.mcqs),
+        },
+      },
+      { status: 200 },
+    )
+  } catch (error: any) {
+    console.error("PUT /api/mcq error:", error)
+    return NextResponse.json({ success: false, message: "Server error", error: error.message }, { status: 500 })
+  }
+}
+
+// Fix DELETE to work with both group and individual MCQ deletion
+export async function DELETE(req: NextRequest) {
+  await connectDB()
+
+  try {
+    const body = await req.json()
+    const { user, primaryInfo, mcqId, deleteType = "single" } = body
+
+    if (!user || !primaryInfo || !mcqId) {
+      return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
+    }
+
+    const template = await MCQTemplate.findOne({ user, primaryInfo })
+    if (!template) {
+      return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
+    }
+
+    if (deleteType === "group") {
+      // Delete entire group by parentIdx
+      const parentIdx = Number.parseInt(mcqId)
+      const initialLength = template.mcqs.length
+      template.mcqs = template.mcqs.filter((mcq: any) => mcq.parentIdx !== parentIdx)
+
+      if (template.mcqs.length === initialLength) {
+        return NextResponse.json({ success: false, message: "MCQ group not found" }, { status: 404 })
+      }
+
+      // Re-index remaining groups
+      const groupMap = new Map()
+      template.mcqs.forEach((mcq: any) => {
+        if (!groupMap.has(mcq.parentIdx)) {
+          groupMap.set(mcq.parentIdx, groupMap.size)
+        }
+        mcq.parentIdx = groupMap.get(mcq.parentIdx)
+      })
+    } else {
+      // Delete individual MCQ
+      const initialLength = template.mcqs.length
+      template.mcqs = template.mcqs.filter((mcq: any) => mcq._id.toString() !== mcqId)
+
+      if (template.mcqs.length === initialLength) {
+        return NextResponse.json({ success: false, message: "MCQ not found" }, { status: 404 })
+      }
+    }
+
+    template.isComplete = checkTemplateIsComplete(template.mcqs)
+    await template.save()
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "MCQ deleted",
+        data: {
+          ...template.toObject(),
+          mcqs: convertMCQsToFrontendFormat(template.mcqs),
+        },
+      },
+      { status: 200 },
+    )
+  } catch (error: any) {
+    console.error("DELETE /api/mcq error:", error)
+    return NextResponse.json({ success: false, message: "Server error", error: error.message }, { status: 500 })
   }
 }

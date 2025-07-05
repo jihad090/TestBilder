@@ -1,53 +1,44 @@
+
+
+
+
 import mongoose from "mongoose";
 
-// Sub-MCQs (only for mcq-4)
 const subMCQSchema = new mongoose.Schema({
-  childIdx: { type: Number, required: false },
-  //id: { type: String, required: true },
-  questionText: { type: String, required: false },
+  childIdx: { type: Number, required: true },
+  questionText: { type: String, default: "" },
   image: { type: String, default: "" },
-  options: { type: [String], required: false },
-  correctAnswer: { type: String, required: false },
+  options: { type: [String], required: true, default: ["", "", "", ""] },
+  correctAnswer: { type: String, default: "" },
   marks: { type: Number, default: 1 },
-  
 });
 
-// Main MCQ Schema (for mcq-1,2,3,4)
 const mcqSchema = new mongoose.Schema({
   mcqType: {
     type: String,
     enum: ["mcq-1", "mcq-2", "mcq-3", "mcq-4"],
-    required: false,
+    required: true,
   },
-  parentIdx: { type: Number, required: false },
-  //id: { type: String, required: true },
-
-  // For mcq-1,2,3
-  questionText: { type: String },
-  image: { type: String},
-  options: { type: [String],default: undefined },
-  correctAnswer: { type: String },
-  marks: { type: Number },
-
-  // Only for mcq-4
-  passage: { type: String,default: undefined },
-  passageImage: {type: String,default: undefined},
- subQuestions: { type: [subMCQSchema],default: undefined},
+  parentIdx: { type: Number, required: true },
+  questionText: { type: String, default: "" },
+  image: { type: String, default: "" },
+  options: { type: [String], default: [] },
+  correctAnswer: { type: String, default: "" },
+  marks: { type: Number, default: 1 },
+  infoItems: { type: [String], default: [] },
+  passage: { type: String, default: "" },
+  passageImage: { type: String, default: "" },
+  subQuestions: { type: [subMCQSchema], default: [] },
 });
 
-const templateSchema = new mongoose.Schema(
-  {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    primaryInfo: { type: mongoose.Schema.Types.ObjectId, ref: "PrimaryInfo", required: true },
-    mcqs: [[mcqSchema]], 
-    isComplete: { type: Boolean, default: false }, 
+const templateSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  primaryInfo: { type: mongoose.Schema.Types.ObjectId, ref: "PrimaryQuestionInfo", required: true },
+  mcqs: { type: mongoose.Schema.Types.Mixed, default: [] },
+  isComplete: { type: Boolean, default: false },
+}, { timestamps: true });
 
-  },
-  { timestamps: true }
-);
-templateSchema.index({ user: 1, createdAt: -1 })
-templateSchema.index({ user: 1, primaryInfo: 1 })
-templateSchema.index({ user: 1, isComplete: 1 })
 
 const MCQTemplate = mongoose.models.MCQTemplate || mongoose.model("MCQTemplate", templateSchema);
+
 export default MCQTemplate;
