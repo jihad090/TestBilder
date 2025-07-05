@@ -1232,5 +1232,4 @@ const className = 10 //class
 const totalMark = 30 // totalMark
 const subjectCode = 101 //subjectCode
 const totalTime = "30 minute" //totalTime
-// const message = '"সততা ছাড়া জ্ঞান অর্জন হলো এমন এক নৌকা, যার তলায় ছিদ্র আছে। এটি কখনও তোমাকে সাফল্যের তীরে পৌঁছাবে না।"---কনফুসিয়াস'
 const message = ''

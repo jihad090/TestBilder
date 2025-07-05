@@ -841,7 +841,7 @@ const DelBtn = ({
       className="bg-red-500 hover:bg-red-600 text-white font-semibold px-3 py-2 text-sm rounded-xl transition-colors"
       onClick={handleDelete}
     >
-      {deleteType === "individual" ? "Delete MCQ" : "Delete Group"}
+      {deleteType === "individual" ? "Delete MCQ" : "Delete MCQ"}
     </button>
   )
 }
