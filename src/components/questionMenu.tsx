@@ -10,7 +10,7 @@ export function QuestionMenubar() {
   return (
     <Menubar className=" justify-between fixed w-full top-[40px] z-10">
       <p className="text-xl">
-        MCQ exam
+        Exam Editor
       </p>
 
       <div className="flex gap-4">
