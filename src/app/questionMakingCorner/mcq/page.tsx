@@ -1,5 +1,4 @@
 
-
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
@@ -20,12 +19,14 @@ const Mcq = () => {
   const [saving, setSaving] = useState<boolean>(false)
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
   const [lastSaved, setLastSaved] = useState<Date | undefined>()
+  const [generatingPDF, setGeneratingPDF] = useState<boolean>(false)
   const router = useRouter()
 
   // Auto-save function
   const autoSaveData = async (data: any[]) => {
     if (!userId || !primaryInfoId || data.length === 0) return
 
+    console.log("Auto-saving data:", data.length, "groups")
     setSaveStatus("saving")
 
     const payload = {
@@ -42,10 +43,12 @@ const Mcq = () => {
       })
 
       const result = await res.json()
+      console.log("Auto-save response:", result)
+
       if (result.success) {
         setSaveStatus("saved")
         setLastSaved(new Date())
-        setTimeout(() => setSaveStatus("idle"), 2000) // Hide saved status after 2 seconds
+        setTimeout(() => setSaveStatus("idle"), 2000) 
       } else {
         setSaveStatus("error")
         console.error("Auto-save failed:", result.message)
@@ -67,6 +70,7 @@ const Mcq = () => {
   // Auto-save when mcqTemplet changes
   useEffect(() => {
     if (mcqTemplet.length > 0 && userId && primaryInfoId) {
+      console.log("MCQ data changed, triggering debounced save")
       debouncedSave(mcqTemplet)
     }
   }, [mcqTemplet, debouncedSave, userId, primaryInfoId])
@@ -74,6 +78,8 @@ const Mcq = () => {
   // Individual MCQ delete function
   const handleDeleteIndividualMCQ = async (mcqId: string) => {
     if (!userId || !primaryInfoId) return
+
+    console.log("Deleting individual MCQ:", mcqId)
 
     try {
       const res = await fetch("/Api/mcq", {
@@ -88,6 +94,8 @@ const Mcq = () => {
       })
 
       const data = await res.json()
+      console.log("Delete response:", data)
+
       if (data.success) {
         setMcqTemplet(data.data.mcqs)
         console.log("MCQ deleted successfully")
@@ -103,29 +111,40 @@ const Mcq = () => {
   // Load existing data on component mount
   useEffect(() => {
     const initializeData = async () => {
+      console.log("Initializing MCQ page...")
+
       if (typeof window !== "undefined") {
         const storedUserId = localStorage.getItem("userId")
+        console.log("Stored user ID:", storedUserId)
+
         if (storedUserId) {
           setUserId(storedUserId)
         } else {
           setErrorMsg("User not logged in! Redirecting to login...")
-          setTimeout(() => router.push("/login"), 2000)
+        //  setTimeout(() => router.push("/login"), 2000)
           return
         }
 
         const params = new URLSearchParams(window.location.search)
         const idFromUrl = params.get("primaryId")
+        console.log("Primary ID from URL:", idFromUrl)
+
         if (idFromUrl) {
           setPrimaryInfoId(idFromUrl)
 
           // Load existing template data
           try {
+            console.log("Loading existing template data...")
             const response = await fetch(`/Api/mcq?user=${storedUserId}&primaryInfo=${idFromUrl}`)
             const data = await response.json()
 
+            console.log("Load response:", data)
+
             if (data.success && data.data.mcqs) {
               setMcqTemplet(data.data.mcqs)
-              console.log("Loaded existing data:", data.data.mcqs)
+              console.log("Loaded existing data:", data.data.mcqs.length, "groups")
+            } else {
+              console.log("No existing data found, starting fresh")
             }
           } catch (error) {
             console.error("Error loading existing data:", error)
@@ -141,6 +160,8 @@ const Mcq = () => {
   }, [router])
 
   const handleAddMcqGroup = () => {
+    console.log("Adding new MCQ group of type:", mcqTempletName)
+
     let newGroup
     if (mcqTempletName === "mcq-4") {
       newGroup = [
@@ -177,7 +198,7 @@ const Mcq = () => {
     }
 
     setSaving(true)
-    console.log("Manual save - Submitting MCQ data:", mcqTemplet)
+    console.log("Manual save - Submitting MCQ data:", mcqTemplet.length, "groups")
 
     const payload = {
       user: userId,
@@ -193,10 +214,10 @@ const Mcq = () => {
       })
 
       const data = await res.json()
+      console.log("Manual save response:", data)
 
       if (data.success) {
         alert("Saved successfully!")
-        console.log("Saved data:", data.data)
         if (data.data.mcqs) {
           setMcqTemplet(data.data.mcqs)
         }
@@ -209,6 +230,55 @@ const Mcq = () => {
       alert("Network error occurred")
     } finally {
       setSaving(false)
+    }
+  }
+
+  // Generate PDF function
+  const handleGeneratePDF = async () => {
+    if (!userId || !primaryInfoId) {
+      alert("User ID or Primary Info ID missing")
+      return
+    }
+
+    if (mcqTemplet.length === 0) {
+      alert("No MCQ data to generate PDF")
+      return
+    }
+
+    setGeneratingPDF(true)
+    console.log("Generating PDF...")
+
+    try {
+      const res = await fetch("/Api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: userId,
+          primaryInfo: primaryInfoId,
+        }),
+      })
+
+      const data = await res.json()
+      console.log("Generate PDF response:", data)
+
+      if (data.success) {
+        // Open the generated HTML in a new window
+        const newWindow = window.open("", "_blank")
+        if (newWindow) {
+          newWindow.document.write(data.htmlContent)
+          newWindow.document.close()
+        } else {
+          alert("Please allow popups to generate PDF")
+        }
+      } else {
+        alert("Error generating PDF: " + data.message)
+        console.error("PDF generation error:", data)
+      }
+    } catch (error) {
+      console.error("PDF generation error:", error)
+      alert("Network error occurred while generating PDF")
+    } finally {
+      setGeneratingPDF(false)
     }
   }
 
@@ -343,18 +413,42 @@ const Mcq = () => {
         </div>
       </div>
 
-      <div className="mt-20">{mcqTemplet.map((item, arrayIndex) => renderMcqComponent(item, arrayIndex))}</div>
+      <div className="mt-20">
+        {mcqTemplet.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">
+            <p className="text-lg">No MCQ templates added yet.</p>
+            <p>Click "Add" button to create your first MCQ.</p>
+          </div>
+        ) : (
+          mcqTemplet.map((item, arrayIndex) => renderMcqComponent(item, arrayIndex))
+        )}
+      </div>
 
-      <div className="justify-center flex text-white mt-10">
+      <div className="justify-center flex text-white mt-10 gap-4">
         <Button
           onClick={handleSubmit}
           disabled={saving}
-          className="bg-black px-3 p-1 hover:bg-blue-700 font-semibold rounded-md text-white"
+          className="bg-green-600 px-6 py-2 hover:bg-green-700 font-semibold rounded-md text-white"
         >
           {saving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Saving...
+            </>
+          ) : (
+            "Save MCQs"
+          )}
+        </Button>
+
+        <Button
+          onClick={handleGeneratePDF}
+          disabled={generatingPDF || mcqTemplet.length === 0}
+          className="bg-blue-600 px-6 py-2 hover:bg-blue-700 font-semibold rounded-md text-white disabled:bg-gray-400"
+        >
+          {generatingPDF ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
             </>
           ) : (
             "Generate PDF"
@@ -368,4 +462,3 @@ const Mcq = () => {
 }
 
 export default Mcq
-
