@@ -7,7 +7,6 @@ import {db} from "@/lib/db";
 import type {Theme} from "@/lib/db";
 
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
