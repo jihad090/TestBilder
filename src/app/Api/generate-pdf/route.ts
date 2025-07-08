@@ -352,7 +352,7 @@ function generateGridPage(pageData: any, headerInfo: any, isFirstPage: boolean, 
         </tr>
         <tr>
           <td style="text-align: left; width: 33.33%;"><b>পরীক্ষাঃ </b>${headerInfo.examName}</td>
-          <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b>${headerInfo.subject}${headerInfo.paper}</td>
+          <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b>${headerInfo.subject} (${headerInfo.paper})</td>
           <td style="text-align: left; width: 33.33%;"><b>শ্রেণীঃ </b>${headerInfo.className}</td>
         </tr>
         <tr>
@@ -379,7 +379,7 @@ function generateGridPage(pageData: any, headerInfo: any, isFirstPage: boolean, 
         </tr>
         <tr>
           <td style="text-align: left; width: 33.33%;"><b>পরীক্ষাঃ </b>${headerInfo.examName}</td>
-          <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b>${headerInfo.subject}${headerInfo.paper}</td>
+          <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b>${headerInfo.subject} (${headerInfo.paper})</td>
           <td style="text-align: left; width: 33.33%;"><b>শ্রেণীঃ </b>${headerInfo.className}</td>
         </tr>
         <tr>
@@ -404,9 +404,7 @@ function generateGridPage(pageData: any, headerInfo: any, isFirstPage: boolean, 
           ? `
       <div style="display: flex; align-items: center; justify-content: center; height: 100%; background-color: #f9f9f9;">
         <img src="/uploads/instruction.png" style="max-width: 90%; max-height: 300px; object-fit: contain;" alt="OMR Instructions">
-        <div style="position: absolute; top: 10px; left: 10px; font-size: 12px; color: #666;">
-          Instructions for filling OMR sheet
-        </div>
+        
       </div>
       `
           : `
@@ -517,8 +515,8 @@ function generateCompleteGridHTML(content: string) {
     }
 
     .question {
-      margin: 15px 0;
-      line-height: 1.5;
+      margin: 12px 0;
+      line-height: 1.3;
     }
 
     .question-number {
@@ -545,7 +543,7 @@ function generateCompleteGridHTML(content: string) {
     }
 
     .info-items {
-      margin: 10px 0;
+      margin: 9px 0;
       padding-left: 20px;
     }
 
