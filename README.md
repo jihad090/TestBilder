@@ -4,7 +4,7 @@ git commit -m ""
 git push origin main
 
 
-
+http://localhost:3000/questionMakingCorner/mcq?primaryId=686c8d64d04e18dbe33e8ef1&templateId=686c8d65d04e18dbe33e8ef4
 
 
 For mongoDB 
