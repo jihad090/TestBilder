@@ -1,4 +1,3 @@
-
 "use client"
 
 import type React from "react"
@@ -324,11 +323,22 @@ const MCQTemplet_2 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
 
 // MCQ Template 3 - Multiple Completion Based
 const MCQTemplet_3 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
+  // Helper function
+  function getDefaultMCQ3Options(infoItems: string[]) {
+    const infoLabels = ["i", "ii", "iii"]
+    return [
+      [0, 1].map((i) => infoLabels[i]).join(", "),
+      [0, 2].map((i) => infoLabels[i]).join(", "),
+      [1, 2].map((i) => infoLabels[i]).join(", "),
+      [0, 1, 2].map((i) => infoLabels[i]).join(", "),
+    ]
+  }
+
   const [formData, setFormData] = useState({
     questionText: "",
     image: "",
     infoItems: ["", "", ""],
-    options: ["i, ii", "i, iii", "ii, iii", "i, ii, iii"], // Default values
+    options: getDefaultMCQ3Options(["", "", ""]),
     correctAnswer: "",
     marks: 1,
   })
@@ -347,7 +357,7 @@ const MCQTemplet_3 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
         options:
           existingData.options && existingData.options.length === 4
             ? existingData.options
-            : ["i, ii", "i, iii", "ii, iii", "i, ii, iii"], // Use defaults if no existing data
+            : getDefaultMCQ3Options(existingData.infoItems || ["", "", ""]),
         correctAnswer: existingData.correctAnswer || "",
         marks: existingData.marks || 1,
       }
@@ -356,6 +366,20 @@ const MCQTemplet_3 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
       lastDataRef.current = JSON.stringify(newFormData)
     }
   }, [pIdx])
+
+  // Auto-update options if infoItems change
+  useEffect(() => {
+    if (
+      formData.options.join() === getDefaultMCQ3Options(["", "", ""]).join() ||
+      formData.options.some((opt) => !opt.trim())
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        options: getDefaultMCQ3Options(prev.infoItems),
+      }))
+    }
+    // eslint-disable-next-line
+  }, [formData.infoItems])
 
   useEffect(() => {
     if (isInitialized.current) {
