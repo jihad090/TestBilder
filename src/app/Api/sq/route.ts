@@ -5,7 +5,7 @@ import { connectDB } from "@/dbconfig/dbconfig"
 import ShortQuestion from "@/Models/sqTemplete"
 
 const validateSQ = (sq: any) => {
-  console.log("🔍 Backend validating SQ:", JSON.stringify(sq, null, 2))
+  console.log("Backend validating SQ:", JSON.stringify(sq, null, 2))
 
   // Check if sq has either questionText or image
   if (!sq.questionText && !sq.image) {
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { user, primaryInfo, sqGroup, isComplete = false, operation, templateId } = body
 
-    console.log("📥 Received SQ data:", JSON.stringify(body, null, 2))
+    console.log(" Received SQ data:", JSON.stringify(body, null, 2))
 
     if (!user || !primaryInfo) {
       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })

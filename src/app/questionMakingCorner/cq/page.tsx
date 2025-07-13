@@ -1,5 +1,6 @@
 
 
+
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
@@ -47,32 +48,26 @@ const CQ = () => {
         const data = await res.json()
         if (data.success) {
           setSaveStatus("saved")
-          console.log(" CQ Template auto-saved successfully")
-          // Reset to idle after 2 seconds
+          console.log("CQ Template auto-saved successfully")
           setTimeout(() => setSaveStatus("idle"), 2000)
         } else {
           setSaveStatus("error")
-          console.error(" Auto-save failed:", data.message)
-          // Reset to idle after 3 seconds
+          console.error("Auto-save failed:", data.message)
           setTimeout(() => setSaveStatus("idle"), 3000)
         }
       } catch (err) {
         setSaveStatus("error")
-        console.error(" Auto-save network error:", err)
+        console.error("Auto-save network error:", err)
         setTimeout(() => setSaveStatus("idle"), 3000)
       }
     },
     [userId, primaryInfoId, templateId],
   )
 
-  //  Create debounced save function only once
   const debouncedSaveRef = useRef<any>(null)
 
   useEffect(() => {
-    // Create debounced function only when saveToDatabase for changes
     debouncedSaveRef.current = debounce(saveToDatabase, 1000)
-
-    // Cleanup function to cancel pending debounced calls
     return () => {
       if (debouncedSaveRef.current) {
         debouncedSaveRef.current.cancel()
@@ -80,7 +75,6 @@ const CQ = () => {
     }
   }, [saveToDatabase])
 
-  //  Load existing template - moved outside useCallback
   const loadExistingTemplate = async (tempId: string) => {
     try {
       const res = await fetch(`/Api/cq?templateId=${tempId}`, {
@@ -91,14 +85,13 @@ const CQ = () => {
         setCqTemplet(data.data.cqs)
         console.log("Loaded existing CQ template:", data.data.cqs.length, "CQs")
       } else {
-        console.error(" Failed to load template:", data.message)
+        console.error("Failed to load template:", data.message)
       }
     } catch (error) {
-      console.error(" Error loading CQ template:", error)
+      console.error("Error loading CQ template:", error)
     }
   }
 
-  // Initialize component data - FIXED dependency array
   useEffect(() => {
     const initializeData = async () => {
       if (typeof window !== "undefined") {
@@ -132,9 +125,8 @@ const CQ = () => {
     }
 
     initializeData()
-  }, []) //  Empty dependency array - run only once on mount
+  }, [])
 
-  //  FIXED: Add new CQ group - use functional update to avoid dependency on cqTemplet
   const handleAddCQGroup = useCallback(() => {
     setCqTemplet((prevCqTemplet) => {
       const newCQ = {
@@ -160,16 +152,14 @@ const CQ = () => {
 
       const updated = [...prevCqTemplet, newCQ]
 
-      //  Trigger auto-save with updated data
       if (debouncedSaveRef.current) {
         debouncedSaveRef.current(updated)
       }
 
       return updated
     })
-  }, [cqTempletName]) // Only depend on cqTempletName, not cqTemplet
+  }, [cqTempletName])
 
-  //  Delete CQ with immediate save
   const handleDeleteCQ = useCallback(
     async (pIdx: number) => {
       if (!templateId) return
@@ -184,27 +174,25 @@ const CQ = () => {
           setCqTemplet(data.data.cqs)
           console.log("CQ deleted successfully")
         } else {
-          console.error(" Delete failed:", data.message)
+          console.error("Delete failed:", data.message)
         }
       } catch (error) {
-        console.error(" Delete error:", error)
+        console.error("Delete error:", error)
       }
     },
     [templateId],
   )
 
-  // Update question data with auto-save
   const updateQuestionData = useCallback((newTemplate: any[]) => {
     setCqTemplet(newTemplate)
 
-    //  Trigger auto-save
     if (debouncedSaveRef.current) {
       debouncedSaveRef.current(newTemplate)
     }
   }, [])
 
-  //  Final submit for PDF generation
-  const handleSubmit = useCallback(async () => {
+  // Generate PDF function - save and redirect
+  const handleGeneratePDF = useCallback(async () => {
     if (!userId || !primaryInfoId || !templateId) {
       alert("Missing required IDs")
       return
@@ -233,20 +221,21 @@ const CQ = () => {
       const data = await res.json()
       if (data.success) {
         setSaveStatus("saved")
-        alert("CQ Template finalized! Ready for PDF generation.")
-        console.log(" Final CQ template saved:", data.data)
+        console.log("CQ template saved, redirecting to PDF generation...")
+
+        // Redirect to CQ PDF generation page
+        router.push(`/CQ?templateId=${templateId}`)
       } else {
         setSaveStatus("error")
-        alert("Error: " + data.message)
+        alert("Error saving template: " + data.message)
       }
     } catch (error) {
       setSaveStatus("error")
-      console.error(" Submit error:", error)
+      console.error("Save error:", error)
       alert("Network error occurred")
     }
-  }, [userId, primaryInfoId, templateId, cqTemplet])
+  }, [userId, primaryInfoId, templateId, cqTemplet, router])
 
-  //  Render CQ components
   const renderCQComponent = useCallback(
     (item: any, index: number) => {
       const sharedProps = {
@@ -275,7 +264,6 @@ const CQ = () => {
     [cqTemplet, updateQuestionData, handleDeleteCQ],
   )
 
-  //  Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -291,7 +279,6 @@ const CQ = () => {
     <div className="my-15 w-full">
       {errorMsg && <div className="text-red-600 text-center my-4 font-semibold">{errorMsg}</div>}
 
-      {/*  Header with CQ type selector */}
       <div className="justify-between items-center w-full fixed top-[100px] z-10">
         <div className="justify-between item-center w-full flex bg-gray-400 p-2 rounded-2xl max-w-200 m-auto">
           <div className="flex items-center text-md font-semibold">
@@ -319,22 +306,19 @@ const CQ = () => {
         </div>
       </div>
 
-      {/*  Render all CQ components */}
       <div className="mt-[120px]">{cqTemplet.map((item, idx) => renderCQComponent(item, idx))}</div>
 
-      {/* Generate PDF button */}
       <div className="justify-center flex text-white my-5">
         <button
-          onClick={handleSubmit}
-          className="bg-black px-3 p-1 hover:bg-blue-700 font-semibold rounded-md text-white disabled:opacity-50"
-          disabled={!!errorMsg || saveStatus === "saving"}
+          onClick={handleGeneratePDF}
+          className="px-3 py-1 bg-black text-white rounded-md hover:bg-blue-700 font-semibold disabled:opacity-50"
+          disabled={!!errorMsg || saveStatus === "saving" || cqTemplet.length === 0}
           type="button"
         >
-          {saveStatus === "saving" ? "Saving..." : "Generate PDF"}
+          {saveStatus === "saving" ? "Saving & Generating..." : "Save & Generate PDF"}
         </button>
       </div>
 
-       
       <div className="text-center mt-4">
         <span
           className={`text-sm font-medium ${
@@ -348,13 +332,12 @@ const CQ = () => {
           }`}
         >
           {saveStatus === "saving" && "Auto-saving..."}
-          {saveStatus === "saved" && " Auto-saved successfully"}
-          {saveStatus === "error" && " Auto-save failed"}
+          {saveStatus === "saved" && "Auto-saved successfully"}
+          {saveStatus === "error" && "Auto-save failed"}
           {saveStatus === "idle" && "🔄 Auto-save enabled"}
         </span>
       </div>
 
-     
       <div className="text-center mt-2 text-xs text-gray-500">
         {cqTemplet.length} CQ group{cqTemplet.length !== 1 ? "s" : ""} added
       </div>

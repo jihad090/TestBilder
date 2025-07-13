@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>CQ</title>
+<title>CQ Question Paper</title>
 <style>
   body {
     width: 794px;
@@ -11,6 +11,7 @@
     background: white;
     margin: 0;
     padding: 0;
+    font-family: 'Times New Roman', serif;
   }
   .parent{
     height: 100%;
@@ -36,7 +37,6 @@
   .qPage1-Left {
     grid-row: 11 / 58;
     grid-column: 1 / 2;
-    /* background-color: aqua; */
     padding: 10px 10px 10px 20px;
     box-sizing: border-box;
     border-right: 1px solid black;
@@ -44,14 +44,12 @@
   .qPage1-Right {
     grid-row: 11 / 58;
     grid-column: 2 / 3;
-    /* background-color: lightblue; */
     padding: 10px 20px 10px 10px;
     box-sizing: border-box;
   }
   .qPage2-Left {
     grid-row: 4 / 58;
     grid-column: 1 / 2;
-    /* background-color: lightgreen; */
     padding: 10px 10px 10px 20px;
     box-sizing: border-box;
     border-right: 1px solid black;
@@ -59,7 +57,6 @@
   .qPage2-Right {
     grid-row: 4 / 58;
     grid-column: 2 / 3;
-    /* background-color: lightcoral; */
     padding: 10px 20px 10px 10px;
     box-sizing: border-box;
   }
@@ -92,16 +89,39 @@
       page-break-after: avoid;
     }
   }
+
+  /* Loading styles */
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 18px;
+    color: #666;
+  }
+
+  .error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 18px;
+    color: #d32f2f;
+    text-align: center;
+    padding: 20px;
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-<script src="data.js"></script> 
-
 </head>
 <body>
+  <div class="loading">
+    <div>
+      <div style="margin-bottom: 20px;">Loading CQ Question Paper...</div>
+      <div style="font-size: 14px; color: #999;">Please wait while we generate your question paper</div>
+    </div>
+  </div>
 
-  
+  <script src="data.js"></script> 
   <script src="script.js"></script>
-
 </body>
 </html>

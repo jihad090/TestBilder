@@ -3,7 +3,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/dbconfig/dbconfig"
 import MCQTemplate from "@/Models/mcqTemplate"
-
 // Validate a single MCQ
 function validateMCQ(mcq: any): boolean {
   if (mcq.mcqType === "mcq-4") {
@@ -182,6 +181,11 @@ export async function POST(req: NextRequest) {
   }
 }
 
+
+
+
+
+
 export async function GET(req: NextRequest) {
   await connectDB()
 
@@ -189,18 +193,25 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const user = searchParams.get("user")
     const primaryInfo = searchParams.get("primaryInfo")
+    const templateId = searchParams.get("templateId")
 
-    if (!user || !primaryInfo) {
+    let template = null
+
+    if (templateId) {
+      // ✅ If templateId is provided, find by ID and populate primaryInfo
+      template = await MCQTemplate.findById(templateId).populate("primaryInfo")
+    } else if (user && primaryInfo) {
+      // ✅ Fallback for user + primaryInfo-based fetch (for frontend/editor)
+      template = await MCQTemplate.findOne({ user, primaryInfo }).populate("primaryInfo")
+    } else {
       return NextResponse.json(
         {
           success: false,
-          message: "Missing user or primaryInfo",
+          message: "Missing templateId or user+primaryInfo",
         },
         { status: 400 },
       )
     }
-
-    const template = await MCQTemplate.findOne({ user, primaryInfo })
 
     if (!template) {
       return NextResponse.json(
@@ -234,6 +245,10 @@ export async function GET(req: NextRequest) {
     )
   }
 }
+
+
+
+
 
 // Add a new PUT endpoint for individual MCQ updates and fix DELETE
 export async function PUT(req: NextRequest) {
@@ -343,3 +358,8 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: false, message: "Server error", error: error.message }, { status: 500 })
   }
 }
+
+
+
+
+

@@ -1,16 +1,16 @@
 const superArray = []
 const templet = `
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <span >
+  <span>
     <div class="parent" id="parent1">
-      <div class="headerPage1" >
+      <div class="headerPage1">
         <table style="width: 100%; font-size: 12px;">
           <tr style="height: 80px;">
             <td colspan="3" class="institutionName" style="text-align: center; font-size: 28px;"></td>
           </tr>
           <tr>
             <td style="text-align: left; width: 33.33%;"><b>পরীক্ষাঃ </b><span class="examName"></span></td>
-            <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b><span class="subject"> </span><span class="paper"></span></td>
+            <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b><span class="subject"></span><span class="paper"></span></td>
             <td style="text-align: left; width: 33.33%;"><b>শ্রেণীঃ </b><span class="class"></span></td>
           </tr>
           <tr>
@@ -19,211 +19,299 @@ const templet = `
             <td style="text-align: left;"><b>সময়ঃ </b><span class="totalTime"></span></td>
           </tr>
           <tr>
-            <td colspan="3" style="text-align: left;"><b>বিঃদ্রঃ</b> উত্তরপত্রে ক্রমিক নম্বরের বিপরীতে সর্বমোট 7 টি প্রশ্ন লিখো। প্রতিটি প্রশ্নের ডান পাশে মান সংযুক্ত রয়েছে। </td>
+            <td colspan="3" style="text-align: left;"><b>বিঃদ্রঃ</b> উত্তরপত্রে ক্রমিক নম্বরের বিপরীতে সর্বমোট প্রশ্ন লিখো। প্রতিটি প্রশ্নের ডান পাশে মান সংযুক্ত রয়েছে।</td>
           </tr>
         </table>
       </div>
-      <div class="qPage1-Left" id="page1Left">
-      </div>
-      <div class="qPage1-Right" id="page1Right">
-      </div>
+      <div class="qPage1-Left" id="page1Left"></div>
+      <div class="qPage1-Right" id="page1Right"></div>
     </div>
     <div class="parent" id="parent2">
-      <div class="headerPage2" style="text-align: center; margin: 0; font-size: 12px;">
-      </div>
-      <div class="qPage2-Left" id="page2Left" >
-      </div>
-      <div class="qPage2-Right" id="page2Right" >
+      <div class="headerPage2" style="text-align: center; margin: 0; font-size: 12px;"></div>
+      <div class="qPage2-Left" id="page2Left"></div>
+      <div class="qPage2-Right" id="page2Right">
         <div id="test" style="width: 375px;"></div>
       </div>
-    </div>  
-     
+    </div>
   </span>
 `
+
 let loopControl = true
+let mainArray = []
+const maxHeight = 3500
 
-  let mainArray = []
-  const maxHeight = 3500
+let containerFontSize = 16
+let paddingBottomSize = 8
+let imgHeight = 100
+let imgBool = false
 
-  let containerFontSize = 16
-  let paddingBottomSize = 8
-  let imgHeight = 100
+const minFontSize = 10
+const minPaddingBottomSize = 3
+const minImgHeight = 80
 
-  let imgBool = false
+function infiniteCQ(cqData, cqMeta) {
+  console.log("infiniteCQ called with:", { cqDataLength: cqData?.length, cqMeta })
 
-  const minFontSize = 10
-  const minPaddingBottomSize = 3
-  const minImgHeight = 80
+  if (!cqData || !Array.isArray(cqData) || cqData.length === 0) {
+    console.error("Invalid cqData provided to infiniteCQ")
+    return
+  }
 
-function infiniteCQ(){
   document.body.innerHTML = templet
-  const allContainer = document.getElementById('test')
-  // Function to build content
+  const allContainer = document.getElementById("test")
+
   function buildContent() {
-    allContainer.innerHTML = ''
-    mainArray=[]
+    allContainer.innerHTML = ""
+    mainArray = []
     allContainer.style.fontSize = `${containerFontSize}px`
-    cqData.map((item, idx) => {
-      // question
-      allContainer.innerHTML += `<div id="question" style="text-align: justify;" ><b id="qNo">${idx+1}&#46;</b> <span id="qStatement">${item.passage}</span></div>`
 
-      mainArray.push(`<div id="question" style="text-align: justify;" ><b id="qNo">${idx+1}&#46;</b> <span id="qStatement">${item.passage}</span></div>`)
-      // img
-      if(item.passageImgSrc){
-        allContainer.innerHTML += `<div style="width: 100%; text-align: center;"><img src="${item.passageImgSrc}" alt="Image missing" height="${imgHeight}px"></div>`
+    cqData.forEach((item, idx) => {
+      // Get main passage text from the CQ structure
+      const passage = item.questions?.[0]?.questionText || ""
+      const passageImg = item.questions?.[0]?.passageImage || ""
 
-        mainArray.push(`<div style="width: 100%; text-align: center;"><img src="${item.passageImgSrc}" alt="Image missing" height="${imgHeight}px"></div>`)
+      // Add main question/passage
+      if (passage) {
+        allContainer.innerHTML += `<div id="question" style="text-align: justify;"><b id="qNo">${idx + 1}&#46;</b> <span id="qStatement">${passage}</span></div>`
+        mainArray.push(
+          `<div id="question" style="text-align: justify;"><b id="qNo">${idx + 1}&#46;</b> <span id="qStatement">${passage}</span></div>`,
+        )
       }
-      // option for preliminary action
-      allContainer.innerHTML += `
-        <div style="padding-bottom: ${paddingBottomSize}px;padding-left: 5px;" id="questionContainer${idx}">
-        </div>
-      `
-      item.questions.map((ques, qIdx) => {
-        let char = 'ক';
-        let asciiValue = char.charCodeAt(0);
-        document.getElementById(`questionContainer${idx}`).innerHTML += `
-          <div style="width: 100%; text-align: justify;"><div style="width: fit-content;"><b>${String.fromCharCode(asciiValue + qIdx)}&#41;</b> <span id="question${idx}${qIdx}">${ques.question}</span></div></div>      
-        `    
-        mainArray.push(`<div style="text-align: justify;"><b>${String.fromCharCode(asciiValue + qIdx)}&#41;</b> <span id="question${idx}${qIdx}">${ques.question}</span></div>`)
-        if(ques.imgSrc){
-          document.getElementById(`questionContainer${idx}`).innerHTML += `
-            <div style="width: 100%; height:${imgHeight}px; text-align: center;">
-              <img src="${ques.imgSrc}" alt="Image missing" height="${imgHeight}px">
+
+      // Add passage image if exists
+      if (passageImg) {
+        allContainer.innerHTML += `<div style="width: 100%; text-align: center;"><img src="${passageImg}" alt="Image missing" height="${imgHeight}px"></div>`
+        mainArray.push(
+          `<div style="width: 100%; text-align: center;"><img src="${passageImg}" alt="Image missing" height="${imgHeight}px"></div>`,
+        )
+      }
+
+      // Container for sub-questions
+      allContainer.innerHTML += `<div style="padding-bottom: ${paddingBottomSize}px;padding-left: 5px;" id="questionContainer${idx}"></div>`
+
+      // Add sub-questions
+      const subQuestions = item.questions?.[0]?.subQuestions || []
+      subQuestions.forEach((sq, qIdx) => {
+        const char = "ক"
+        const asciiValue = char.charCodeAt(0)
+
+        const questionContainer = document.getElementById(`questionContainer${idx}`)
+        if (questionContainer) {
+          questionContainer.innerHTML += `
+            <div style="width: 100%; text-align: justify;">
+              <div style="width: fit-content;">
+                <b>${String.fromCharCode(asciiValue + qIdx)}&#41;</b>
+                <span id="question${idx}${qIdx}">${sq.questionText || ""}</span>
+                <span style="float: right; font-weight: bold;">[${sq.marks || 1}]</span>
+              </div>
             </div>
           `
-          mainArray.push(`<div style="width: 100%; height:${imgHeight}px; text-align: center;"><img src="${ques.imgSrc}" alt="Image missing" height="${imgHeight}px"></div>`)
-        }      
+
+          mainArray.push(
+            `<div style="text-align: justify;"><b>${String.fromCharCode(asciiValue + qIdx)}&#41;</b> <span>${sq.questionText || ""}</span><span style="float: right; font-weight: bold;">[${sq.marks || 1}]</span></div>`,
+          )
+
+          // Add sub-question image if exists
+          if (sq.image) {
+            questionContainer.innerHTML += `
+              <div style="width: 100%; height:${imgHeight}px; text-align: center;">
+                <img src="${sq.image}" alt="Image missing" height="${imgHeight}px">
+              </div>
+            `
+            mainArray.push(
+              `<div style="width: 100%; height:${imgHeight}px; text-align: center;"><img src="${sq.image}" alt="Image missing" height="${imgHeight}px"></div>`,
+            )
+          }
+        }
       })
+
       mainArray.push(`<div style="padding-bottom: ${paddingBottomSize}px;padding-left: 5px;"></div>`)
     })
   }
-  // Main optimization loop -----Game on
+
+  // Shuffle array function
   function shuffleArray(array) {
-    return [...array].sort(() => Math.random() - 0.5);
-    // return array
+    return [...array].sort(() => Math.random() - 0.5)
   }
-  const cqData = shuffleArray(cqDataEng);
+
+  const shuffledCqData = shuffleArray(cqData)
   let flag = true
   let font = false
-  MathJax.typesetPromise([allContainer]).then(() => {});
-  while(allContainer.offsetHeight > maxHeight || flag && loopControl){
 
-    // decrement font size and padding bottom
-    {
-      if(paddingBottomSize <= minPaddingBottomSize) {
-        font = true
-      } 
-      if(imgHeight <= minImgHeight) {
-        imgBool = false
-      }    
-      if(paddingBottomSize <= minPaddingBottomSize && containerFontSize <= minFontSize) {
-        imgBool = true
-      } 
-      // Check if all minimums reached
-      if(paddingBottomSize <= minPaddingBottomSize && containerFontSize <= minFontSize && imgHeight <= minImgHeight) {
-        console.log("All minimums reached, breaking loop")
-        alert("Dear sir, please consider some small question and option as it is not adjustable for legal paper")
-        break
-      }  
-      if(imgBool){
-        imgHeight--
-      }else{
-        if(font){
-          containerFontSize--
-          font=!font
-        }else{
-          paddingBottomSize--
-          font=!font
-        }      
-      }      
-    }
-    flag = false  
-    // Rebuild content with new parameters
-    buildContent()
-    console.log(allContainer.offsetHeight)
-    MathJax.typesetPromise([allContainer]).then(() => {});
-    console.log(`Height: ${allContainer.offsetHeight}, paddingBS: ${paddingBottomSize}, containerFS: ${containerFontSize}, imgH: ${imgHeight}`)
-  }
-  loopControl = false  
+  // Initial build
   buildContent()
-  // Rebuild content with new parameters
-  MathJax.typesetPromise([allContainer]).then(() => {});
+
+  // MathJax rendering if available
+  if (window.MathJax) {
+    window.MathJax.typesetPromise([allContainer]).then(() => {})
+  }
+
+  // Optimization loop
+  while ((allContainer.offsetHeight > maxHeight || flag) && loopControl) {
+    if (paddingBottomSize <= minPaddingBottomSize) {
+      font = true
+    }
+    if (imgHeight <= minImgHeight) {
+      imgBool = false
+    }
+    if (paddingBottomSize <= minPaddingBottomSize && containerFontSize <= minFontSize) {
+      imgBool = true
+    }
+
+    // Check if all minimums reached
+    if (paddingBottomSize <= minPaddingBottomSize && containerFontSize <= minFontSize && imgHeight <= minImgHeight) {
+      console.log("All minimums reached, breaking loop")
+      alert("Content is too large for the page. Please consider reducing question length.")
+      break
+    }
+
+    if (imgBool) {
+      imgHeight--
+    } else {
+      if (font) {
+        containerFontSize--
+        font = !font
+      } else {
+        paddingBottomSize--
+        font = !font
+      }
+    }
+
+    flag = false
+    buildContent()
+
+    if (window.MathJax) {
+      window.MathJax.typesetPromise([allContainer]).then(() => {})
+    }
+
+    console.log(
+      `Height: ${allContainer.offsetHeight}, paddingBS: ${paddingBottomSize}, containerFS: ${containerFontSize}, imgH: ${imgHeight}`,
+    )
+  }
+
+  loopControl = false
+  buildContent()
+
+  if (window.MathJax) {
+    window.MathJax.typesetPromise([allContainer]).then(() => {})
+  }
+
   console.log("Final height:", allContainer.offsetHeight)
 
+  // Distribute content across page sections
   const portion = [
-    {idName:"page1Left", size:840, state:true},
-    {idName:"page1Right", size:840, state:true},
-    {idName:"page2Left", size:970, state:true},
-    {idName:"page2Right", size:970, state:true},
+    { idName: "page1Left", size: 840, state: true },
+    { idName: "page1Right", size: 840, state: true },
+    { idName: "page2Left", size: 970, state: true },
+    { idName: "page2Right", size: 970, state: true },
   ]
 
-  const itemContainer = document.getElementById('test')
-  mainArray.map((item) => {
-    itemContainer.innerHTML=''
+  const itemContainer = document.getElementById("test")
+  mainArray.forEach((item) => {
     itemContainer.innerHTML = item
-    MathJax.typesetPromise([itemContainer]).then(() => {});
+
+    if (window.MathJax) {
+      window.MathJax.typesetPromise([itemContainer]).then(() => {})
+    }
+
     const itemHeight = itemContainer.offsetHeight
-    itemContainer.innerHTML=''
-    if(portion[0].size>=itemHeight && portion[0].state===true){
-      document.getElementById(portion[0].idName).innerHTML+=item
-      portion[0].size-=itemHeight
-    }
-    else if(portion[1].size>=itemHeight && portion[1].state===true){
-      portion[0].state=false
-      document.getElementById(portion[1].idName).innerHTML+=item
-      portion[1].size-=itemHeight
-    }
-    else if(portion[2].size>=itemHeight && portion[2].state===true){
-      portion[1].state=false
-      document.getElementById(portion[2].idName).innerHTML+=item
-      portion[2].size-=itemHeight
-    }
-    else if(portion[3].size>=itemHeight && portion[3].state===true){
-      portion[2].state=false
-      document.getElementById(portion[3].idName).innerHTML+=item
-      portion[3].size-=itemHeight
+    itemContainer.innerHTML = ""
+
+    for (let i = 0; i < portion.length; i++) {
+      if (portion[i].size >= itemHeight && portion[i].state) {
+        document.getElementById(portion[i].idName).innerHTML += item
+        portion[i].size -= itemHeight
+        if (i > 0) portion[i - 1].state = false
+        break
+      }
     }
   })
-  {
-    document.getElementById("parent1").style.fontSize=`${containerFontSize}px`
-    document.getElementById("parent2").style.fontSize=`${containerFontSize}px`
-    document.querySelectorAll(".institutionName").forEach(el => {
-      el.innerHTML = institutionName;
-    });
-    document.querySelectorAll(".examName").forEach(el => {
-      el.textContent = examName;
-    });
-    document.querySelectorAll(".subject").forEach(el => {
-      el.textContent = subject;
-    });
-    document.querySelectorAll(".paper").forEach(el => {
-      el.textContent = paper;
-    });
-    document.querySelectorAll(".class").forEach(el => {
-      el.textContent = className;
-    });
-    document.querySelectorAll(".subjectCode").forEach(el => {
-      el.textContent = subjectCode;
-    });
-    document.querySelectorAll(".totalMark").forEach(el => {
-      el.textContent = totalMark;
-    });
-    document.querySelectorAll(".totalTime").forEach(el => {
-      el.textContent = totalTime;
-    });
-    document.querySelectorAll(".headerPage2").forEach(el => {
-      el.textContent = message;
-    });    
-  }
+
+  // Set font sizes and populate header information
+  document.getElementById("parent1").style.fontSize = `${containerFontSize}px`
+  document.getElementById("parent2").style.fontSize = `${containerFontSize}px`
+
+  // Populate header fields
+  document.querySelectorAll(".institutionName").forEach((el) => {
+    el.textContent = cqMeta.institutionName || ""
+  })
+  document.querySelectorAll(".examName").forEach((el) => {
+    el.textContent = cqMeta.examName || ""
+  })
+  document.querySelectorAll(".subject").forEach((el) => {
+    el.textContent = cqMeta.subject || ""
+  })
+  document.querySelectorAll(".paper").forEach((el) => {
+    el.textContent = cqMeta.paper ? ` (${cqMeta.paper})` : ""
+  })
+  document.querySelectorAll(".class").forEach((el) => {
+    el.textContent = cqMeta.className || ""
+  })
+  document.querySelectorAll(".subjectCode").forEach((el) => {
+    el.textContent = cqMeta.subjectCode || ""
+  })
+  document.querySelectorAll(".totalMark").forEach((el) => {
+    el.textContent = cqMeta.totalMark || ""
+  })
+  document.querySelectorAll(".totalTime").forEach((el) => {
+    el.textContent = cqMeta.totalTime || ""
+  })
+  document.querySelectorAll(".headerPage2").forEach((el) => {
+    el.textContent = cqMeta.message || ""
+  })
+
   superArray.push(document.body.innerHTML)
 }
 
-const copy = 3
-for(let i=0; i<copy; i++){
-  infiniteCQ()
+// Main render function
+function renderCQ(cqMeta, cqData) {
+  console.log("renderCQ called with:", { cqMeta, cqDataLength: cqData?.length })
+
+  if (!cqData || !cqMeta) {
+    console.error("Missing data in renderCQ")
+    document.body.innerHTML =
+      "<div style='text-align: center; margin-top: 50px; font-size: 18px; color: red;'>Error: Missing CQ data or metadata</div>"
+    return
+  }
+
+  if (!Array.isArray(cqData) || cqData.length === 0) {
+    console.error("Invalid cqData array")
+    document.body.innerHTML =
+      "<div style='text-align: center; margin-top: 50px; font-size: 18px; color: red;'>Error: No CQ questions found</div>"
+    return
+  }
+
+  const copy = 3
+  for (let i = 0; i < copy; i++) {
+    infiniteCQ(cqData, cqMeta)
+  }
+
+  document.body.innerHTML = ""
+  for (let i = 0; i < copy; i++) {
+    document.body.innerHTML += superArray[i]
+  }
+
+  console.log("CQ rendering completed")
 }
-document.body.innerHTML=""
-for(let i=0; i<copy; i++){
-  document.body.innerHTML+=superArray[i]
-}
+
+// Make renderCQ globally available
+window.renderCQ = renderCQ
+
+// Auto-render if data is already available
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, checking for data...")
+  if (window.cqData && window.cqMeta) {
+    console.log("Data available, rendering...")
+    renderCQ(window.cqMeta, window.cqData)
+  } else {
+    console.log("Data not yet available, waiting...")
+  }
+})
+
+// Fallback: Try to render after a short delay
+setTimeout(() => {
+  if (window.cqData && window.cqMeta && document.body.innerHTML.trim() === "") {
+    console.log("Fallback render triggered")
+    renderCQ(window.cqMeta, window.cqData)
+  }
+}, 2000)
