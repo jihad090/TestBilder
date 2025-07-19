@@ -36,24 +36,21 @@ export async function GET(request: NextRequest) {
     const [cqTemplates, mcqTemplates, sqTemplates] = await Promise.all([
       FullCQTemplate.find({
         primaryInfo: { $in: primaryInfoIds },
-        isComplete: true,
-        isDeleted: { $ne: true }, 
+        // isDeleted: { $ne: true }, // REMOVED
       })
         .populate("primaryInfo")
         .sort({ updatedAt: -1 }),
 
       MCQTemplate.find({
         primaryInfo: { $in: primaryInfoIds },
-        isComplete: true,
-        isDeleted: { $ne: true },
+        // isDeleted: { $ne: true }, // REMOVED
       })
         .populate("primaryInfo")
         .sort({ updatedAt: -1 }),
 
       ShortQuestion.find({
         primaryInfo: { $in: primaryInfoIds },
-        isComplete: true,
-        isDeleted: { $ne: true },
+        // isDeleted: { $ne: true }, // REMOVED
       })
         .populate("primaryInfo")
         .sort({ updatedAt: -1 }),
@@ -103,6 +100,9 @@ export async function GET(request: NextRequest) {
         isComplete: template.isComplete,
         createdAt: template.createdAt,
         updatedAt: template.updatedAt,
+        sqGroup: {
+          isComplete: template.sqGroup?.isComplete ?? false,
+        },
         primaryInfo: {
           _id: template.primaryInfo._id,
           institutionName: template.primaryInfo.institutionName,
@@ -115,16 +115,16 @@ export async function GET(request: NextRequest) {
         questionsCount: template.sqGroup?.questions?.length || 0,
       })),
     ]
-// Sort by updatedAt (most recent first)
+    // Sort by updatedAt (most recent first)
     allTemplates.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 
-    console.log(`Fetched ${allTemplates.length} complete templates for user ${userId}`)
+    console.log(`Fetched ${allTemplates.length} templates for user ${userId}`)
 
     return NextResponse.json(
       {
         success: true,
         data: allTemplates,
-        message: `Found ${allTemplates.length} complete templates`,
+        message: `Found ${allTemplates.length} templates`,
       },
       { status: 200 },
     )
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-//  DELETE method for soft-deleting templates
+// DELETE method for hard-deleting templates
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB()
@@ -155,32 +155,20 @@ export async function DELETE(request: NextRequest) {
     let deletedTemplate = null
     let templateType = ""
 
-    //  Soft delete based on exam type
+    // Hard delete based on exam type
     switch (examType) {
       case "cq":
-        deletedTemplate = await FullCQTemplate.findOneAndUpdate(
-          { _id: templateId, user: userId },
-          { isDeleted: true, deletedAt: new Date() },
-          { new: true },
-        )
+        deletedTemplate = await FullCQTemplate.findByIdAndDelete(templateId) // Changed to findByIdAndDelete
         templateType = "CQ"
         break
 
       case "mcq":
-        deletedTemplate = await MCQTemplate.findOneAndUpdate(
-          { _id: templateId, user: userId },
-          { isDeleted: true, deletedAt: new Date() },
-          { new: true },
-        )
+        deletedTemplate = await MCQTemplate.findByIdAndDelete(templateId) // Changed to findByIdAndDelete
         templateType = "MCQ"
         break
 
       case "sq":
-        deletedTemplate = await ShortQuestion.findOneAndUpdate(
-          { _id: templateId, user: userId },
-          { isDeleted: true, deletedAt: new Date() },
-          { new: true },
-        )
+        deletedTemplate = await ShortQuestion.findByIdAndDelete(templateId) // Changed to findByIdAndDelete
         templateType = "SQ"
         break
 
@@ -192,7 +180,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Template not found or access denied" }, { status: 404 })
     }
 
-    console.log(`Soft-deleted ${templateType} template: ${templateId}`)
+    console.log(`Hard-deleted ${templateType} template: ${templateId}`)
 
     return NextResponse.json(
       {
