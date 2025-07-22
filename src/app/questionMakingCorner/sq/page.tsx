@@ -249,7 +249,7 @@ const SQ = () => {
       </div>
 
       <div className="mt-[120px] space-y-4">
-        {sqTemplet.map((item) => (
+        {sqTemplet.map((item, idx) => (
           <SqTemplet
             key={item.id}
             value={item.questionText}
