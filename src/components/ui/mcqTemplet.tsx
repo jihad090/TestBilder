@@ -174,10 +174,10 @@ const MCQTemplet_1 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
                   <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">ক/A</SelectItem>
-                  <SelectItem value="1">খ/B</SelectItem>
-                  <SelectItem value="2">গ/C</SelectItem>
-                  <SelectItem value="3">ঘ/D</SelectItem>
+                  <SelectItem value="1">ক/A</SelectItem>
+                  <SelectItem value="2">খ/B</SelectItem>
+                  <SelectItem value="3">গ/C</SelectItem>
+                  <SelectItem value="4">ঘ/D</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -309,8 +309,8 @@ const MCQTemplet_2 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
                   <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">ক/A</SelectItem>
-                  <SelectItem value="1">খ/B</SelectItem>
+                  <SelectItem value="1">ক/A</SelectItem>
+                  <SelectItem value="2">খ/B</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -548,10 +548,10 @@ const MCQTemplet_3 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
                   <SelectValue placeholder="সঠিক উত্তর (Correct Answer)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">ক/A</SelectItem>
-                  <SelectItem value="1">খ/B</SelectItem>
-                  <SelectItem value="2">গ/C</SelectItem>
-                  <SelectItem value="3">ঘ/D</SelectItem>
+                  <SelectItem value="1">ক/A</SelectItem>
+                  <SelectItem value="2">খ/B</SelectItem>
+                  <SelectItem value="3">গ/C</SelectItem>
+                  <SelectItem value="4">ঘ/D</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -569,7 +569,7 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
     passageImage: "",
     subQuestions: [] as any[],
   })
-  const [isSubQuestionsOpen, setIsSubQuestionsOpen] = useState(false)
+  const [isSubQuestionsOpen, setIsSubQuestionsOpen] = useState(true)
 
   const isInitialized = useRef(false)
   const lastDataRef = useRef<string>("")
@@ -797,10 +797,10 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
                         <SelectValue placeholder="সঠিক উত্তর" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="0">ক/A</SelectItem>
-                        <SelectItem value="1">খ/B</SelectItem>
-                        <SelectItem value="2">গ/C</SelectItem>
-                        <SelectItem value="3">ঘ/D</SelectItem>
+                        <SelectItem value="1">ক/A</SelectItem>
+                        <SelectItem value="2">খ/B</SelectItem>
+                        <SelectItem value="3">গ/C</SelectItem>
+                        <SelectItem value="4">ঘ/D</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
