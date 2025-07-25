@@ -1,8 +1,10 @@
 
 
+
+
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { DelBtn, MCQTemplet_1, MCQTemplet_2, MCQTemplet_3, MCQTemplet_4 } from "@/components/ui/mcqTemplet"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -22,20 +24,32 @@ const Mcq = () => {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
   const [lastSaved, setLastSaved] = useState<Date | undefined>()
   const [generatingPDF, setGeneratingPDF] = useState<boolean>(false)
+
+  const saveInProgressRef = useRef(false)
   const router = useRouter()
 
   const autoSaveData = async (data: any[]) => {
-    if (!userId || !primaryInfoId || data.length === 0) return
+    if (!userId || !primaryInfoId || data.length === 0 || saveInProgressRef.current) {
+      return
+    }
+
+    saveInProgressRef.current = true
     setSaveStatus("saving")
 
     try {
       const res = await fetch("/Api/mcq", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user: userId, primaryInfo: primaryInfoId, mcqs: data }),
+        body: JSON.stringify({
+          user: userId,
+          primaryInfo: primaryInfoId,
+          mcqs: data,
+          operation: "update",
+        }),
       })
 
       const result = await res.json()
+
       if (result.success) {
         setSaveStatus("saved")
         setLastSaved(new Date())
@@ -43,16 +57,22 @@ const Mcq = () => {
       } else {
         setSaveStatus("error")
         console.error("Auto-save failed:", result.message)
+
+        if (result.error === "VERSION_CONFLICT") {
+          console.log("Version conflict detected, will retry on next change")
+        }
       }
     } catch (error) {
       setSaveStatus("error")
       console.error("Auto-save error:", error)
+    } finally {
+      saveInProgressRef.current = false
     }
   }
 
   const debouncedSave = useCallback(
-    debounce((data: any[]) => autoSaveData(data), 100),
-    [userId, primaryInfoId]
+    debounce((data: any[]) => autoSaveData(data), 1000),
+    [userId, primaryInfoId],
   )
 
   useEffect(() => {
@@ -113,10 +133,10 @@ const Mcq = () => {
           try {
             const response = await fetch(`/Api/mcq?user=${storedUserId}&primaryInfo=${idFromUrl}`)
             const data = await response.json()
-             console.log("✅ fetched mcq data:", data)
+            console.log("✅ fetched mcq data:", data)
             if (data.success && Array.isArray(data.data.mcqs)) {
               const validMCQs = data.data.mcqs.filter(
-                (group: any[]) => Array.isArray(group) && group.length > 0 && group[0]
+                (group: any[]) => Array.isArray(group) && group.length > 0 && group[0],
               )
               setMcqTemplet(validMCQs)
             }
@@ -175,6 +195,8 @@ const Mcq = () => {
 
     setGeneratingPDF(true)
 
+    debouncedSave.cancel()
+
     try {
       const res = await fetch("/Api/mcq", {
         method: "POST",
@@ -183,6 +205,7 @@ const Mcq = () => {
           user: userId,
           primaryInfo: primaryInfoId,
           mcqs: mcqTemplet,
+          operation: "final_save",
         }),
       })
 
@@ -273,17 +296,13 @@ const Mcq = () => {
         case "saved":
           return "Saved"
         case "error":
-          return "Save failed"
+          return "Save failed - will retry"
         default:
           return lastSaved ? `Last saved: ${lastSaved.toLocaleTimeString()}` : ""
       }
     }
 
     if (saveStatus === "idle" && !lastSaved) return null
-
-
-
-
 
     return (
       <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -293,10 +312,7 @@ const Mcq = () => {
     )
   }
 
-
-//function to count total MCQ questions
-
-    const getTotalMcqCount = () => {
+  const getTotalMcqCount = () => {
     let total = 0
     mcqTemplet.forEach((group) => {
       if (!Array.isArray(group) || group.length === 0 || !group[0]) return
@@ -375,10 +391,9 @@ const Mcq = () => {
             "Generate PDF"
           )}
         </Button>
-
       </div>
-       
-<div className="text-center mt-6 mb-6 text-lg text-blue-700 font-semibold bg-blue-100 py-2 rounded-xl w-fit mx-auto px-4 shadow">
+
+      <div className="text-center mt-6 mb-6 text-lg text-blue-700 font-semibold bg-blue-100 py-2 rounded-xl w-fit mx-auto px-4 shadow">
         {getTotalMcqCount()} MCQ{getTotalMcqCount() !== 1 ? "'s" : ""} added
       </div>
 
@@ -388,7 +403,3 @@ const Mcq = () => {
 }
 
 export default Mcq
-
-
-
-

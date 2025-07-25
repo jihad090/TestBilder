@@ -1,8 +1,12 @@
 
 
+
+
+
 import { type NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/dbconfig/dbconfig"
 import MCQTemplate from "@/Models/mcqTemplate"
+
 function validateMCQ(mcq: any): boolean {
   if (mcq.mcqType === "mcq-4") {
     const hasPassageText = mcq.passage && mcq.passage.trim() !== ""
@@ -49,34 +53,41 @@ function convertMCQsToBackendFormat(mcqs: any[][]): any[] {
 
   mcqs.forEach((group, groupIndex) => {
     group.forEach((mcq) => {
-      const cleanedMCQ: any = {
+      const base = {
         mcqType: mcq.mcqType,
         parentIdx: groupIndex,
-        questionText: mcq.questionText || "",
-        image: mcq.image || "",
-        options: mcq.options || [],
-        correctAnswer: mcq.correctAnswer || "",
         marks: mcq.marks || 1,
       }
 
-      if (mcq.mcqType === "mcq-3" && mcq.infoItems) {
-        cleanedMCQ.infoItems = mcq.infoItems
-      }
-
       if (mcq.mcqType === "mcq-4") {
-        cleanedMCQ.passage = mcq.passage || ""
-        cleanedMCQ.passageImage = mcq.passageImage || ""
-        cleanedMCQ.subQuestions = (mcq.subQuestions || []).map((subQ: any, index: number) => ({
-          childIdx: index,
-          questionText: subQ.questionText || "",
-          image: subQ.image || "",
-          options: subQ.options || [],
-          correctAnswer: subQ.correctAnswer || "",
-          marks: subQ.marks || 1,
-        }))
-      }
+        flatMCQs.push({
+          ...base,
+          passage: mcq.passage || "",
+          passageImage: mcq.passageImage || "",
+          subQuestions: (mcq.subQuestions || []).map((subQ: any, index: number) => ({
+            childIdx: index,
+            questionText: subQ.questionText || "",
+            image: subQ.image || "",
+            options: subQ.options || [],
+            correctAnswer: subQ.correctAnswer || "",
+            marks: subQ.marks || 1,
+          })),
+        })
+      } else {
+        const cleanedMCQ: any = {
+          ...base,
+          questionText: mcq.questionText || "",
+          image: mcq.image || "",
+          options: mcq.options || [],
+          correctAnswer: mcq.correctAnswer || "",
+        }
 
-      flatMCQs.push(cleanedMCQ)
+        if (mcq.mcqType === "mcq-3" && mcq.infoItems) {
+          cleanedMCQ.infoItems = mcq.infoItems
+        }
+
+        flatMCQs.push(cleanedMCQ)
+      }
     })
   })
 
@@ -104,12 +115,34 @@ function convertMCQsToFrontendFormat(mcqs: any[]): any[][] {
   return result
 }
 
+async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
+  let lastError: any
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation()
+    } catch (error: any) {
+      lastError = error
+
+      if (error.name === "VersionError" && attempt < maxRetries) {
+        console.log(`Version conflict detected, retrying attempt ${attempt + 1}/${maxRetries}`)
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 100))
+        continue
+      }
+
+      throw error
+    }
+  }
+
+  throw lastError
+}
+
 export async function POST(req: NextRequest) {
   await connectDB()
 
   try {
     const body = await req.json()
-    const { user, primaryInfo, mcqs } = body
+    const { user, primaryInfo, mcqs, operation = "update" } = body
 
     if (!user || !primaryInfo || !mcqs) {
       return NextResponse.json(
@@ -121,50 +154,57 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Convert frontend format to backend format
     const backendMCQs = convertMCQsToBackendFormat(mcqs)
     const isComplete = checkTemplateIsComplete(backendMCQs)
 
-    const template = await MCQTemplate.findOne({ user, primaryInfo })
-
-    if (template) {
-      template.mcqs = backendMCQs
-      template.isComplete = isComplete
-      await template.save()
-
-      return NextResponse.json(
+    const result = await retryOperation(async () => {
+      const template = await MCQTemplate.findOneAndUpdate(
+        { user, primaryInfo },
         {
-          success: true,
-          message: "Template updated",
-          data: {
-            ...template.toObject(),
-            mcqs: convertMCQsToFrontendFormat(template.mcqs),
+          $set: {
+            mcqs: backendMCQs,
+            isComplete: isComplete,
+            updatedAt: new Date(),
           },
         },
-        { status: 200 },
-      )
-    } else {
-      const newTemplate = await MCQTemplate.create({
-        user,
-        primaryInfo,
-        mcqs: backendMCQs,
-        isComplete,
-      })
-
-      return NextResponse.json(
         {
-          success: true,
-          message: "Template created",
-          data: {
-            ...newTemplate.toObject(),
-            mcqs: convertMCQsToFrontendFormat(newTemplate.mcqs),
-          },
+          new: true, 
+          upsert: true, 
+          runValidators: true,
+          setDefaultsOnInsert: true,
         },
-        { status: 201 },
       )
-    }
+
+      return template
+    })
+
+    const isNewDocument = !result.createdAt || result.createdAt.getTime() === result.updatedAt.getTime()
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: isNewDocument ? "Template created" : "Template updated",
+        data: {
+          ...result.toObject(),
+          mcqs: convertMCQsToFrontendFormat(result.mcqs),
+        },
+      },
+      { status: isNewDocument ? 201 : 200 },
+    )
   } catch (error: any) {
     console.error("POST /api/mcq error:", error)
+
+    if (error.name === "VersionError") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Document was modified by another process. Please refresh and try again.",
+          error: "VERSION_CONFLICT",
+        },
+        { status: 409 },
+      )
+    }
+
     return NextResponse.json(
       {
         success: false,
@@ -175,11 +215,6 @@ export async function POST(req: NextRequest) {
     )
   }
 }
-
-
-
-
-
 
 export async function GET(req: NextRequest) {
   await connectDB()
@@ -239,10 +274,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-
-
-
-
 export async function PUT(req: NextRequest) {
   await connectDB()
 
@@ -254,27 +285,37 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
     }
 
-    const template = await MCQTemplate.findOne({ user, primaryInfo })
-    if (!template) {
-      return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
-    }
+    const result = await retryOperation(async () => {
+      const template = await MCQTemplate.findOneAndUpdate(
+        {
+          user,
+          primaryInfo,
+          "mcqs._id": mcqId,
+        },
+        {
+          $set: {
+            "mcqs.$": { ...updatedMCQ },
+            updatedAt: new Date(),
+          },
+        },
+        { new: true },
+      )
 
-    const mcqIndex = template.mcqs.findIndex((mcq: any) => mcq._id.toString() === mcqId)
-    if (mcqIndex === -1) {
-      return NextResponse.json({ success: false, message: "MCQ not found" }, { status: 404 })
-    }
+      if (!template) {
+        throw new Error("Template or MCQ not found")
+      }
 
-    template.mcqs[mcqIndex] = { ...template.mcqs[mcqIndex], ...updatedMCQ }
-    template.isComplete = checkTemplateIsComplete(template.mcqs)
-    await template.save()
+      template.isComplete = checkTemplateIsComplete(template.mcqs)
+      return await template.save()
+    })
 
     return NextResponse.json(
       {
         success: true,
         message: "MCQ updated",
         data: {
-          ...template.toObject(),
-          mcqs: convertMCQsToFrontendFormat(template.mcqs),
+          ...result.toObject(),
+          mcqs: convertMCQsToFrontendFormat(result.mcqs),
         },
       },
       { status: 200 },
@@ -296,46 +337,49 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
     }
 
-    const template = await MCQTemplate.findOne({ user, primaryInfo })
-    if (!template) {
-      return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
-    }
-
-    if (deleteType === "group") {
-      const parentIdx = Number.parseInt(mcqId)
-      const initialLength = template.mcqs.length
-      template.mcqs = template.mcqs.filter((mcq: any) => mcq.parentIdx !== parentIdx)
-
-      if (template.mcqs.length === initialLength) {
-        return NextResponse.json({ success: false, message: "MCQ group not found" }, { status: 404 })
+    const result = await retryOperation(async () => {
+      const template = await MCQTemplate.findOne({ user, primaryInfo })
+      if (!template) {
+        throw new Error("Template not found")
       }
 
-      const groupMap = new Map()
-      template.mcqs.forEach((mcq: any) => {
-        if (!groupMap.has(mcq.parentIdx)) {
-          groupMap.set(mcq.parentIdx, groupMap.size)
+      if (deleteType === "group") {
+        const parentIdx = Number.parseInt(mcqId)
+        const initialLength = template.mcqs.length
+        template.mcqs = template.mcqs.filter((mcq: any) => mcq.parentIdx !== parentIdx)
+
+        if (template.mcqs.length === initialLength) {
+          throw new Error("MCQ group not found")
         }
-        mcq.parentIdx = groupMap.get(mcq.parentIdx)
-      })
-    } else {
-      const initialLength = template.mcqs.length
-      template.mcqs = template.mcqs.filter((mcq: any) => mcq._id.toString() !== mcqId)
 
-      if (template.mcqs.length === initialLength) {
-        return NextResponse.json({ success: false, message: "MCQ not found" }, { status: 404 })
+        const groupMap = new Map()
+        template.mcqs.forEach((mcq: any) => {
+          if (!groupMap.has(mcq.parentIdx)) {
+            groupMap.set(mcq.parentIdx, groupMap.size)
+          }
+          mcq.parentIdx = groupMap.get(mcq.parentIdx)
+        })
+      } else {
+        const initialLength = template.mcqs.length
+        template.mcqs = template.mcqs.filter((mcq: any) => mcq._id.toString() !== mcqId)
+
+        if (template.mcqs.length === initialLength) {
+          throw new Error("MCQ not found")
+        }
       }
-    }
 
-    template.isComplete = checkTemplateIsComplete(template.mcqs)
-    await template.save()
+      template.isComplete = checkTemplateIsComplete(template.mcqs)
+      template.updatedAt = new Date()
+      return await template.save()
+    })
 
     return NextResponse.json(
       {
         success: true,
         message: "MCQ deleted",
         data: {
-          ...template.toObject(),
-          mcqs: convertMCQsToFrontendFormat(template.mcqs),
+          ...result.toObject(),
+          mcqs: convertMCQsToFrontendFormat(result.mcqs),
         },
       },
       { status: 200 },
@@ -345,8 +389,3 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: false, message: "Server error", error: error.message }, { status: 500 })
   }
 }
-
-
-
-
-
