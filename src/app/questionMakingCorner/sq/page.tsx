@@ -161,7 +161,6 @@ const SQ = () => {
     async (questionId: string) => {
       if (!templateId) return
 
-      // Find the question to get its index
       const questionIndex = sqTemplet.findIndex((q) => q.id === questionId)
       if (questionIndex === -1) return
 
@@ -171,7 +170,6 @@ const SQ = () => {
         })
         const data = await res.json()
         if (data.success) {
-          // Update parentIdx for remaining questions
           const updatedQuestions = (data.data.sqGroup.questions || []).map((q: any, index: number) => ({
             ...q,
             id: q.id || generateId(),
@@ -217,7 +215,6 @@ const SQ = () => {
       return
     }
 
-    // Cancel any pending auto-save before final save
     debouncedSaveRef.current?.cancel()
     setSaveStatus("saving")
 
@@ -301,11 +298,11 @@ const SQ = () => {
 
       <div className="mt-8 flex justify-center">
         <button
-          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold disabled:opacity-50 transition-colors"
+          className="px-3 py-1 bg-black text-white rounded-md hover:bg-blue-700 font-semibold disabled:opacity-50"
           onClick={handleSubmit}
           disabled={!!errorMsg || saveStatus === "saving" || sqTemplet.length === 0}
         >
-          {saveStatus === "saving" ? "Saving & Generating..." : "Save & Generate PDF"}
+          {saveStatus === "saving" ? "Saving & Generating..." : "Generate PDF"}
         </button>
       </div>
 
@@ -321,6 +318,9 @@ const SQ = () => {
                   : "text-gray-500"
           }`}
         >
+<div className="text-center mt-6 mb-6 text-lg text-blue-700 font-semibold bg-blue-100 py-2 rounded-xl w-fit mx-auto px-4 shadow">
+        {sqTemplet.length} question{sqTemplet.length !== 1 ? "'s" : ""} added
+      </div>
           {saveStatus === "saving" && "Auto-saving..."}
           {saveStatus === "saved" && "Auto-saved successfully"}
           {saveStatus === "error" && "Auto-save failed"}
@@ -328,9 +328,7 @@ const SQ = () => {
         </span>
       </div>
 
-      <div className="text-center mt-2 text-xs text-gray-500">
-        {sqTemplet.length} question{sqTemplet.length !== 1 ? "s" : ""} added
-      </div>
+    
     </div>
   )
 }

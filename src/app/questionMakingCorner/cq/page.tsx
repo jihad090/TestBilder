@@ -312,7 +312,7 @@ const CQ = () => {
           disabled={!!errorMsg || saveStatus === "saving" || cqTemplet.length === 0}
           type="button"
         >
-          {saveStatus === "saving" ? "Saving & Generating..." : "Save & Generate PDF"}
+          {saveStatus === "saving" ? "Saving & Generating..." : "Generate PDF"}
         </button>
       </div>
 
@@ -328,6 +328,9 @@ const CQ = () => {
                   : "text-gray-500"
           }`}
         >
+<div className="text-center mt-6 mb-6 text-lg text-blue-700 font-semibold bg-blue-100 py-2 rounded-xl w-fit mx-auto px-4 shadow">
+        {cqTemplet.length} CQ{cqTemplet.length !== 1 ? "'s" : ""} added
+      </div>
           {saveStatus === "saving" && "Auto-saving..."}
           {saveStatus === "saved" && "Auto-saved successfully"}
           {saveStatus === "error" && "Auto-save failed"}
@@ -336,7 +339,7 @@ const CQ = () => {
       </div>
 
       <div className="text-center mt-2 text-xs text-gray-500">
-        {cqTemplet.length} CQ group{cqTemplet.length !== 1 ? "s" : ""} added
+        {cqTemplet.length} CQ{cqTemplet.length !== 1 ? "'s" : ""} added
       </div>
     </div>
   )

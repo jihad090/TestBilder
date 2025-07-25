@@ -4,7 +4,6 @@ import { type NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/dbconfig/dbconfig"
 import User from "@/Models/userModel"
 
-// GET - Fetch user profile
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
@@ -76,7 +75,6 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Current password is incorrect" }, { status: 401 })
     }
 
-    // Prepare update object
     const updateData: any = {}
     if (firstName !== undefined) updateData.firstName = firstName
     if (lastName !== undefined) updateData.lastName = lastName
@@ -124,3 +122,4 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 })
   }
 }
+

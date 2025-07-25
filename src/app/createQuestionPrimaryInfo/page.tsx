@@ -1,4 +1,7 @@
 
+
+
+
 "use client"
 import type React from "react"
 import { useState, useEffect } from "react"
@@ -12,6 +15,10 @@ export default function QuestionFormDemo() {
   const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState("")
+  const [profileLoading, setProfileLoading] = useState(true)
+
+  const [institutionName, setInstitutionName] = useState("")
+  const [version, setVersion] = useState("bangla")
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,9 +29,31 @@ export default function QuestionFormDemo() {
         setTimeout(() => {
           router.push("/login")
         }, 2000)
+      } else {
+        fetchUserProfile(storedUserId)
       }
     }
   }, [router])
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      setProfileLoading(true)
+      const response = await fetch(`/Api/profile?userId=${userId}`)
+      const data = await response.json()
+
+      if (data.success) {
+        setInstitutionName(data.data.institutionName || "")
+        setVersion(data.data.version || "bangla")
+        console.log("Fetched from database:", data.data)
+      } else {
+        console.error("Failed to fetch profile:", data.message)
+      }
+    } catch (error) {
+      console.error("Profile fetch error:", error)
+    } finally {
+      setProfileLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -92,7 +121,7 @@ export default function QuestionFormDemo() {
             body: JSON.stringify({
               user: userId,
               primaryInfo: primaryId,
-              cqs: [], 
+              cqs: [],
             }),
           })
 
@@ -113,7 +142,7 @@ export default function QuestionFormDemo() {
             body: JSON.stringify({
               user: userId,
               primaryInfo: primaryId,
-              mcqs: [], 
+              mcqs: [],
             }),
           })
 
@@ -121,7 +150,7 @@ export default function QuestionFormDemo() {
           console.log("MCQ Template Creation Response:", templateResult)
 
           if (templateResult.success) {
-            templateId = templateResult.data._id  || templateResult.data.id
+            templateId = templateResult.data._id || templateResult.data.id
           } else {
             setErrorMsg("MCQ Template creation failed: " + templateResult.message)
             setLoading(false)
@@ -136,7 +165,7 @@ export default function QuestionFormDemo() {
               primaryInfo: primaryId,
               sqGroup: {
                 title: "sq-1",
-                questions: [], 
+                questions: [],
                 isComplete: false,
               },
             }),
@@ -174,6 +203,17 @@ export default function QuestionFormDemo() {
     }
   }
 
+  if (profileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Loading user preferences...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="shadow-input my-16 mx-auto max-w-md rounded-none bg-gray-100 p-4 md:rounded-2xl md:p-8 dark:bg-black">
       <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">Complete These Primary Questions</h2>
@@ -182,18 +222,31 @@ export default function QuestionFormDemo() {
       <form className="my-8" onSubmit={handleSubmit}>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="version">Version</Label>
-          <select id="version" className="bg-white h-10 rounded-sm" defaultValue="bangla">
+          <select
+            id="version"
+            className="bg-white h-10 rounded-sm"
+            value={version}
+            onChange={(e) => setVersion(e.target.value)}
+          >
             <option value="none" hidden>
               Select version
             </option>
             <option value="english">English</option>
             <option value="bangla">বাংলা</option>
           </select>
+          <span className="text-xs text-green-600">✓ Auto-filled from your profile</span>
         </LabelInputContainer>
 
         <LabelInputContainer className="mb-4">
           <Label htmlFor="institutionName">Institution Name</Label>
-          <Input id="institutionName" placeholder="Your Institution Name" type="text" />
+          <Input
+            id="institutionName"
+            placeholder="Your Institution Name"
+            type="text"
+            value={institutionName}
+            onChange={(e) => setInstitutionName(e.target.value)}
+          />
+          <span className="text-xs text-green-600">✓ Auto-filled from your profile</span>
         </LabelInputContainer>
 
         <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
@@ -284,6 +337,3 @@ const LabelInputContainer = ({
 }) => {
   return <div className={cn("flex w-full flex-col space-y-2", className)}>{children}</div>
 }
-
-
-

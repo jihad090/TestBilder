@@ -71,7 +71,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET load existing template by ID
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

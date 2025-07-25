@@ -281,12 +281,33 @@ const Mcq = () => {
 
     if (saveStatus === "idle" && !lastSaved) return null
 
+
+
+
+
     return (
       <div className="flex items-center gap-2 text-sm text-gray-600">
         {getStatusIcon()}
         <span>{getStatusText()}</span>
       </div>
     )
+  }
+
+
+//function to count total MCQ questions
+
+    const getTotalMcqCount = () => {
+    let total = 0
+    mcqTemplet.forEach((group) => {
+      if (!Array.isArray(group) || group.length === 0 || !group[0]) return
+      const type = group[0].mcqType
+      if (type === "mcq-4" && Array.isArray(group[0].subQuestions)) {
+        total += group[0].subQuestions.length
+      } else {
+        total += 1
+      }
+    })
+    return total
   }
 
   if (loading) {
@@ -354,6 +375,11 @@ const Mcq = () => {
             "Generate PDF"
           )}
         </Button>
+
+      </div>
+       
+<div className="text-center mt-6 mb-6 text-lg text-blue-700 font-semibold bg-blue-100 py-2 rounded-xl w-fit mx-auto px-4 shadow">
+        {getTotalMcqCount()} MCQ{getTotalMcqCount() !== 1 ? "'s" : ""} added
       </div>
 
       {errorMsg && <div className="text-center text-red-500 mt-4">{errorMsg}</div>}

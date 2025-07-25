@@ -148,7 +148,6 @@ export async function DELETE(request: NextRequest) {
     let deletedTemplate = null
     let templateType = ""
 
-    // Hard delete based on exam type
     switch (examType) {
       case "cq":
         deletedTemplate = await FullCQTemplate.findByIdAndDelete(templateId) 

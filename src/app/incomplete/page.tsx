@@ -174,7 +174,7 @@ export default function CompleteTemplateTable() {
                   </TableRow>
                 ) : (
                   filteredTemplates.map((item, idx) => (
-                    <TableRow key={item._id} className="bg-green-100 border-4">
+                    <TableRow key={item._id} className="bg-red-200 border-4">
                       <TableCell>{idx + 1}</TableCell>
                       <TableCell className="capitalize">{item.examType}</TableCell>
                       <TableCell>{item.primaryInfo.subject}</TableCell>
