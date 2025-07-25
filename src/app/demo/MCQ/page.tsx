@@ -5,10 +5,6 @@ import { useRef } from "react";
 export default function PdfViewer() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const handlePrint = () => {
-    iframeRef.current?.contentWindow?.print();
-  };
-
   return (
     <div className="w-full flex flex-col items-center" style={{ height: 'calc(100vh - 50px)' }}>
       <iframe

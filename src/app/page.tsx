@@ -34,7 +34,7 @@ export default function Home() {
                 variant="outline"
                 className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-10 py-4 text-lg font-semibold rounded-xl"
               >
-                <FileText className="w-6 h-6 mr-3" />
+                <FileText className="w-6 h-6 mr-3" /> 
                 View MCQ Sample Papers
               </Button>
             </Link>
