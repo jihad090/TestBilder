@@ -1,7 +1,6 @@
 
 
 
-
 "use client"
 
 import type React from "react"
@@ -68,10 +67,11 @@ function generateCqTempletComponent(
         })),
     })
 
-    // Debounced updateTemplate to reduce rapid state updates and infinite loops
+    const [isExternalUpdate, setIsExternalUpdate] = useState(false)
+
     const updateTemplate = useCallback(
       debounce(() => {
-        if (!cqTemplet[pIdx]) return
+        if (!cqTemplet[pIdx] || isExternalUpdate) return
 
         const updatedCQ = {
           ...cqTemplet[pIdx],
@@ -100,33 +100,38 @@ function generateCqTempletComponent(
           setCqTemplet(updatedTemplate)
         }
       }, 300),
-      [cqTemplet, pIdx, formData, setCqTemplet],
+      [cqTemplet, pIdx, formData, setCqTemplet, isExternalUpdate],
     )
 
     useEffect(() => {
-      updateTemplate()
+      if (!isExternalUpdate) {
+        updateTemplate()
+      }
       return () => {
         updateTemplate.cancel()
       }
-    }, [formData, updateTemplate])
+    }, [formData, updateTemplate, isExternalUpdate])
 
     useEffect(() => {
       const current = cqTemplet[pIdx]?.questions?.[0]
       if (!current) return
 
-      // Update formData only if it is different, to prevent infinite loop
-      if (
+      const hasSignificantChange =
         current.questionText !== formData.questionText ||
         current.passageImage !== formData.passageImage ||
         JSON.stringify(current.subQuestions) !== JSON.stringify(formData.subQuestions)
-      ) {
+
+      if (hasSignificantChange && !isExternalUpdate) {
+        setIsExternalUpdate(true)
         setFormData({
           questionText: current.questionText || "",
           passageImage: current.passageImage || "",
-          subQuestions: current.subQuestions || [],
+          subQuestions: current.subQuestions || formData.subQuestions,
         })
+
+        setTimeout(() => setIsExternalUpdate(false), 100)
       }
-    }, [cqTemplet, pIdx]) // watch whole cqTemplet and pIdx
+    }, [cqTemplet, pIdx])
 
     const handlePassageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setFormData((prev) => ({ ...prev, questionText: e.target.value }))
@@ -141,13 +146,13 @@ function generateCqTempletComponent(
     }
 
     const handleSubImageChange = (index: number, url: string) => {
+      console.log(`Updating sub-question ${index} image:`, url)
       handleSubChange(index, "image", url)
     }
 
-    const handleImageUpload = (index: number | null, url: string) => {
-      if (index === null) {
-        setFormData((prev) => ({ ...prev, passageImage: url }))
-      }
+    const handlePassageImageChange = (url: string) => {
+      console.log("Updating passage image:", url)
+      setFormData((prev) => ({ ...prev, passageImage: url }))
     }
 
     return (
@@ -164,9 +169,9 @@ function generateCqTempletComponent(
               placeholder="উদ্দীপকটি লিখুন (Write the passage)"
             />
             <ImageDropzone
-              imgFor="Passage"
+              imgFor={`Passage-${pIdx}`}
               image={formData.passageImage}
-              onImageChange={(url) => handleImageUpload(null, url)}
+              onImageChange={handlePassageImageChange}
             />
           </div>
 
@@ -201,7 +206,7 @@ function generateCqTempletComponent(
                 </div>
               </div>
               <ImageDropzone
-                imgFor={`Question${item.englishNum}`}
+                imgFor={`Question${item.englishNum}-${pIdx}-${idx}`}
                 image={item.image || ""}
                 onImageChange={(url) => handleSubImageChange(idx, url)}
               />

@@ -37,7 +37,6 @@ export default function QuestionFormDemo() {
 
     setLoading(true)
 
-    //  Keep your original form data structure
     const formData = {
       user: userId,
       version: (document.getElementById("version") as HTMLSelectElement).value,
@@ -54,7 +53,6 @@ export default function QuestionFormDemo() {
       examDate: (document.getElementById("examDate") as HTMLInputElement).value,
     }
 
-    //  Keep your original validation
     if (!formData.version || formData.version === "none") {
       setErrorMsg("Please select a version")
       setLoading(false)
@@ -72,7 +70,6 @@ export default function QuestionFormDemo() {
     }
 
     try {
-      //   Create primary info (keep same)
       const res = await fetch("/Api/createQuestionPrimaryInfo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -88,7 +85,6 @@ export default function QuestionFormDemo() {
         const examType = formData.examType
         let templateId = null
 
-        //  Step 2: Create template with CORRECT payload structure
         if (examType === "cq") {
           const templateRes = await fetch("/Api/cq", {
             method: "POST",
@@ -96,13 +92,12 @@ export default function QuestionFormDemo() {
             body: JSON.stringify({
               user: userId,
               primaryInfo: primaryId,
-              cqs: [], //  Correct field name for CQ
+              cqs: [], 
             }),
           })
 
           const templateResult = await templateRes.json()
           console.log("CQ Template Creation Response:", templateResult)
-//create templete id for cq
 
           if (templateResult.success) {
             templateId = templateResult.data._id
@@ -118,13 +113,12 @@ export default function QuestionFormDemo() {
             body: JSON.stringify({
               user: userId,
               primaryInfo: primaryId,
-              mcqs: [], //  Correct field name for MCQ
+              mcqs: [], 
             }),
           })
 
           const templateResult = await templateRes.json()
           console.log("MCQ Template Creation Response:", templateResult)
-//create templete id for mcq
 
           if (templateResult.success) {
             templateId = templateResult.data._id  || templateResult.data.id
@@ -142,7 +136,7 @@ export default function QuestionFormDemo() {
               primaryInfo: primaryId,
               sqGroup: {
                 title: "sq-1",
-                questions: [], // Correct structure for SQ
+                questions: [], 
                 isComplete: false,
               },
             }),
@@ -150,7 +144,6 @@ export default function QuestionFormDemo() {
 
           const templateResult = await templateRes.json()
           console.log("SQ Template Creation Response:", templateResult)
-//create templete id for sq
           if (templateResult.success) {
             templateId = templateResult.data._id
           } else {
@@ -160,7 +153,6 @@ export default function QuestionFormDemo() {
           }
         }
 
-        //Redirect with BOTH IDs
         if (templateId) {
           alert("Primary Question Created Successfully!")
           const redirectPath = `/questionMakingCorner/${examType}?primaryId=${primaryId}&templateId=${templateId}`
@@ -190,7 +182,7 @@ export default function QuestionFormDemo() {
       <form className="my-8" onSubmit={handleSubmit}>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="version">Version</Label>
-          <select id="version" className="bg-white h-10 rounded-sm">
+          <select id="version" className="bg-white h-10 rounded-sm" defaultValue="bangla">
             <option value="none" hidden>
               Select version
             </option>
@@ -240,7 +232,7 @@ export default function QuestionFormDemo() {
           </LabelInputContainer>
           <LabelInputContainer>
             <Label htmlFor="subjectCode">Subject Code</Label>
-            <Input id="subjectCode" placeholder="If need" type="number" min={1} max={200} />
+            <Input id="subjectCode" placeholder="If need" type="number" min={1} max={999} />
           </LabelInputContainer>
         </div>
 
@@ -292,3 +284,6 @@ const LabelInputContainer = ({
 }) => {
   return <div className={cn("flex w-full flex-col space-y-2", className)}>{children}</div>
 }
+
+
+

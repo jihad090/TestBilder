@@ -1303,13 +1303,12 @@ function convertMCQData(apiMcqGroups) {
       converted.push(passageMcq)
       currentMcqId++
     } else if (firstItemInGroup.mcqType === "mcq-3") {
-      // Handle mcq-3 type: format info items as i, ii, iii and add after question
       const romanNumerals = ["i", "ii", "iii", "iv", "v"]
       let formattedInfoItems = ""
 
       if (firstItemInGroup.infoItems && Array.isArray(firstItemInGroup.infoItems)) {
         const infoItemsText = firstItemInGroup.infoItems
-          .filter((item) => item && item.trim() !== "") // Filter out empty items
+          .filter((item) => item && item.trim() !== "") 
           .map((item, index) => `${romanNumerals[index] || index + 1}. ${item}`)
           .join("<br>")
 
@@ -1320,13 +1319,12 @@ function convertMCQData(apiMcqGroups) {
 
       const mcq3Item = {
         mcqId: currentMcqId.toString(),
-        mcqHeader: "", // No header for mcq-3
+        mcqHeader: "", 
         passage: "",
         passageImgSrc: "",
         questions: [],
       }
 
-      // Add the main question with info items appended
       mcq3Item.questions.push({
         qId: `${currentMcqId}.1`,
         question: (firstItemInGroup.questionText || "") + formattedInfoItems,
@@ -1335,7 +1333,6 @@ function convertMCQData(apiMcqGroups) {
         mcqAnswer: firstItemInGroup.correctAnswer || 0,
       })
 
-      // Pad with empty questions to ensure 3 questions per mcqId for layout consistency
       while (mcq3Item.questions.length < 3) {
         mcq3Item.questions.push({
           qId: "",
@@ -1375,12 +1372,10 @@ function convertMCQData(apiMcqGroups) {
   return converted
 }
 
-// Function to shuffle an array (used for MCQs)
 function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5)
 }
 
-// Main data fetching and initiation logic
 document.addEventListener("DOMContentLoaded", async () => {
   const loadingDiv = document.querySelector(".loading")
   const errorDiv = document.querySelector(".error")
@@ -1420,7 +1415,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       primaryInfo = data.primaryInfo
     } else if (data.primaryInfo) {
       try {
-        const primaryRes = await fetch(`/Api/primary-info?primaryId=${data.primaryInfo}`)
+        const primaryRes = await fetch(`/Api/createQuestionPrimaryInfo?primaryId=${data.primaryInfo}`)
         const primaryData = await primaryRes.json()
         if (primaryData.success) {
           primaryInfo = primaryData.data
@@ -1429,14 +1424,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       } catch (err) {
         console.error("Error fetching primary info:", err)
-        primaryInfo = {} // Fallback to empty object if primary info fetch fails
+        primaryInfo = {} 
       }
     }
 
-    // --- Debugging logs for setCount ---
     console.log("Raw primaryInfo object:", primaryInfo)
     console.log("Raw primaryInfo.setCount:", primaryInfo.setCount)
-    // --- End Debugging logs ---
 
     const mcqMeta = {
       institutionName: primaryInfo.institutionName || "Institution Name",
@@ -1448,11 +1441,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       subjectCode: primaryInfo.subjectCode || "101",
       totalTime: primaryInfo.totalTime || "30 minutes",
       message: primaryInfo.message || "",
-      // Robust parsing for setCount - try multiple field names
       setCount: Number.parseInt(String(primaryInfo.setCount || primaryInfo.totalSet || "1").trim()) || 1,
     }
 
-    console.log("Parsed mcqMeta.setCount:", mcqMeta.setCount) // Log parsed value
+    console.log("Parsed mcqMeta.setCount:", mcqMeta.setCount) 
 
     const originalMcqData = Array.isArray(data.mcqs) ? convertMCQData(data.mcqs) : []
 
@@ -1469,17 +1461,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       return
     }
 
-    // Call the function in script.js to start generation for multiple sets
     if (typeof window.infiniteMCQ === "function") {
       for (let i = 0; i < mcqMeta.setCount; i++) {
-        console.log(`Generating set ${i + 1} of ${mcqMeta.setCount}`) // Log each set generation
+        console.log(`Generating set ${i + 1} of ${mcqMeta.setCount}`) 
         const shuffledMcqData = shuffleArray(originalMcqData)
-        // Pass the shuffled data and meta to infiniteMCQ
-        await window.infiniteMCQ(shuffledMcqData, mcqMeta, i) // Pass current set index
-        superArray.push(document.body.innerHTML) // Store the generated HTML for each set
+        await window.infiniteMCQ(shuffledMcqData, mcqMeta, i)
+        superArray.push(document.body.innerHTML) 
       }
 
-      // After all sets are generated, clear body and append all sets
       document.body.innerHTML = ""
       for (let i = 0; i < superArray.length; i++) {
         document.body.innerHTML += superArray[i]

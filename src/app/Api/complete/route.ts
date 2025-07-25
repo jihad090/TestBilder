@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, message: "User ID is required" }, { status: 400 })
     }
 
-    //   Get all primaryInfo IDs for this user
     const primaryInfos = await PrimaryQuestionInfo.find({ user: userId }).select("_id examType")
 
     if (primaryInfos.length === 0) {
@@ -32,31 +31,26 @@ export async function GET(request: NextRequest) {
 
     const primaryInfoIds = primaryInfos.map((info) => info._id)
 
-    //  Get complete templates using primaryInfo IDs
     const [cqTemplates, mcqTemplates, sqTemplates] = await Promise.all([
       FullCQTemplate.find({
         primaryInfo: { $in: primaryInfoIds },
-        // isDeleted: { $ne: true }, // REMOVED
       })
         .populate("primaryInfo")
         .sort({ updatedAt: -1 }),
 
       MCQTemplate.find({
         primaryInfo: { $in: primaryInfoIds },
-        // isDeleted: { $ne: true }, // REMOVED
       })
         .populate("primaryInfo")
         .sort({ updatedAt: -1 }),
 
       ShortQuestion.find({
         primaryInfo: { $in: primaryInfoIds },
-        // isDeleted: { $ne: true }, // REMOVED
       })
         .populate("primaryInfo")
         .sort({ updatedAt: -1 }),
     ])
 
-    //  Format and combine all templates
     const allTemplates = [
       ...cqTemplates.map((template) => ({
         _id: template._id,
@@ -137,7 +131,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// DELETE method for hard-deleting templates
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB()
@@ -158,17 +151,17 @@ export async function DELETE(request: NextRequest) {
     // Hard delete based on exam type
     switch (examType) {
       case "cq":
-        deletedTemplate = await FullCQTemplate.findByIdAndDelete(templateId) // Changed to findByIdAndDelete
+        deletedTemplate = await FullCQTemplate.findByIdAndDelete(templateId) 
         templateType = "CQ"
         break
 
       case "mcq":
-        deletedTemplate = await MCQTemplate.findByIdAndDelete(templateId) // Changed to findByIdAndDelete
+        deletedTemplate = await MCQTemplate.findByIdAndDelete(templateId) 
         templateType = "MCQ"
         break
 
       case "sq":
-        deletedTemplate = await ShortQuestion.findByIdAndDelete(templateId) // Changed to findByIdAndDelete
+        deletedTemplate = await ShortQuestion.findByIdAndDelete(templateId) 
         templateType = "SQ"
         break
 

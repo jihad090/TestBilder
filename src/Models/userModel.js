@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema({
   mobileNo: String,
   email: { type: String, required: true, unique: true },
   password: String,
+   institutionName: String,
+   version:{
+    type: String,
+    enum: ['english', 'bangla'],
+   }
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

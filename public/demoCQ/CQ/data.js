@@ -4,10 +4,8 @@ const templateId = urlParams.get("templateId")
 window.cqData = null
 window.cqMeta = null
 
-// Declare renderCQ function or import it here
 function renderCQ(meta, data) {
   console.log("renderCQ function is called with meta and data")
-  // Implementation of renderCQ function
 }
 
 if (!templateId) {
@@ -15,7 +13,6 @@ if (!templateId) {
   document.body.innerHTML =
     "<div style='text-align: center; margin-top: 50px; font-size: 18px; color: red;'>Error: Template ID missing from URL</div>"
 } else {
-  // Fetch CQ data from API
   fetch(`/Api/cq?templateId=${templateId}`)
     .then((res) => {
       if (!res.ok) {
@@ -32,17 +29,14 @@ if (!templateId) {
 
       const data = result.data
 
-      // Extract primary info - handle both populated and non-populated cases
-      let primaryInfo
+      let primaryInfo = {}
       if (typeof data.primaryInfo === "object" && data.primaryInfo !== null && data.primaryInfo.institutionName) {
-        // primaryInfo is populated (object with actual data)
         primaryInfo = data.primaryInfo
         console.log("Primary info is populated")
       } else if (data.primaryInfo) {
-        // primaryInfo is just an ID, fetch it separately
         console.log("Primary info not populated, fetching separately...")
         try {
-          const primaryRes = await fetch(`/Api/primary-info?primaryId=${data.primaryInfo}`)
+          const primaryRes = await fetch(`/Api/createQuestionPrimaryInfo?primaryId=${data.primaryInfo}`)
           const primaryData = await primaryRes.json()
           if (primaryData.success) {
             primaryInfo = primaryData.data
@@ -59,7 +53,6 @@ if (!templateId) {
         primaryInfo = {}
       }
 
-      // Set CQ meta info with fallbacks
       window.cqMeta = {
         institutionName: primaryInfo.institutionName || "Institution Name",
         examName: primaryInfo.examName || "Exam Name",
@@ -72,22 +65,20 @@ if (!templateId) {
         message: primaryInfo.message || "",
       }
 
-      // Set CQ questions data
       window.cqData = Array.isArray(data.cqs) ? data.cqs : []
 
-      // Debug logs
       console.log("cqMeta:", window.cqMeta)
       console.log("cqData:", window.cqData)
       console.log("Number of CQs:", window.cqData.length)
 
-      // Check if renderCQ function exists and call it
       if (typeof renderCQ === "function") {
         console.log("Calling renderCQ function...")
         renderCQ(window.cqMeta, window.cqData)
       } else {
         console.log("renderCQ function not yet available, data is ready")
       }
-    })
+    })  
+  
     .catch((err) => {
       console.error("CQ data fetch error:", err)
       document.body.innerHTML = `
@@ -100,3 +91,5 @@ if (!templateId) {
       `
     })
 }
+
+

@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       primaryInfo = data.primaryInfo
     } else if (data.primaryInfo) {
       try {
-        const primaryRes = await fetch(`/Api/primary-info?primaryId=${data.primaryInfo}`)
+        const primaryRes = await fetch(`/Api/createQuestionPrimaryInfo?primaryId=${data.primaryInfo}`)
         const primaryData = await primaryRes.json()
         if (primaryData.success) {
           primaryInfo = primaryData.data
@@ -341,16 +341,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       } catch (err) {
         console.error("Error fetching primary info:", err)
-        primaryInfo = {} // Fallback to empty object if primary info fetch fails
+        primaryInfo = {} 
       }
     }
 
-    // --- Debugging logs for setCount ---
     console.log("Raw primaryInfo object:", primaryInfo)
     console.log("Raw primaryInfo.setCount:", primaryInfo.setCount)
-    // --- End Debugging logs ---
 
-    // Set global variables for script.js
     window.sqMeta = {
       institutionName: primaryInfo.institutionName || "Institution Name",
       examName: primaryInfo.examName || "Exam Name",
@@ -361,11 +358,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       subjectCode: primaryInfo.subjectCode || "101",
       totalTime: primaryInfo.totalTime || "30 minutes",
       message: primaryInfo.message || "",
-      // Robust parsing for setCount - try multiple field names
       setCount: Number.parseInt(String(primaryInfo.setCount || primaryInfo.totalSet || "1").trim()) || 1,
     }
 
-    console.log("Parsed sqMeta.setCount:", window.sqMeta.setCount) // Log parsed value
+    console.log("Parsed sqMeta.setCount:", window.sqMeta.setCount) 
 
     const originalSqData = convertSQData(data)
 
@@ -382,20 +378,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       return
     }
 
-    // Set global data for script.js
     window.originalSqData = originalSqData
 
-    // Call the function in script.js to start generation for multiple sets
     if (typeof window.infiniteSQ === "function") {
       for (let i = 0; i < window.sqMeta.setCount; i++) {
-        console.log(`Generating SQ set ${i + 1} of ${window.sqMeta.setCount}`) // Log each set generation
+        console.log(`Generating SQ set ${i + 1} of ${window.sqMeta.setCount}`) 
         const shuffledSqData = shuffleArray(originalSqData)
-        // Pass the shuffled data to infiniteSQ
-        await window.infiniteSQ(shuffledSqData, window.sqMeta, i) // Pass current set index
-        superArray.push(document.body.innerHTML) // Store the generated HTML for each set
+        await window.infiniteSQ(shuffledSqData, window.sqMeta, i) 
+        superArray.push(document.body.innerHTML) 
       }
 
-      // After all sets are generated, clear body and append all sets
       document.body.innerHTML = ""
       for (let i = 0; i < superArray.length; i++) {
         document.body.innerHTML += superArray[i]

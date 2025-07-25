@@ -1,5 +1,6 @@
 
 
+
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -35,10 +36,11 @@ export default function ImageDropzone({ imgFor, image, onImageChange }: Props) {
       const data = await res.json()
       if (data.success) {
         const imageUrl = data.fileUrl
+        console.log(`Image uploaded for ${imgFor}:`, imageUrl)
         setPreview(imageUrl)
         onImageChange(imageUrl)
       } else {
-        alert("Image upload failed: " + data.message)
+        alert("Image upload failed: " + data.error)
       }
     } catch (err) {
       console.error("Upload error:", err)
@@ -94,7 +96,7 @@ export default function ImageDropzone({ imgFor, image, onImageChange }: Props) {
         <div className="relative mt-2">
           <img
             src={preview || "/placeholder.svg"}
-            alt="Preview"
+            alt={`Preview for ${imgFor}`}
             className="max-w-md max-h-60 rounded-md border shadow-sm"
           />
           <button

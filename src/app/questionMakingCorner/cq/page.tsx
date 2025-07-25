@@ -191,14 +191,12 @@ const CQ = () => {
     }
   }, [])
 
-  // Generate PDF function - save and redirect
   const handleGeneratePDF = useCallback(async () => {
     if (!userId || !primaryInfoId || !templateId) {
       alert("Missing required IDs")
       return
     }
 
-    // Cancel any pending auto-save before final save
     if (debouncedSaveRef.current) {
       debouncedSaveRef.current.cancel()
     }
@@ -223,7 +221,6 @@ const CQ = () => {
         setSaveStatus("saved")
         console.log("CQ template saved, redirecting to PDF generation...")
 
-        // Redirect to CQ PDF generation page
         router.push(`/CQ?templateId=${templateId}`)
       } else {
         setSaveStatus("error")

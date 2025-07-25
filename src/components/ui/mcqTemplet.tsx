@@ -673,7 +673,6 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
 
   return (
     <div className="bg-blue-100 max-w-4xl mx-auto p-3 rounded-2xl mb-2">
-      {/* Passage Section */}
       <form>
         <LabelInputContainer className="mb-2">
           <Label htmlFor={`passage-${pIdx}`}>উদ্দীপক (Passage)</Label>
@@ -693,7 +692,6 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
         />
       </form>
 
-      {/* Sub-Questions Section */}
       <div className="mt-4">
         <div className="flex justify-between items-center mb-3">
           <button
@@ -715,7 +713,6 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
           </button>
         </div>
 
-        {/* Collapsible Sub-Questions */}
         {isSubQuestionsOpen && (
           <div className="space-y-3">
             {passageData.subQuestions.map((subQuestion, index) => (
@@ -737,7 +734,7 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
                 <div className="pr-8">
                   <LabelInputContainer className="mb-2">
                     <Label>
-                      প্রশ্ন {index + 1} (Sub Question {index + 1}) - childIdx: {subQuestion.childIdx}
+                      প্রশ্ন {index + 1} (Sub Question {index + 1}) 
                     </Label>
                     <Input
                       placeholder="প্রশ্নটি লিখুন"
@@ -850,10 +847,8 @@ const DelBtn = ({
     e.stopPropagation()
 
     if (deleteType === "individual" && mcqId && onDeleteIndividual) {
-      // Delete individual MCQ via API
       await onDeleteIndividual(mcqId)
     } else {
-      // Delete entire group locally
       setMcqTemplet((prev) => {
         return prev.filter((_, index) => index !== pIdx)
       })

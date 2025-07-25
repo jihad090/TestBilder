@@ -158,7 +158,6 @@ function infiniteCQ(cqData, cqMeta) {
       imgBool = true
     }
 
-    // Check if all minimums reached
     if (paddingBottomSize <= minPaddingBottomSize && containerFontSize <= minFontSize && imgHeight <= minImgHeight) {
       console.log("All minimums reached, breaking loop")
       alert("Content is too large for the page. Please consider reducing question length.")
@@ -198,7 +197,6 @@ function infiniteCQ(cqData, cqMeta) {
 
   console.log("Final height:", allContainer.offsetHeight)
 
-  // Distribute content across page sections
   const portion = [
     { idName: "page1Left", size: 840, state: true },
     { idName: "page1Right", size: 840, state: true },
@@ -263,7 +261,6 @@ function infiniteCQ(cqData, cqMeta) {
   superArray.push(document.body.innerHTML)
 }
 
-// Main render function
 function renderCQ(cqMeta, cqData) {
   console.log("renderCQ called with:", { cqMeta, cqDataLength: cqData?.length })
 
@@ -294,10 +291,8 @@ function renderCQ(cqMeta, cqData) {
   console.log("CQ rendering completed")
 }
 
-// Make renderCQ globally available
 window.renderCQ = renderCQ
 
-// Auto-render if data is already available
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, checking for data...")
   if (window.cqData && window.cqMeta) {
@@ -308,7 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 })
 
-// Fallback: Try to render after a short delay
 setTimeout(() => {
   if (window.cqData && window.cqMeta && document.body.innerHTML.trim() === "") {
     console.log("Fallback render triggered")

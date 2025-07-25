@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/dbconfig/dbconfig";
 import User from "@/Models/userModel";
 
-import bcrypt from "bcryptjs"; 
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -24,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
 
    
-    const isMatch = password === user.password; // If you're not hashing
+    const isMatch = password === user.password; 
 
     if (!isMatch) {
       return NextResponse.json({ message: "Invalid password" }, { status: 401 });

@@ -9,6 +9,7 @@ import debounce from "lodash/debounce"
 
 interface SQQuestion {
   id: string
+  
   parentIdx: number
   questionText: string
   image?: string
@@ -30,11 +31,14 @@ const SQ = () => {
   const searchParams = useSearchParams()
   const debouncedSaveRef = useRef<any>(null)
 
-  const generateId = () => `${Date.now()}-${crypto.randomUUID()}`
+  const generateId = () => `sq-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
   const saveToDatabase = useCallback(
     async (updatedTemplate: SQQuestion[]) => {
-      if (!userId || !primaryInfoId || !templateId) return
+      if (!userId || !primaryInfoId || !templateId) {
+        console.log("Missing IDs for SQ auto-save:", { userId, primaryInfoId, templateId })
+        return
+      }
 
       setSaveStatus("saving")
 
@@ -58,17 +62,20 @@ const SQ = () => {
         const data = await res.json()
         if (data.success) {
           setSaveStatus("saved")
+          console.log("SQ Template auto-saved successfully")
           setTimeout(() => setSaveStatus("idle"), 2000)
         } else {
           setSaveStatus("error")
+          console.error("SQ Auto-save failed:", data.message)
           setTimeout(() => setSaveStatus("idle"), 3000)
         }
-      } catch {
+      } catch (err) {
         setSaveStatus("error")
+        console.error("SQ Auto-save network error:", err)
         setTimeout(() => setSaveStatus("idle"), 3000)
       }
     },
-    [userId, primaryInfoId, templateId, sqTempletName]
+    [userId, primaryInfoId, templateId, sqTempletName],
   )
 
   useEffect(() => {
@@ -91,8 +98,9 @@ const SQ = () => {
           isComplete: !!(q.questionText?.trim() || q.image?.trim()),
         }))
         setSqTemplet(questions)
+        console.log("Loaded existing SQ template:", questions.length, "questions")
       } else {
-        setErrorMsg("SQ Template not found!")
+        console.log("No existing SQ template found, starting fresh")
       }
     } catch (error) {
       console.error("Error loading SQ template:", error)
@@ -112,8 +120,12 @@ const SQ = () => {
 
         const primaryId = searchParams.get("primaryId")
         const tempId = searchParams.get("templateId")
-        if (primaryId) setPrimaryInfoId(primaryId)
-        else setErrorMsg("Missing primaryId in URL!")
+
+        if (primaryId) {
+          setPrimaryInfoId(primaryId)
+        } else {
+          setErrorMsg("Missing primaryId in URL!")
+        }
 
         if (tempId) {
           setTemplateId(tempId)
@@ -139,34 +151,50 @@ const SQ = () => {
         isComplete: false,
       }
       const updated = [...prev, newSQ]
+      console.log("Added new SQ question:", newSQ.id)
       debouncedSaveRef.current?.(updated)
       return updated
     })
   }, [])
 
   const handleDeleteSQ = useCallback(
-    async (pIdx: number) => {
+    async (questionId: string) => {
       if (!templateId) return
+
+      // Find the question to get its index
+      const questionIndex = sqTemplet.findIndex((q) => q.id === questionId)
+      if (questionIndex === -1) return
+
       try {
-        const res = await fetch(`/Api/sq?templateId=${templateId}&sqIndex=${pIdx}`, {
+        const res = await fetch(`/Api/sq?templateId=${templateId}&sqIndex=${questionIndex}`, {
           method: "DELETE",
         })
         const data = await res.json()
-        if (data.success) setSqTemplet(data.data.sqGroup.questions || [])
+        if (data.success) {
+          // Update parentIdx for remaining questions
+          const updatedQuestions = (data.data.sqGroup.questions || []).map((q: any, index: number) => ({
+            ...q,
+            id: q.id || generateId(),
+            parentIdx: index,
+          }))
+          setSqTemplet(updatedQuestions)
+          console.log("SQ question deleted successfully")
+        } else {
+          console.error("SQ Delete failed:", data.message)
+        }
       } catch (error) {
-        console.error("Delete error:", error)
+        console.error("SQ Delete error:", error)
       }
     },
-    [templateId]
+    [templateId, sqTemplet],
   )
 
   const handleQuestionTextChange = useCallback((id: string, value: string) => {
     setSqTemplet((prev) => {
       const updated = prev.map((item) =>
-        item.id === id
-          ? { ...item, questionText: value, isComplete: !!(value.trim() || item.image?.trim()) }
-          : item
+        item.id === id ? { ...item, questionText: value, isComplete: !!(value.trim() || item.image?.trim()) } : item,
       )
+      console.log(`SQ Question text updated for ${id}:`, value)
       debouncedSaveRef.current?.(updated)
       return updated
     })
@@ -175,18 +203,21 @@ const SQ = () => {
   const handleImageChange = useCallback((id: string, image: string) => {
     setSqTemplet((prev) => {
       const updated = prev.map((item) =>
-        item.id === id
-          ? { ...item, image, isComplete: !!(item.questionText?.trim() || image.trim()) }
-          : item
+        item.id === id ? { ...item, image, isComplete: !!(item.questionText?.trim() || image.trim()) } : item,
       )
+      console.log(`SQ Image updated for ${id}:`, image)
       debouncedSaveRef.current?.(updated)
       return updated
     })
   }, [])
 
   const handleSubmit = useCallback(async () => {
-    if (!userId || !primaryInfoId || !templateId) return
+    if (!userId || !primaryInfoId || !templateId) {
+      alert("Missing required IDs")
+      return
+    }
 
+    // Cancel any pending auto-save before final save
     debouncedSaveRef.current?.cancel()
     setSaveStatus("saving")
 
@@ -210,13 +241,16 @@ const SQ = () => {
       const data = await res.json()
       if (data.success) {
         setSaveStatus("saved")
+        console.log("SQ template saved, redirecting to PDF generation...")
         router.push(`/SQ?templateId=${templateId}`)
       } else {
         setSaveStatus("error")
+        alert("Error saving SQ template: " + data.message)
       }
     } catch (error) {
-      console.error("Submit error:", error)
+      console.error("SQ Submit error:", error)
       setSaveStatus("error")
+      alert("Network error occurred")
     }
   }, [userId, primaryInfoId, templateId, sqTemplet, sqTempletName, router])
 
@@ -249,16 +283,18 @@ const SQ = () => {
       </div>
 
       <div className="mt-[120px] space-y-4">
-        {sqTemplet.map((item) => (
+        {sqTemplet.map((item,idx) => (
           <SqTemplet
             key={item.id}
+            id={item.id}
+            index={idx}
             value={item.questionText}
             image={item.image}
             marks={item.marks}
             onChange={(val) => handleQuestionTextChange(item.id, val)}
             onImageChange={(url) => handleImageChange(item.id, url)}
           >
-            <DelBtnSQ pIdx={item.parentIdx} onDelete={() => handleDeleteSQ(item.parentIdx)} />
+            <DelBtnSQ pIdx={item.parentIdx} onDelete={() => handleDeleteSQ(item.id)} />
           </SqTemplet>
         ))}
       </div>
@@ -267,9 +303,9 @@ const SQ = () => {
         <button
           className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold disabled:opacity-50 transition-colors"
           onClick={handleSubmit}
-          disabled={!!errorMsg || saveStatus === "saving"}
+          disabled={!!errorMsg || saveStatus === "saving" || sqTemplet.length === 0}
         >
-          {saveStatus === "saving" ? "Saving & Generating..." : "Generate PDF"}
+          {saveStatus === "saving" ? "Saving & Generating..." : "Save & Generate PDF"}
         </button>
       </div>
 
