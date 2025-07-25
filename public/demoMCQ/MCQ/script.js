@@ -10,17 +10,17 @@ const templet = `
             <td colspan="3" class="institutionName" style="text-align: center; font-size: 28px;"></td>
           </tr>
           <tr>
-            <td style="text-align: left; width: 33.33%;"><b>পরীক্ষাঃ </b><span class="examName"></span></td>
-            <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b><span class="subject"></span><span class="paper"></span></td>
-            <td style="text-align: left; width: 33.33%;"><b>শ্রেণীঃ </b><span class="class"></span></td>
+            <td style="text-align: left; width: 33.33%;"><b>Exam: </b><span class="examName"></span></td>
+            <td style="text-align: left; width: 33.33%;"><b>Subject: </b><span class="subject"></span><span class="paper"></span></td>
+            <td style="text-align: left; width: 33.33%;"><b>Class: </b><span class="class"></span></td>
           </tr>
           <tr>
-            <td style="text-align: left;"><b>সেটঃ </b><span class="setCode"></span></td>
-            <td style="text-align: left;"><b>পূর্ণমানঃ </b><span class="totalMark"></span></td>
-            <td style="text-align: left;"><b>সময়ঃ </b><span class="totalTime"></span></td>
+            <td style="text-align: left;"><b>Question Set: </b><span class="setCode"></span></td>
+            <td style="text-align: left;"><b>Total mark: </b><span class="totalMark"></span></td>
+            <td style="text-align: left;"><b>Total Time: </b><span class="totalTime"></span></td>
           </tr>
           <tr>
-            <td colspan="3" style="text-align: left;"><b>বিঃদ্রঃ</b> সংযুক্ত উত্তরপত্রে ক্রমিক নম্বরের বিপরীতে সঠিক/ সর্বোত্তম উত্তর বল পয়েন্ট কলম দিয়ে পূরণ করো। প্রতিটি প্রশ্নের মান ১।</td>
+            <td colspan="3" style="text-align: left;"><b>Note:</b> On the attached answer sheet, fill in the correct/optimal answer opposite the serial number using a ballpoint pen. Each question is worth 1 mark.
           </tr>
         </table>
       </div>
@@ -34,14 +34,14 @@ const templet = `
             <td colspan="3" class="institutionName" style="text-align: center; font-size: 20px;"></td>
           </tr>
           <tr>
-            <td style="text-align: left; width: 33.33%;"><b>পরীক্ষাঃ </b><span class="examName"></span></td>
-            <td style="text-align: left; width: 33.33%;"><b>বিষয়ঃ </b><span class="subject"></span><span class="paper"></span></td>
-            <td style="text-align: left; width: 33.33%;"><b>শ্রেণীঃ </b><span class="class"></span></td>
+            <td style="text-align: left; width: 33.33%;"><b>Exam: </b><span class="examName"></span></td>
+            <td style="text-align: left; width: 33.33%;"><b>Subject: </b><span class="subject"></span><span class="paper"></span></td>
+            <td style="text-align: left; width: 33.33%;"><b>Class: </b><span class="class"></span></td>
           </tr>
           <tr>
-            <td style="text-align: left;"><b>সেটঃ </b><span class="setCode"></span></td>
-            <td style="text-align: left;"><b>পূর্ণমানঃ </b><span class="totalMark"></span></td>
-            <td style="text-align: left;"><b>সময়ঃ </b><span class="totalTime"></span></td>
+            <td style="text-align: left;"><b>Question Set: </b><span class="setCode"></span></td>
+            <td style="text-align: left;"><b>Total mark: </b><span class="totalMark"></span></td>
+            <td style="text-align: left;"><b>Total Time: </b><span class="totalTime"></span></td>
           </tr>
         </table>
       </div>
