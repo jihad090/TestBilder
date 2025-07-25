@@ -7,7 +7,6 @@ import PrimaryQuestionInfo from "@/Models/primaryQuestion"
 
 await connectDB()
 
-// POST - Create new primary question info
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
@@ -51,7 +50,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET - Fetch existing primary question info by ID
 export async function GET(request: NextRequest) {
   try {
     await connectDB()

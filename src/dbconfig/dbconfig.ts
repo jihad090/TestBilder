@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const MONGO_URL =
   "mongodb+srv://u2104070:sayed2104070@cluster0.tzxod9n.mongodb.net/TestBuilder?retryWrites=true&w=majority&appName=Cluster0";
 
-// MongoDB connection caching
 let cached = (global as any).mongoose || { conn: null, promise: null };
 (global as any).mongoose = cached;
 

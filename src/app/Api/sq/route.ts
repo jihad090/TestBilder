@@ -7,7 +7,6 @@ import ShortQuestion from "@/Models/sqTemplete"
 const validateSQ = (sq: any) => {
   console.log("Backend validating SQ:", JSON.stringify(sq, null, 2))
 
-  // Check if sq has either questionText or image
   if (!sq.questionText && !sq.image) {
     console.log(" SQ needs either questionText or image")
     return false
@@ -17,7 +16,6 @@ const validateSQ = (sq: any) => {
   return true
 }
 
-// POST: Create new SQ template (called when primary info is submitted)
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
@@ -31,7 +29,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
     }
 
-    //  Handle UPDATE operation
     if (operation === "update" && templateId) {
       if (!sqGroup || !sqGroup.questions || !Array.isArray(sqGroup.questions)) {
         return NextResponse.json(
@@ -74,8 +71,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: updated }, { status: 200 })
     }
 
-    //  Handle CREATE operation (default)
-    // Check if template already exists for this primaryInfo
+   
     const existingTemplate = await ShortQuestion.findOne({
       user,
       primaryInfo,
@@ -92,7 +88,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create new incomplete template
     const newTemplate = new ShortQuestion({
       user,
       primaryInfo,
@@ -101,7 +96,7 @@ export async function POST(request: NextRequest) {
         questions: [], 
         isComplete: false,
       },
-      isComplete: false, // Always incomplete when first created
+      isComplete: false, 
     })
 
     const savedTemplate = await newTemplate.save()
@@ -129,7 +124,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Fetch existing SQ template
 export async function GET(request: NextRequest) {
   try {
     await connectDB()
@@ -141,7 +135,6 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId")
     const onlyComplete = searchParams.get("onlyComplete")
 
-    //  Handle fetching complete templates for a user
     if (userId && onlyComplete === "true") {
       const templates = await ShortQuestion.find({
         user: userId,
@@ -158,7 +151,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Missing templateId or user/primaryInfo" }, { status: 400 })
     }
 
-    // Find template by ID or by user+primaryInfo
     let template
     if (templateId) {
       template = await ShortQuestion.findById(templateId).populate("primaryInfo")
@@ -185,7 +177,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// DELETE: Remove a single SQ from existing template
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB()

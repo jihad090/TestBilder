@@ -5,7 +5,6 @@ import { FileText, FormInput, Shield, DollarSign, Database, Zap, GraduationCap }
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 lg:py-10">
         <div className="text-center max-w-5xl mx-auto">
 

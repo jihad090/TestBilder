@@ -22,7 +22,6 @@ const validateCQ = (cq: any) => {
   )
 }
 
-//  POST — create or update
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -55,7 +54,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: updated }, { status: 200 })
     }
 
-    //  create new
     const newTemplate = new FullCQTemplate({
       user,
       primaryInfo,
@@ -93,7 +91,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// DELETE  remove a single CQ from existing template
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

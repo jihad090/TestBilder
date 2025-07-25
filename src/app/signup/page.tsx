@@ -34,9 +34,9 @@ export default function SignupFormDemo() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(`❌ ${data.message}`);
+        alert(` ${data.message}`);
       } else {
-        alert("✅ Signup successful!");
+        alert(" Signup successful!");
         window.location.href = "/login";
       }
     } catch (error) {

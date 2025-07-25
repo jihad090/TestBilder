@@ -66,11 +66,9 @@ function infiniteCQ(cqData, cqMeta) {
     allContainer.style.fontSize = `${containerFontSize}px`
 
     cqData.forEach((item, idx) => {
-      // Get main passage text from the CQ structure
       const passage = item.questions?.[0]?.questionText || ""
       const passageImg = item.questions?.[0]?.passageImage || ""
 
-      // Add main question/passage
       if (passage) {
         allContainer.innerHTML += `<div id="question" style="text-align: justify;"><b id="qNo">${idx + 1}&#46;</b> <span id="qStatement">${passage}</span></div>`
         mainArray.push(
@@ -78,7 +76,6 @@ function infiniteCQ(cqData, cqMeta) {
         )
       }
 
-      // Add passage image if exists
       if (passageImg) {
         allContainer.innerHTML += `<div style="width: 100%; text-align: center;"><img src="${passageImg}" alt="Image missing" height="${imgHeight}px"></div>`
         mainArray.push(
@@ -86,10 +83,8 @@ function infiniteCQ(cqData, cqMeta) {
         )
       }
 
-      // Container for sub-questions
       allContainer.innerHTML += `<div style="padding-bottom: ${paddingBottomSize}px;padding-left: 5px;" id="questionContainer${idx}"></div>`
 
-      // Add sub-questions
       const subQuestions = item.questions?.[0]?.subQuestions || []
       subQuestions.forEach((sq, qIdx) => {
         const char = "ক"
@@ -111,7 +106,6 @@ function infiniteCQ(cqData, cqMeta) {
             `<div style="text-align: justify;"><b>${String.fromCharCode(asciiValue + qIdx)}&#41;</b> <span>${sq.questionText || ""}</span><span style="float: right; font-weight: bold;">[${sq.marks || 1}]</span></div>`,
           )
 
-          // Add sub-question image if exists
           if (sq.image) {
             questionContainer.innerHTML += `
               <div style="width: 100%; height:${imgHeight}px; text-align: center;">
@@ -129,7 +123,6 @@ function infiniteCQ(cqData, cqMeta) {
     })
   }
 
-  // Shuffle array function
   function shuffleArray(array) {
     return [...array].sort(() => Math.random() - 0.5)
   }
@@ -138,15 +131,12 @@ function infiniteCQ(cqData, cqMeta) {
   let flag = true
   let font = false
 
-  // Initial build
   buildContent()
 
-  // MathJax rendering if available
   if (window.MathJax) {
     window.MathJax.typesetPromise([allContainer]).then(() => {})
   }
 
-  // Optimization loop
   while ((allContainer.offsetHeight > maxHeight || flag) && loopControl) {
     if (paddingBottomSize <= minPaddingBottomSize) {
       font = true
@@ -225,11 +215,9 @@ function infiniteCQ(cqData, cqMeta) {
     }
   })
 
-  // Set font sizes and populate header information
   document.getElementById("parent1").style.fontSize = `${containerFontSize}px`
   document.getElementById("parent2").style.fontSize = `${containerFontSize}px`
 
-  // Populate header fields
   document.querySelectorAll(".institutionName").forEach((el) => {
     el.textContent = cqMeta.institutionName || ""
   })

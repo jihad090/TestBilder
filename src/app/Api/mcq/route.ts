@@ -3,7 +3,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/dbconfig/dbconfig"
 import MCQTemplate from "@/Models/mcqTemplate"
-// Validate a single MCQ
 function validateMCQ(mcq: any): boolean {
   if (mcq.mcqType === "mcq-4") {
     const hasPassageText = mcq.passage && mcq.passage.trim() !== ""
@@ -40,13 +39,11 @@ function validateMCQ(mcq: any): boolean {
   }
 }
 
-// Check if entire template is complete
 function checkTemplateIsComplete(mcqs: any[]): boolean {
   if (!Array.isArray(mcqs) || mcqs.length === 0) return false
   return mcqs.every(validateMCQ)
 }
 
-// Convert frontend array structure to backend flat structure
 function convertMCQsToBackendFormat(mcqs: any[][]): any[] {
   const flatMCQs: any[] = []
 
@@ -86,7 +83,6 @@ function convertMCQsToBackendFormat(mcqs: any[][]): any[] {
   return flatMCQs
 }
 
-// Convert backend flat structure to frontend array structure
 function convertMCQsToFrontendFormat(mcqs: any[]): any[][] {
   const groupedMCQs: { [key: number]: any[] } = {}
 
@@ -98,7 +94,6 @@ function convertMCQsToFrontendFormat(mcqs: any[]): any[][] {
     groupedMCQs[parentIdx].push(mcq)
   })
 
-  // Convert to array format
   const result: any[][] = []
   Object.keys(groupedMCQs)
     .sort((a, b) => Number(a) - Number(b))
@@ -198,10 +193,8 @@ export async function GET(req: NextRequest) {
     let template = null
 
     if (templateId) {
-      // ✅ If templateId is provided, find by ID and populate primaryInfo
       template = await MCQTemplate.findById(templateId).populate("primaryInfo")
     } else if (user && primaryInfo) {
-      // ✅ Fallback for user + primaryInfo-based fetch (for frontend/editor)
       template = await MCQTemplate.findOne({ user, primaryInfo }).populate("primaryInfo")
     } else {
       return NextResponse.json(
@@ -250,7 +243,6 @@ export async function GET(req: NextRequest) {
 
 
 
-// Add a new PUT endpoint for individual MCQ updates and fix DELETE
 export async function PUT(req: NextRequest) {
   await connectDB()
 
@@ -267,7 +259,6 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Template not found" }, { status: 404 })
     }
 
-    // Find and update the specific MCQ
     const mcqIndex = template.mcqs.findIndex((mcq: any) => mcq._id.toString() === mcqId)
     if (mcqIndex === -1) {
       return NextResponse.json({ success: false, message: "MCQ not found" }, { status: 404 })
@@ -294,7 +285,6 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// Fix DELETE to work with both group and individual MCQ deletion
 export async function DELETE(req: NextRequest) {
   await connectDB()
 
@@ -312,7 +302,6 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (deleteType === "group") {
-      // Delete entire group by parentIdx
       const parentIdx = Number.parseInt(mcqId)
       const initialLength = template.mcqs.length
       template.mcqs = template.mcqs.filter((mcq: any) => mcq.parentIdx !== parentIdx)
@@ -321,7 +310,6 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ success: false, message: "MCQ group not found" }, { status: 404 })
       }
 
-      // Re-index remaining groups
       const groupMap = new Map()
       template.mcqs.forEach((mcq: any) => {
         if (!groupMap.has(mcq.parentIdx)) {
@@ -330,7 +318,6 @@ export async function DELETE(req: NextRequest) {
         mcq.parentIdx = groupMap.get(mcq.parentIdx)
       })
     } else {
-      // Delete individual MCQ
       const initialLength = template.mcqs.length
       template.mcqs = template.mcqs.filter((mcq: any) => mcq._id.toString() !== mcqId)
 

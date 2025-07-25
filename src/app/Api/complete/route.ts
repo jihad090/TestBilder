@@ -109,7 +109,6 @@ export async function GET(request: NextRequest) {
         questionsCount: template.sqGroup?.questions?.length || 0,
       })),
     ]
-    // Sort by updatedAt (most recent first)
     allTemplates.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 
     console.log(`Fetched ${allTemplates.length} templates for user ${userId}`)
