@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       totalMark,
       examName,
       subject,
-      paper = "none",
+      paper = "",
       subjectCode,
       examType,
       totalTime,
