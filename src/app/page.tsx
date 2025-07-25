@@ -28,7 +28,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-          <Link href="/MCQ">
+          <Link href="/demo/MCQ">
               <Button
                 size="lg"
                 variant="outline"
@@ -38,7 +38,7 @@ export default function Home() {
                 View MCQ Sample Papers
               </Button>
             </Link>
-            <Link href="/CQ">
+            <Link href="/demo/CQ">
               <Button
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
@@ -47,7 +47,7 @@ export default function Home() {
                 View CQ Sample Papers
               </Button>
             </Link>
-            <Link href="/SQ">
+            <Link href="/demo/SQ">
               <Button
                 size="lg"
                 variant="outline"
