@@ -338,9 +338,7 @@ const CQ = () => {
         </span>
       </div>
 
-      <div className="text-center mt-2 text-xs text-gray-500">
-        {cqTemplet.length} CQ{cqTemplet.length !== 1 ? "'s" : ""} added
-      </div>
+     
     </div>
   )
 }
