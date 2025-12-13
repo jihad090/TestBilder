@@ -48,30 +48,45 @@ function checkTemplateIsComplete(mcqs: any[]): boolean {
   return mcqs.every(validateMCQ)
 }
 
-function convertMCQsToBackendFormat(mcqs: any[][]): any[] {
+
+import { analyzeComplexity } from "@/utils/complexityAnalyzer"
+
+async function convertMCQsToBackendFormat(mcqs: any[][]): Promise<any[]> {
   const flatMCQs: any[] = []
 
-  mcqs.forEach((group, groupIndex) => {
-    group.forEach((mcq) => {
+  for (let groupIndex = 0; groupIndex < mcqs.length; groupIndex++) {
+    const group = mcqs[groupIndex];
+    for (const mcq of group) {
       const base = {
         mcqType: mcq.mcqType,
         parentIdx: groupIndex,
         marks: mcq.marks || 1,
+        complexity: mcq.complexity,
       }
 
       if (mcq.mcqType === "mcq-4") {
+        const subQuestions = [];
+        if (mcq.subQuestions && Array.isArray(mcq.subQuestions)) {
+          for (let index = 0; index < mcq.subQuestions.length; index++) {
+            const subQ = mcq.subQuestions[index];
+
+            subQuestions.push({
+              childIdx: index,
+              questionText: subQ.questionText || "",
+              image: subQ.image || "",
+              options: subQ.options || [],
+              correctAnswer: subQ.correctAnswer || "",
+              marks: subQ.marks || 1,
+              complexity: subQ.complexity
+            });
+          }
+        }
+
         flatMCQs.push({
           ...base,
           passage: mcq.passage || "",
           passageImage: mcq.passageImage || "",
-          subQuestions: (mcq.subQuestions || []).map((subQ: any, index: number) => ({
-            childIdx: index,
-            questionText: subQ.questionText || "",
-            image: subQ.image || "",
-            options: subQ.options || [],
-            correctAnswer: subQ.correctAnswer || "",
-            marks: subQ.marks || 1,
-          })),
+          subQuestions: subQuestions,
         })
       } else {
         const cleanedMCQ: any = {
@@ -88,11 +103,12 @@ function convertMCQsToBackendFormat(mcqs: any[][]): any[] {
 
         flatMCQs.push(cleanedMCQ)
       }
-    })
-  })
+    }
+  }
 
   return flatMCQs
 }
+
 
 function convertMCQsToFrontendFormat(mcqs: any[]): any[][] {
   const groupedMCQs: { [key: number]: any[] } = {}
@@ -154,7 +170,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const backendMCQs = convertMCQsToBackendFormat(mcqs)
+    const backendMCQs = await convertMCQsToBackendFormat(mcqs)
     const isComplete = checkTemplateIsComplete(backendMCQs)
 
     const result = await retryOperation(async () => {
@@ -168,8 +184,8 @@ export async function POST(req: NextRequest) {
           },
         },
         {
-          new: true, 
-          upsert: true, 
+          new: true,
+          upsert: true,
           runValidators: true,
           setDefaultsOnInsert: true,
         },

@@ -7,6 +7,8 @@ import type React from "react"
 import { useState, useEffect, useCallback } from "react"
 import { Label } from "../../ui/label"
 import { Input } from "../../ui/input"
+import { Button } from "@/components/ui/button"
+import { Loader2, Brain } from "lucide-react"
 import ImageDropzone from "@/components/ImageDropzone"
 import debounce from "lodash/debounce"
 
@@ -16,6 +18,7 @@ interface SubQuestion {
   banglaNum: string
   englishNum: string
   image?: string
+  complexity?: "Easy" | "Medium" | "Hard"
 }
 
 interface CQQuestion {
@@ -155,6 +158,30 @@ function generateCqTempletComponent(
       setFormData((prev) => ({ ...prev, passageImage: url }))
     }
 
+    const [analyzingIndex, setAnalyzingIndex] = useState<number | null>(null);
+
+    const handleAnalyzeSubQuestion = async (index: number, text: string, e: React.MouseEvent) => {
+      e.preventDefault();
+      if (!text) return;
+
+      setAnalyzingIndex(index);
+      try {
+        const res = await fetch("/Api/analyze-complexity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        if (data.success) {
+          handleSubChange(index, "complexity", data.complexity);
+        }
+      } catch (err) {
+        console.error("Analysis failed", err);
+      } finally {
+        setAnalyzingIndex(null);
+      }
+    }
+
     return (
       <div className="w-full">
         <div className="bg-blue-100 mx-auto max-w-220 p-3 rounded-2xl mb-2">
@@ -182,16 +209,41 @@ function generateCqTempletComponent(
                   {item.banglaNum} ({item.englishNum})
                 </h4>
                 <div className="flex w-full justify-between">
-                  <div className="mb-2 w-full">
-                    <Label htmlFor={`q${pIdx}-${idx}`}>প্রশ্ন (Question)</Label>
-                    <Input
-                      id={`q${pIdx}-${idx}`}
-                      placeholder={`প্রশ্ন ${item.banglaNum} লিখুন`}
-                      type="text"
-                      value={item.questionText}
-                      onChange={(e) => handleSubChange(idx, "questionText", e.target.value)}
-                    />
+                  <div className="flex flex-col w-full">
+                    <div className="flex gap-2 self-end mb-1">
+                      <Button
+                        onClick={(e) => handleAnalyzeSubQuestion(idx, item.questionText, e)}
+                        disabled={analyzingIndex === idx || !item.questionText}
+                        variant="outline"
+                        size="sm"
+                        className="h-6 px-1.5 text-[10px] flex gap-1 items-center bg-white"
+                        title="Analyze Complexity"
+                      >
+                        {analyzingIndex === idx ? <Loader2 className="w-3 h-3 animate-spin" /> : <Brain className="w-3 h-3" />}
+                        Analyze
+                      </Button>
+
+                      {(item as any).complexity && (
+                        <div className={`px-2 py-0.5 rounded text-[10px] font-semibold w-fit ${(item as any).complexity === "Hard" ? "bg-red-100 text-red-800" :
+                          (item as any).complexity === "Medium" ? "bg-yellow-100 text-yellow-800" :
+                            "bg-green-100 text-green-800"
+                          }`}>
+                          {(item as any).complexity}
+                        </div>
+                      )}
+                    </div>
+                    <div className="mb-2 w-full">
+                      <Label htmlFor={`q${pIdx}-${idx}`}>প্রশ্ন (Question)</Label>
+                      <Input
+                        id={`q${pIdx}-${idx}`}
+                        placeholder={`প্রশ্ন ${item.banglaNum} লিখুন`}
+                        type="text"
+                        value={item.questionText}
+                        onChange={(e) => handleSubChange(idx, "questionText", e.target.value)}
+                      />
+                    </div>
                   </div>
+
                   <div className="mb-2">
                     <Label htmlFor={`marks${pIdx}-${idx}`}>নম্বর (Marks)</Label>
                     <Input
@@ -215,7 +267,7 @@ function generateCqTempletComponent(
 
           <div className="flex justify-between mt-4">{children}</div>
         </div>
-      </div>
+      </div >
     )
   }
 }

@@ -3,16 +3,18 @@ import mongoose from "mongoose";
 
 const subQuestionSchema = new mongoose.Schema({
   questionText: { type: String, required: false },
-   banglaNum: String,
+  banglaNum: String,
   englishNum: String,
-  image: String ,
+  image: String,
   marks: { type: Number, default: 1 },
+  complexity: { type: String, enum: ["Easy", "Medium", "Hard"], default: "Easy" },
 });
 
 const questionSchema = new mongoose.Schema({
   questionText: { type: String, required: false },
   marks: { type: Number, default: 10 },
-  passageImage: String, 
+  complexity: { type: String, enum: ["Easy", "Medium", "Hard"], default: "Easy" },
+  passageImage: String,
   subQuestions: [subQuestionSchema],
 });
 
@@ -25,7 +27,7 @@ const cqSchema = new mongoose.Schema({
   },
   containedQuestion: { type: Number, required: false },
   parentIdx: { type: Number, required: false },
-  id: { type: String, required: false }, 
+  id: { type: String, required: false },
   questions: [questionSchema],
   isComplete: { type: Boolean, default: false },
 });

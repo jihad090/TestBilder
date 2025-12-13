@@ -7,7 +7,8 @@ import { Input } from "../../ui/input"
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ImageDropzone from "@/components/ImageDropzone"
-import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Plus, Trash2, Brain, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 type Props = {
   children?: React.ReactNode
@@ -91,6 +92,36 @@ const MCQTemplet_1 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
     }))
   }
 
+  const [analyzing, setAnalyzing] = useState(false);
+
+  const handleAnalyze = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.questionText) return;
+
+    setAnalyzing(true);
+    try {
+      const res = await fetch("/Api/analyze-complexity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: formData.questionText })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMcqTemplet(prev => {
+          const newState = [...prev];
+          if (newState[pIdx] && newState[pIdx][0]) {
+            newState[pIdx][0] = { ...newState[pIdx][0], complexity: data.complexity };
+          }
+          return newState;
+        });
+      }
+    } catch (err) {
+      console.error("Analysis failed", err);
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   return (
     <div className="w-full">
       <form className="bg-blue-300 mx-auto max-w-4xl p-3 rounded-2xl mb-2">
@@ -161,6 +192,29 @@ const MCQTemplet_1 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
         <div className="flex justify-between items-center">
           {children}
           <div className="flex gap-4 items-center">
+            <div className="flex gap-2 items-center">
+              <Button
+                onClick={handleAnalyze}
+                disabled={analyzing || !formData.questionText}
+                variant="outline"
+                size="sm"
+                className="h-7 px-2 text-xs flex gap-1 items-center bg-white"
+                title="Analyze Complexity"
+              >
+                {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Brain className="w-3 h-3" />}
+                Analyze
+              </Button>
+
+              {mcqTemplet[pIdx]?.[0]?.complexity && (
+                <div className={`px-2 py-1 rounded text-xs font-semibold ${mcqTemplet[pIdx][0].complexity === "Hard" ? "bg-red-100 text-red-800" :
+                  mcqTemplet[pIdx][0].complexity === "Medium" ? "bg-yellow-100 text-yellow-800" :
+                    "bg-green-100 text-green-800"
+                  }`}>
+                  {mcqTemplet[pIdx][0].complexity}
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">নম্বর:</span>
               <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
@@ -248,6 +302,36 @@ const MCQTemplet_2 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
     }))
   }
 
+  const [analyzing, setAnalyzing] = useState(false);
+
+  const handleAnalyze = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.questionText) return;
+
+    setAnalyzing(true);
+    try {
+      const res = await fetch("/Api/analyze-complexity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: formData.questionText })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMcqTemplet(prev => {
+          const newState = [...prev];
+          if (newState[pIdx] && newState[pIdx][0]) {
+            newState[pIdx][0] = { ...newState[pIdx][0], complexity: data.complexity };
+          }
+          return newState;
+        });
+      }
+    } catch (err) {
+      console.error("Analysis failed", err);
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   return (
     <div className="w-full">
       <form className="bg-blue-300 mx-auto max-w-4xl p-3 rounded-2xl mb-2">
@@ -296,6 +380,29 @@ const MCQTemplet_2 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
         <div className="flex justify-between items-center">
           {children}
           <div className="flex gap-4 items-center">
+            <div className="flex gap-2 items-center">
+              <Button
+                onClick={handleAnalyze}
+                disabled={analyzing || !formData.questionText}
+                variant="outline"
+                size="sm"
+                className="h-7 px-2 text-xs flex gap-1 items-center bg-white"
+                title="Analyze Complexity"
+              >
+                {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Brain className="w-3 h-3" />}
+                Analyze
+              </Button>
+
+              {mcqTemplet[pIdx]?.[0]?.complexity && (
+                <div className={`px-2 py-1 rounded text-xs font-semibold ${mcqTemplet[pIdx][0].complexity === "Hard" ? "bg-red-100 text-red-800" :
+                  mcqTemplet[pIdx][0].complexity === "Medium" ? "bg-yellow-100 text-yellow-800" :
+                    "bg-green-100 text-green-800"
+                  }`}>
+                  {mcqTemplet[pIdx][0].complexity}
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">নম্বর:</span>
               <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
@@ -423,6 +530,36 @@ const MCQTemplet_3 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
     }))
   }
 
+  const [analyzing, setAnalyzing] = useState(false);
+
+  const handleAnalyze = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.questionText) return;
+
+    setAnalyzing(true);
+    try {
+      const res = await fetch("/Api/analyze-complexity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: formData.questionText })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMcqTemplet(prev => {
+          const newState = [...prev];
+          if (newState[pIdx] && newState[pIdx][0]) {
+            newState[pIdx][0] = { ...newState[pIdx][0], complexity: data.complexity };
+          }
+          return newState;
+        });
+      }
+    } catch (err) {
+      console.error("Analysis failed", err);
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   return (
     <div className="w-full">
       <form className="bg-blue-300 mx-auto max-w-4xl p-3 rounded-2xl mb-2">
@@ -535,6 +672,29 @@ const MCQTemplet_3 = ({ children, pIdx, mcqTemplet, setMcqTemplet }: Props) => {
         <div className="flex justify-between items-center">
           {children}
           <div className="flex gap-4 items-center">
+            <div className="flex gap-2 items-center">
+              <Button
+                onClick={handleAnalyze}
+                disabled={analyzing || !formData.questionText}
+                variant="outline"
+                size="sm"
+                className="h-7 px-2 text-xs flex gap-1 items-center bg-white"
+                title="Analyze Complexity"
+              >
+                {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Brain className="w-3 h-3" />}
+                Analyze
+              </Button>
+
+              {mcqTemplet[pIdx]?.[0]?.complexity && (
+                <div className={`px-2 py-1 rounded text-xs font-semibold ${mcqTemplet[pIdx][0].complexity === "Hard" ? "bg-red-100 text-red-800" :
+                  mcqTemplet[pIdx][0].complexity === "Medium" ? "bg-yellow-100 text-yellow-800" :
+                    "bg-green-100 text-green-800"
+                  }`}>
+                  {mcqTemplet[pIdx][0].complexity}
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">নম্বর:</span>
               <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
@@ -663,12 +823,41 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
       subQuestions: prev.subQuestions.map((sq, i) =>
         i === subIndex
           ? {
-              ...sq,
-              options: sq.options.map((opt: string, oi: number) => (oi === optionIndex ? value : opt)),
-            }
+            ...sq,
+            options: sq.options.map((opt: string, oi: number) => (oi === optionIndex ? value : opt)),
+          }
           : sq,
       ),
     }))
+  }
+
+  const [analyzingIndex, setAnalyzingIndex] = useState<number | null>(null);
+
+  const handleAnalyzeSubQuestion = async (index: number, text: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!text) return;
+
+    setAnalyzingIndex(index);
+    try {
+      const res = await fetch("/Api/analyze-complexity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPassageData((prev) => ({
+          ...prev,
+          subQuestions: prev.subQuestions.map((sq, i) =>
+            i === index ? { ...sq, complexity: data.complexity } : sq
+          ),
+        }))
+      }
+    } catch (err) {
+      console.error("Analysis failed", err);
+    } finally {
+      setAnalyzingIndex(null);
+    }
   }
 
   return (
@@ -734,7 +923,7 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
                 <div className="pr-8">
                   <LabelInputContainer className="mb-2">
                     <Label>
-                      প্রশ্ন {index + 1} (Sub Question {index + 1}) 
+                      প্রশ্ন {index + 1} (Sub Question {index + 1})
                     </Label>
                     <Input
                       placeholder="প্রশ্নটি লিখুন"
@@ -786,6 +975,14 @@ const MCQTemplet_4 = ({ children, pIdx, setMcqTemplet, mcqTemplet, onDeleteIndiv
 
                   <div className="flex justify-between items-center mt-3">
                     <div className="flex items-center gap-2">
+                      {subQuestion.complexity && (
+                        <div className={`px-2 py-1 rounded text-xs font-semibold ${subQuestion.complexity === "Hard" ? "bg-red-100 text-red-800" :
+                          subQuestion.complexity === "Medium" ? "bg-yellow-100 text-yellow-800" :
+                            "bg-green-100 text-green-800"
+                          }`}>
+                          {subQuestion.complexity}
+                        </div>
+                      )}
                       <span className="text-sm font-medium">নম্বর:</span>
                       <span className="bg-white px-3 py-1 rounded border text-sm">1</span>
                     </div>

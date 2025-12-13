@@ -11,6 +11,7 @@ const subMCQSchema = new mongoose.Schema({
   options: { type: [String], required: true, default: ["", "", "", ""] },
   correctAnswer: { type: String, default: "" },
   marks: { type: Number, default: 1 },
+  complexity: { type: String, enum: ["Easy", "Medium", "Hard"], default: "Easy" },
 });
 
 const mcqSchema = new mongoose.Schema({
@@ -29,6 +30,7 @@ const mcqSchema = new mongoose.Schema({
   passage: { type: String, default: "" },
   passageImage: { type: String, default: "" },
   subQuestions: { type: [subMCQSchema], default: [] },
+  complexity: { type: String, enum: ["Easy", "Medium", "Hard"], default: "Easy" },
 });
 
 const templateSchema = new mongoose.Schema({

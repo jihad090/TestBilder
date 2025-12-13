@@ -53,6 +53,53 @@ const Mcq = () => {
       if (result.success) {
         setSaveStatus("saved")
         setLastSaved(new Date())
+
+        // Merge complexity from backend response into local state
+        if (result.data && result.data.mcqs) {
+          setMcqTemplet((prev) => {
+            const newState = [...prev]
+            let hasChanges = false
+
+            result.data.mcqs.forEach((backendGroup: any[], idx: number) => {
+              if (!newState[idx] || !newState[idx][0] || !backendGroup || !backendGroup[0]) return
+
+              // Check Main Question Complexity
+              if (backendGroup[0].complexity && backendGroup[0].complexity !== newState[idx][0].complexity) {
+                newState[idx] = [...newState[idx]] // Clone group
+                newState[idx][0] = { ...newState[idx][0], complexity: backendGroup[0].complexity }
+                hasChanges = true
+              }
+
+              // Check SubQuestions Complexity (for MCQ-4)
+              if (backendGroup[0].mcqType === "mcq-4" && backendGroup[0].subQuestions && newState[idx][0].subQuestions) {
+                const backendSub = backendGroup[0].subQuestions
+                const localSub = newState[idx][0].subQuestions
+
+                if (Array.isArray(backendSub) && Array.isArray(localSub)) {
+                  let subChanged = false
+                  const newSubQuestions = localSub.map((lSub, sIdx) => {
+                    const bSub = backendSub[sIdx] // Assuming order is preserved
+                    if (bSub && bSub.complexity && bSub.complexity !== lSub.complexity) {
+                      subChanged = true
+                      hasChanges = true
+                      return { ...lSub, complexity: bSub.complexity }
+                    }
+                    return lSub
+                  })
+
+                  if (subChanged) {
+                    if (newState[idx] === prev[idx]) newState[idx] = [...newState[idx]] // Clone if not already
+                    if (newState[idx][0] === prev[idx][0]) newState[idx][0] = { ...newState[idx][0] }
+                    newState[idx][0].subQuestions = newSubQuestions
+                  }
+                }
+              }
+            })
+
+            return hasChanges ? newState : prev
+          })
+        }
+
         setTimeout(() => setSaveStatus("idle"), 2000)
       } else {
         setSaveStatus("error")

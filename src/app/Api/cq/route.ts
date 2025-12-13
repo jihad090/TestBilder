@@ -3,6 +3,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/dbconfig/dbconfig"
 import FullCQTemplate from "@/Models/cqTemplate"
+import { analyzeComplexity } from "@/utils/complexityAnalyzer"
+
 
 await connectDB()
 
@@ -31,10 +33,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 })
     }
 
-    const validatedCQs = cqs.map((cq: any) => ({
-      ...cq,
-      isComplete: validateCQ(cq)
-    }))
+    const validatedCQs = cqs.map((cq: any) => {
+      // Just return the logic without analyzing
+      return {
+        ...cq,
+        isComplete: validateCQ(cq)
+      };
+    });
     const allCQsComplete = validatedCQs.every(cq => cq.isComplete)
 
     if (operation === "update" && templateId) {
